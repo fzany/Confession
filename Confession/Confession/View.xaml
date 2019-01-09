@@ -1,0 +1,120 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="Confession.View"  BackgroundColor="Azure" Padding="5">
+
+    <ContentPage.Content>
+        <StackLayout>
+            <StackLayout Orientation="Horizontal" BackgroundColor="{StaticResource Primary}" >
+                <Image Source="back.png" IsVisible="False" Aspect="AspectFit" HeightRequest="50" WidthRequest="50" x:Name="back_button">
+                    <Image.GestureRecognizers>
+                        <TapGestureRecognizer NumberOfTapsRequired="1" Tapped="Back_Tapped"/>
+                    </Image.GestureRecognizers>
+                </Image>
+                <Image Source="logo50.png" Aspect="AspectFit" HeightRequest="50" WidthRequest="50"/>
+                <Label Text="Confessor: View Confession" FontSize="Large" FontFamily="{StaticResource Ink}" FontAttributes="Bold" TextColor="White" VerticalOptions="CenterAndExpand"/>
+            </StackLayout>
+            <StackLayout Orientation="Horizontal">
+                <Label Text="Edit" x:Name="EditTool"  FontFamily="{StaticResource FSolid}" FontSize="Large">
+                    <Label.GestureRecognizers>
+                        <TapGestureRecognizer NumberOfTapsRequired="1" Tapped="EditButtonClicked"/>
+                    </Label.GestureRecognizers>
+                </Label>
+                <Label Text="Delete" x:Name="DeleteTool"  FontFamily="{StaticResource FSolid}" FontSize="Large">
+                    <Label.GestureRecognizers>
+                        <TapGestureRecognizer NumberOfTapsRequired="1" Tapped="DeleteButtonClicked"/>
+                    </Label.GestureRecognizers>
+                </Label>
+            </StackLayout>
+            <ActivityIndicator IsEnabled="False" IsRunning="False" IsVisible="False" x:Name="loadingBox"/>
+            <ScrollView>
+                <StackLayout x:Name='binder'>
+                    <Label Text="{Binding Title}" FontAttributes="Bold" FontSize="Large" />
+                    <Label VerticalOptions="Center" HorizontalOptions="FillAndExpand" Text="{Binding Category}" FontAttributes="Bold"/>
+                    <Label Text="{Binding Date}" FontAttributes="Italic"/>
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+                        <Label Text="{Binding Likes}" Grid.Column="1"/>
+                        <Label  FontFamily="{StaticResource FSolid}" Text="{Binding LikesLogo}" ClassId="{Binding Guid}" TextColor="{Binding LikeColor}" Grid.Column="0">
+                            <Label.GestureRecognizers>
+                                <TapGestureRecognizer NumberOfTapsRequired="1" Tapped="Like_Tapped"/>
+                            </Label.GestureRecognizers>
+                        </Label>
+                        <Label Text="{Binding DisLikes}" Grid.Column="3"/>
+                        <Label  FontFamily="{StaticResource FSolid}" Text="{Binding DisLikesLogo}" ClassId="{Binding Guid}" TextColor="{Binding DislikeColor}" Grid.Column="2">
+                            <Label.GestureRecognizers>
+                                <TapGestureRecognizer NumberOfTapsRequired="1" Tapped="Dislike_Tapped"/>
+                            </Label.GestureRecognizers>
+                        </Label>
+                        <Label Text="{Binding CommentCount}" Grid.Column="5"/>
+                        <Label  FontFamily="{StaticResource FSolid}" Text="{Binding CommentLogo}" Grid.Column="4"/>
+                    </Grid>
+                    <Label Text="{Binding Body}"/>
+                    <ListView VerticalOptions="FillAndExpand" Header="Comments:" x:Name="List_View" HasUnevenRows="True" SeparatorVisibility="None" SelectionMode="None">
+                        <ListView.ItemTemplate>
+                            <DataTemplate>
+                                <ViewCell>
+                                    <StackLayout Spacing="1" BackgroundColor="LightGray" Margin="3" Padding="3">
+                                        <Grid>
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="Auto"/>
+                                                <ColumnDefinition Width="*"/>
+                                                <ColumnDefinition Width="*"/>
+                                                <ColumnDefinition Width="*"/>
+                                                <ColumnDefinition Width="*"/>
+                                                <ColumnDefinition Width="*"/>
+                                                <ColumnDefinition Width="*"/>
+                                                <ColumnDefinition Width="*"/>
+                                            </Grid.ColumnDefinitions>
+                                            <Label Text="{Binding Date}" FontAttributes="Italic" Grid.Column="0"/>
+                                            <Label Text="{Binding Likes}" Grid.Column="2"/>
+                                            <Label  FontFamily="{StaticResource FSolid}" Text="{Binding LikesLogo}" ClassId="{Binding Guid}" Grid.Column="1">
+                                                <Label.GestureRecognizers>
+                                                    <TapGestureRecognizer NumberOfTapsRequired="1" Tapped="Like_Tapped_Comment"/>
+                                                </Label.GestureRecognizers>
+                                            </Label>
+                                            <Label Text="{Binding DisLikes}" Grid.Column="4"/>
+                                            <Label  FontFamily="{StaticResource FSolid}" Text="{Binding DisLikesLogo}" ClassId="{Binding Guid}" Grid.Column="3">
+                                                <Label.GestureRecognizers>
+                                                    <TapGestureRecognizer NumberOfTapsRequired="1" Tapped="Dislike_t_Comment"/>
+                                                </Label.GestureRecognizers>
+                                            </Label>
+                                            <Label  FontFamily="{StaticResource FSolid}" Text="{Binding DeleteLogo}" IsVisible="{Binding DeleteVisibility}" ClassId="{Binding Guid}" Grid.Column="5">
+                                                <Label.GestureRecognizers>
+                                                    <TapGestureRecognizer NumberOfTapsRequired="1" Tapped="Delete_t_Comment"/>
+                                                </Label.GestureRecognizers>
+                                            </Label>
+                                        </Grid>
+                                        <Label Text="{Binding Body}"/>
+                                    </StackLayout>
+                                </ViewCell>
+                            </DataTemplate>
+                        </ListView.ItemTemplate>
+                    </ListView>
+                </StackLayout>
+            </ScrollView>
+            <Grid VerticalOptions="EndAndExpand" HeightRequest="100">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+                <Entry Placeholder="Comment here." x:Name="comment_Input" Grid.Column="0"/>
+                <Image Source="send.png" Aspect="AspectFit" WidthRequest="50" HeightRequest="50" Grid.Column="1">
+                    <Image.GestureRecognizers>
+                        <TapGestureRecognizer NumberOfTapsRequired="1" Tapped="Send_Tapped"/>
+                    </Image.GestureRecognizers>
+                </Image>
+            </Grid>
+        </StackLayout>
+    </ContentPage.Content>
+
+</ContentPage>
