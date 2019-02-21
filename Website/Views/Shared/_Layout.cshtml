@@ -1,0 +1,66 @@
+﻿@model Website.Models.Modeller
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - Website</title>
+
+    <link rel="shortcut icon" href="https://res.cloudinary.com/fzany-inc/image/upload/v1548436737/faviconconfess_xlybpd.png" />
+    <link rel="stylesheet" href="https://code.jquery.com/mobile/1.4.5/jquery.mobile-1.4.5.min.css" />
+    <script type="text/javascript" src="https://code.jquery.com/jquery-1.11.1.min.js"></script>
+    <script type="text/javascript" src="https://code.jquery.com/mobile/1.4.5/jquery.mobile-1.4.5.min.js"></script>
+    @*<script src="~/Scripts/jquery.unobtrusive-ajax.js"></script>*@
+</head>
+<body>
+    <div data-role="header" data-position="fixed">
+        <h1>@Html.ActionLink("Confessor", "Index", new { id = "All" })</h1>
+        <a href="#nav-panel" data-icon="bars" data-iconpos="notext">Menu</a>
+        <a href="#popupAdd" data-rel="popup" data-position-to="window" data-icon="plus" data-iconpos="notext" data-transition="pop">Add</a>
+    </div><!-- /header -->
+    <div role="main" class="ui-content jqm-content jqm-fullwidth">
+        @RenderBody()
+    </div><!-- /content -->
+    <div data-role="footer" data-position="fixed">
+        <h4>&copy; @DateTime.Now.Year - Booksrite</h4>
+    </div><!-- /footer -->
+    <div data-role="panel" data-position-fixed="true" data-display="push" data-theme="b" id="nav-panel">
+        <ul data-role="listview">
+            <li data-icon="delete"><a href="#" data-rel="close">Close</a></li>
+            @{ if (Model != null)
+                {
+                    if (Model.Categories != null)
+                    {
+                        if (Model.Categories.Count() > 0)
+                        {
+                            foreach (var con in Model.Categories)
+                            {
+                                <li>@Html.ActionLink(con, "Index", new { id = con })</li>
+                            }
+                        }
+                    }
+                } }
+            <li style="margin-top:5px;">@Html.ActionLink("All Confessions", "Index", new { id = "All" })</li>
+            <li>@Html.ActionLink("My Confessions", "Index", new { id = "mine" })</li>
+        </ul>
+
+    </div>
+    <div data-role="popup" id="popupAdd" data-theme="a" class="ui-corner-all">
+        @using (Html.BeginForm("Add", "Home"))
+        {
+            <div style="padding:10px 20px;">
+                <h3>Make a Confession</h3>
+                <label>Title</label>
+                @Html.EditorFor(d => d.Confess.Title)
+                <label for="select-choice-a" class="select">Category</label>
+                @Html.DropDownListFor(Model => Model.Confess.Category, Model.ListItems, "Select Category")
+                <label for="textarea-1">Body</label>
+                @Html.TextAreaFor(g => g.Confess.Body, 8, 40, new { name = "textarea-1" })
+                <button data-ajax="false" type="submit" class="ui-btn ui-corner-all ui-shadow ui-btn-b ui-btn-icon-left ui-icon-check">Submit</button>
+            </div>
+        }
+    </div>
+    @*<partial name="_CookieConsentPartial" />*@
+</body>
+</html>

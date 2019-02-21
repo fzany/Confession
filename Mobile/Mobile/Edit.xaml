@@ -1,0 +1,31 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+              xmlns:local="clr-namespace:Mobile.Helpers"
+             x:Class="Mobile.Edit" Padding="5">
+    <ContentPage.ToolbarItems>
+        <ToolbarItem Text="Delete" Clicked="DeleteButtonClicked" Order="Secondary"/>
+    </ContentPage.ToolbarItems>
+    <ContentPage.Content>
+        <StackLayout>
+            <StackLayout Orientation="Horizontal" BackgroundColor="{StaticResource Primary}" >
+               
+                <Image Source="logo50.png" Aspect="AspectFit" HeightRequest="50" WidthRequest="50"/>
+                <Label Text="Confessor: Edit Confession" FontSize="Large" FontFamily="{StaticResource Ink}" FontAttributes="Bold" TextColor="White" VerticalOptions="CenterAndExpand"/>
+            </StackLayout>
+            <ActivityIndicator IsEnabled="False" IsRunning="False" IsVisible="False" x:Name="loadingBox"/>
+            <ScrollView>
+                <StackLayout>
+                    <Label Text="Title" FontFamily="{StaticResource Rob}" FontSize="Small"/>
+                    <Entry Text="{Binding Title}" FontFamily="{StaticResource Rob}" x:Name="title" TextChanged="title_TextChanged"   />
+                    <Label Text="Category" FontFamily="{StaticResource Rob}" FontSize="Small"/>
+                    <Picker  VerticalOptions="Center" HorizontalOptions="FillAndExpand" x:Name="cat" FontFamily="{StaticResource Rob}" Title="Choose Category" SelectedItem="{Binding Category}"/>
+                    <Label Text="Body" FontFamily="{StaticResource Rob}" FontSize="Small"/>
+                    <Editor IsSpellCheckEnabled="True" AutoSize="TextChanges" Text="{Binding Body}" x:Name="body"/>
+                    <Button Text="Update"  FontFamily="{StaticResource Rob}" Clicked="UpdateButton_Clicked" HorizontalOptions="FillAndExpand" x:Name="updateButton"/>
+                </StackLayout>
+            </ScrollView>
+            <local:AdBanner Size="Standardbanner" VerticalOptions="EndAndExpand"/>
+        </StackLayout>
+    </ContentPage.Content>
+</ContentPage>

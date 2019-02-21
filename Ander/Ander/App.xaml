@@ -1,0 +1,34 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<Application xmlns="http://xamarin.com/schemas/2014/forms"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="Ander.App">
+    <Application.Resources>
+        <ResourceDictionary>
+            <OnPlatform x:Key="FSolid"  x:TypeArguments="x:String" Android="FaSolid.otf#Font Awesome 5 Free Solid" iOS="FaSolid">
+                <On Platform ="UWP">/Assets/Fonts/FaSolid.otf#Font Awesome 5 Free Solid</On>
+            </OnPlatform>
+            <OnPlatform x:Key="Ink"  x:TypeArguments="x:String" Android="Inkfree.ttf#Ink Free" iOS="Inkfree">
+                <On Platform ="UWP">/Assets/Fonts/Inkfree.ttf#Ink Free</On>
+            </OnPlatform>
+            <OnPlatform x:Key="Rob"  x:TypeArguments="x:String" Android="RobotoRegular.ttf#Roboto" iOS="RobotoRegular">
+                <On Platform ="UWP">/Assets/Fonts/RobotoRegular.ttf#Roboto</On>
+            </OnPlatform>
+
+            <Color x:Key="Primary">#1976D2</Color>
+            <Color x:Key="PrimaryDark">#1976D2</Color>
+            <Color x:Key="Primarylight">#03A9F4</Color>
+
+            <Style TargetType="ActivityIndicator">
+                <Setter Property="Color" Value="#1976D2" />
+            </Style>
+            <Style TargetType="ContentPage">
+                <Setter Property="BackgroundColor" Value="Azure" />
+                <Setter Property="Padding" Value="5" />
+            </Style>
+            <Style TargetType="BoxView">
+                <Setter Property="BackgroundColor" Value="#1976D2" />
+            </Style>
+        </ResourceDictionary>
+
+    </Application.Resources>
+</Application>

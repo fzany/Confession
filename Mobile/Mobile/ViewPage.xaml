@@ -1,0 +1,84 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:local="clr-namespace:Mobile.Helpers"
+             x:Class="Mobile.ViewPage" BackgroundColor="Azure" Padding="5">
+    <ContentPage.Content>
+        <StackLayout>
+            <ScrollView VerticalOptions="Start">
+                <StackLayout Spacing="5" VerticalOptions="Start">
+
+                    <StackLayout Orientation="Horizontal" BackgroundColor="{StaticResource Primary}" >
+                        <Image Source="back.png" IsVisible="False" Aspect="AspectFit" HeightRequest="50" WidthRequest="50" x:Name="back_button">
+                            <Image.GestureRecognizers>
+                                <TapGestureRecognizer NumberOfTapsRequired="1" Tapped="Back_Tapped"/>
+                            </Image.GestureRecognizers>
+                        </Image>
+                        <Image Source="logo50.png" Aspect="AspectFit" HeightRequest="50" WidthRequest="50"/>
+                        <Label Text="Confessor: View Confession" FontSize="Large" FontFamily="{StaticResource Ink}" FontAttributes="Bold" TextColor="White" VerticalOptions="CenterAndExpand"/>
+                    </StackLayout>
+                    <StackLayout Orientation="Horizontal">
+                        <Label Text="Edit" x:Name="EditTool"  FontFamily="{StaticResource FSolid}" FontSize="Large">
+                            <Label.GestureRecognizers>
+                                <TapGestureRecognizer NumberOfTapsRequired="1" Tapped="EditButtonClicked"/>
+                            </Label.GestureRecognizers>
+                        </Label>
+                        <Label Text="Delete" x:Name="DeleteTool"  FontFamily="{StaticResource FSolid}" FontSize="Large">
+                            <Label.GestureRecognizers>
+                                <TapGestureRecognizer NumberOfTapsRequired="1" Tapped="DeleteButtonClicked"/>
+                            </Label.GestureRecognizers>
+                        </Label>
+                    </StackLayout>
+
+                    <StackLayout>
+                        <Label Text="{Binding Title}" FontFamily="{StaticResource Rob}" FontAttributes="Bold" FontSize="Large" />
+                        <Label VerticalOptions="Center" FontFamily="{StaticResource Rob}" HorizontalOptions="FillAndExpand" Text="{Binding Category}" FontAttributes="Bold"/>
+                        <Label Text="{Binding Date}" FontFamily="{StaticResource Rob}" FontAttributes="Italic"/>
+                        <Grid HorizontalOptions="CenterAndExpand">
+                            <Grid.Resources>
+                                <Style TargetType="Label">
+                                    <Setter Property="VerticalOptions" Value="CenterAndExpand" />
+                                    <Setter Property="FontSize" Value="Large" />
+                                </Style>
+                            </Grid.Resources>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+                            <Label Text="{Binding Likes}" FontFamily="{StaticResource Rob}" Grid.Column="1"/>
+                            <Label  FontFamily="{StaticResource FSolid}" Text="{Binding LikesLogo}" ClassId="{Binding Guid}" TextColor="{Binding LikeColor}" Grid.Column="0">
+                                <Label.GestureRecognizers>
+                                    <TapGestureRecognizer NumberOfTapsRequired="1" Tapped="Like_Tapped"/>
+                                </Label.GestureRecognizers>
+                            </Label>
+                            <Label Text="{Binding DisLikes}" FontFamily="{StaticResource Rob}" Grid.Column="3"/>
+                            <Label  FontFamily="{StaticResource FSolid}" Text="{Binding DisLikesLogo}" ClassId="{Binding Guid}" TextColor="{Binding DislikeColor}" Grid.Column="2">
+                                <Label.GestureRecognizers>
+                                    <TapGestureRecognizer NumberOfTapsRequired="1" Tapped="Dislike_Tapped"/>
+                                </Label.GestureRecognizers>
+                            </Label>
+                            <Label Text="{Binding CommentCount}" FontFamily="{StaticResource Rob}" Grid.Column="5"/>
+                            <Label  FontFamily="{StaticResource FSolid}" Text="{Binding CommentLogo}" Grid.Column="4"/>
+                            <Label Text="{Binding Seen}" FontFamily="{StaticResource Rob}" Grid.Column="7"/>
+                            <Label  FontFamily="{StaticResource FSolid}" Text="{Binding SeenLogo}" Grid.Column="6"/>
+                        </Grid>
+                        <Label Text="{Binding Body}" FontFamily="{StaticResource Rob}"/>
+                    </StackLayout>
+
+
+                </StackLayout>
+            </ScrollView>
+            <local:AdMobView VerticalOptions="EndAndExpand" AdUnitId="{Binding AdUnitId}"/>
+            <Button VerticalOptions="EndAndExpand" Text="View Comments" x:Name="commentButton" Clicked="Open_Comment" TextColor="White" BackgroundColor="{StaticResource Primary}"/>
+        </StackLayout>
+
+    </ContentPage.Content>
+</ContentPage>

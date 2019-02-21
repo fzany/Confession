@@ -1,0 +1,38 @@
+﻿@model Website.Models.Modeller
+
+@{
+    ViewData["Title"] = "Edit";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<a href="#deleteDialog" class="ui-shadow ui-btn ui-corner-all ui-btn-inline ui-btn-icon-left ui-icon-delete" data-rel="popup" data-position-to="window" data-transition="pop">Delete</a>
+
+<h2>Edit</h2>
+@using (Html.BeginForm("Update", "Home"))
+{
+    <div style="padding:10px 20px;">
+        <h3>Make a Confession</h3>
+        <label>Title</label>
+        @Html.HiddenFor(d => d.Confess.Guid, new { @id = Model.Confess.Guid })
+        @Html.EditorFor(d => d.Confess.Title)
+        <label for="select-choice-a" class="select">Category</label>
+        @Html.DropDownListFor(Model => Model.Confess.Category, Model.ListItems, "Select Category", new { })
+        <label for="textarea-1">Body</label>
+        @Html.TextAreaFor(g => g.Confess.Body, 8, 40, new { name = "textarea-1" })
+        <button data-ajax="false" type="submit" class="ui-btn ui-corner-all ui-shadow ui-btn-b ui-btn-icon-left ui-icon-check">Update</button>
+    </div>
+}
+<div data-role="popup" id="deleteDialog" data-overlay-theme="b" data-theme="b" data-dismissible="false" style="max-width:400px;">
+    <div data-role="header" data-theme="a">
+        <h1>Confirmation</h1>
+    </div>
+    @using (Html.BeginForm("Delete", "Home", new { @id = "deleteform" }))
+    {
+        @Html.HiddenFor(model => model.Confess.Guid, new { id = Model.Confess.Guid })
+        <div role="main" class="ui-content">
+            <h3 class="ui-title">Are you sure you want to remove this user from exempt list?</h3>
+            <p>This action cannot be undone.</p>
+            <a href="#" class="ui-btn ui-corner-all ui-shadow ui-btn-inline ui-btn-b" data-rel="back">Cancel</a>
+            <button class="ui-btn ui-corner-all ui-shadow ui-btn-inline ui-btn-b" data-rel="back">Remove</button>
+        </div>
+    }
+</div>

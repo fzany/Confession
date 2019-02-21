@@ -1,0 +1,38 @@
+﻿@model Website.Models.Modeller
+@{
+    ViewData["Title"] = "Home Page";
+}
+
+<ul data-role="listview" data-inset="true" data-filter="true" data-filter-placeholder="Search confessions...">
+
+    @if (Model.ConfessLoaders != null)
+    {
+        DateTime currentDate = DateTime.UtcNow;
+
+        foreach (var con in Model.ConfessLoaders)
+        {
+            string shortTime = con.DateReal.ToShortTimeString();
+            <li data-role="list-divider">
+                <a href='@Url.Action("Detail","Home")/@con.Guid' class="ui-nodisc-icon ui-btn-icon-right">
+                    <span class="ui-btn-inline ui-corner-all">@con.Date </span>
+                    <span class="ui-btn ui-shadow ui-corner-all ui-btn-b ui-icon-eye ui-btn-icon-notext ui-btn-inline"></span>
+                    <span class="ui-btn-inline ui-corner-all">@con.Seen</span>
+                    <span class="ui-btn ui-shadow ui-corner-all ui-btn-b ui-icon-comment ui-btn-icon-notext ui-btn-inline "></span>
+                    <span class="ui-btn-inline ui-corner-all">@con.CommentCount</span>
+                </a>
+                @*@con.Date <span class="ui-corner-all ui-btn-icon-right ui-icon-eye"><span class="ui-li-count">@con.Seen</span></span>
+                    <span class="ui-corner-all ui-btn-icon-right ui-icon-comment"><span class="ui-li-count">@con.CommentCount</span></span>*@
+            </li>
+            <li>
+                <a href='@Url.Action("Detail","Home")/@con.Guid'>
+                    <h2><span>@con.Category : </span> @con.Title</h2>
+                    <p>@con.Body</p>
+                    <p class="ui-li-aside"><strong>@shortTime</strong></p>
+                </a>
+            </li>
+            currentDate = con.DateReal;
+        }
+
+
+    }
+</ul>

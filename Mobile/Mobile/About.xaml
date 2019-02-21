@@ -1,0 +1,35 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="Mobile.About" BackgroundColor="{StaticResource Primary}" Padding="5">
+    <ContentPage.Content>
+        <ScrollView>
+            <StackLayout>
+                <Image Source="confesslogo512.png" Aspect="AspectFit" HeightRequest="200" WidthRequest="200"/>
+                <Label x:Name="appname" FontSize="Large" FontFamily="{StaticResource Ink}" FontAttributes="Bold" TextColor="White"/>
+                <Label x:Name="describe"  TextColor="White"/>
+
+                <Label Text=""/>
+                <Label Text="App Version" FontSize="Small" FontAttributes="Bold" TextColor="White"/>
+                <Label x:Name="version" TextColor="White"/>
+
+                <Label Text=""/>
+                <Label Text="Give Direct Feedback" FontSize="Small" FontAttributes="Bold" TextColor="White"/>
+                <Label Text="Click to send an email with feedback." TextColor="White">
+                    <Label.GestureRecognizers>
+                        <TapGestureRecognizer NumberOfTapsRequired="1" Tapped="Email_Tapped"/>
+                    </Label.GestureRecognizers>
+                </Label>
+
+                <Label Text=""/>
+                <Label Text="Privacy Information" FontSize="Small" FontAttributes="Bold" TextColor="White"/>
+                <Label Text="All post and comments are anonymous." TextColor="White"/>
+
+                <Label Text=""/>
+                <Label Text="Credits" FontSize="Small" FontAttributes="Bold" TextColor="White"/>
+                <Label Text="Booksrite.com" TextColor="White"/>
+            </StackLayout>
+        </ScrollView>
+    </ContentPage.Content>
+
+</ContentPage>

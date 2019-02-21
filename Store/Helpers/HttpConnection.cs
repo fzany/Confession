@@ -1,0 +1,36 @@
+﻿using System;
+using System.Net.Http;
+using System.Net.Http.Headers;
+
+namespace Store.Helpers
+{
+    public static class HttpConnection
+    {/// <summary>
+     /// Initialize a new HttpClient with Security, content and cache configurations. 
+     /// </summary>
+     /// <param name="secretKey"></param>
+     /// <returns></returns>
+        public static HttpClient CreateClient(string secretKey)
+        {
+            // ServicePointManager.SecurityProtocol = SecurityProtocolType.Ssl3 | SecurityProtocolType.Tls | SecurityProtocolType.Tls11 | SecurityProtocolType.Tls12;
+
+            HttpClient client = new HttpClient()
+            {
+                BaseAddress = new Uri(Constants.BaseURL)
+            };
+
+
+            client.DefaultRequestHeaders.Clear();
+
+            client.DefaultRequestHeaders.Accept.Add(
+                new MediaTypeWithQualityHeaderValue(Constants.ContentTypeHeaderJson));
+
+            client.DefaultRequestHeaders.Add("cache-control", "no-cache");
+
+            client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue(Constants.AuthorizationHeaderType, secretKey);
+
+            return client;
+        }
+
+    }
+}
