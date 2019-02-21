@@ -324,6 +324,7 @@ namespace Backend.Helpers
                     loaders.Add(loader);
                     loader = new ConfessLoader();
                 }
+                loaders.OrderByDescending(d => d.DateReal);
                 return loaders;
             }
 
@@ -394,6 +395,7 @@ namespace Backend.Helpers
                     loaders.Add(loader);
                     loader = new CommentLoader();
                 }
+                loaders.OrderByDescending(d => d.DateReal);
                 return loaders;
             }
             public static void DeleteComment(string guid)
