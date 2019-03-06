@@ -18,9 +18,11 @@ namespace Mobile.Droid
             TabLayoutResource = Resource.Layout.Tabbar;
             ToolbarResource = Resource.Layout.Toolbar;
             base.OnCreate(savedInstanceState);
-            MobileAds.Initialize(this.ApplicationContext, "ca-app-pub-4507736790505069~9315189412");
             Xamarin.Essentials.Platform.Init(this, savedInstanceState); // add this line to your code
+           // Android.Gms.Ads.MobileAds.Initialize(ApplicationContext, Mobile.Helpers.AppConstants.AppId);
             global::Xamarin.Forms.Forms.Init(this, savedInstanceState);
+            MobileAds.Initialize(ApplicationContext, Mobile.Helpers.AppConstants.AppId);
+
             LoadApplication(new App());
         }
         public override void OnRequestPermissionsResult(int requestCode, string[] permissions, [GeneratedEnum] Android.Content.PM.Permission[] grantResults)

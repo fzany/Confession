@@ -7,6 +7,7 @@ namespace Shared
     public class Constants
     {
         public const string key = "user_key";
+        public const string CurrentConfessGuid = "confessGuid";
         public const string edit_nav = "edit_nav";
         public const string cat_nav = "cat_nav";
         public const string me_nav = "me_nav";

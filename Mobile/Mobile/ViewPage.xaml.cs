@@ -20,10 +20,15 @@ namespace Mobile
         private ConfessLoader confess;
         private List<CommentLoader> loaders = new List<CommentLoader>();
         private ConfessLoader newloader = new ConfessLoader();
-        public string AdUnitId { get; set; } = "ca-app-pub-4507736790505069/3601851826";
+        
         public ViewPage(ConfessLoader _confess)
         {
             InitializeComponent();
+            AdmobControl admobControl = new AdmobControl()
+            {
+                AdUnitId = AppConstants.BannerId
+            };
+            Ads.Children.Add(admobControl);
             confess = _confess;
             this.BindingContext = confess;
             //commentButton.IsVisible = confess.CommentCount !="0";
@@ -34,11 +39,15 @@ namespace Mobile
                     back_button.IsVisible = true;
                     break;
             }
-            DependencyService.Get<IAdInterstitial>().ShowAd();
+            
             LoadSubscription();
         }
-        private void LoadSubscription()
+        private async void LoadSubscription()
         {
+            if (AppConstants.ShowAds)
+            {
+                await DependencyService.Get<IAdmobInterstitialAds>().Display(AppConstants.InterstitialAdId);
+            }
             MessagingCenter.Subscribe<object, ConfessLoader>(this, Constants.ReloadViewPage, (sender, arg) =>
             {
                 this.BindingContext = arg;

@@ -75,37 +75,37 @@ namespace Backend.Controllers
             }
         }
 
-        [HttpGet]
-        [Route("test/migrate")]
-        public ActionResult<MigrationReport> Migrate()
-        {
-            try
-            {
-                Store.Migrate.Create.CreateConfess(Store.Migrate.Fetch.FetchConfess());
-                Store.Migrate.Create.CreateUser(Store.Migrate.Fetch.FetchUser());
-                Store.Migrate.Create.CreateComment(Store.Migrate.Fetch.FetchComment());
-                Store.Migrate.Create.CreateLikes(Store.Migrate.Fetch.FetchLikes());
-                Store.Migrate.Create.CreateDislikes(Store.Migrate.Fetch.FetchDislikes());
-                Store.Migrate.Create.CreateSeen(Store.Migrate.Fetch.FetchSeen());
+        //[HttpGet]
+        //[Route("test/migrate")]
+        //public ActionResult<MigrationReport> Migrate()
+        //{
+        //    try
+        //    {
+        //        Store.Migrate.Create.CreateConfess(Store.Migrate.Fetch.FetchConfess());
+        //        Store.Migrate.Create.CreateUser(Store.Migrate.Fetch.FetchUser());
+        //        Store.Migrate.Create.CreateComment(Store.Migrate.Fetch.FetchComment());
+        //        Store.Migrate.Create.CreateLikes(Store.Migrate.Fetch.FetchLikes());
+        //        Store.Migrate.Create.CreateDislikes(Store.Migrate.Fetch.FetchDislikes());
+        //        Store.Migrate.Create.CreateSeen(Store.Migrate.Fetch.FetchSeen());
 
-                MigrationReport migrationReport = new MigrationReport();
+        //        MigrationReport migrationReport = new MigrationReport();
 
-                return Ok(migrationReport);
-            }
-            catch (Exception ex)
-            {
-                return StatusCode(500, ex.ToString());
-            }
-        }
-        public class MigrationReport
-        {
-            public List<Confess> Confesses { get; set; } = Store.Migrate.FetchLite.FetchConfess();
-            public List<Likes> Likes { get; set; } = Store.Migrate.FetchLite.FetchLikes();
-            public List<Dislikes> Dislikes { get; set; } = Store.Migrate.FetchLite.FetchDislikes();
-            public List<Seen> Seens { get; set; } = Store.Migrate.FetchLite.FetchSeen();
-            public List<User> Users { get; set; } = Store.Migrate.FetchLite.FetchUser();
-            public List<Comment> Comments { get; set; } = Store.Migrate.FetchLite.FetchComment();
-        }
+        //        return Ok(migrationReport);
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        return StatusCode(500, ex.ToString());
+        //    }
+        //}
+        //public class MigrationReport
+        //{
+        //    public List<Confess> Confesses { get; set; } = Store.Migrate.FetchLite.FetchConfess();
+        //    public List<Likes> Likes { get; set; } = Store.Migrate.FetchLite.FetchLikes();
+        //    public List<Dislikes> Dislikes { get; set; } = Store.Migrate.FetchLite.FetchDislikes();
+        //    public List<Seen> Seens { get; set; } = Store.Migrate.FetchLite.FetchSeen();
+        //    public List<User> Users { get; set; } = Store.Migrate.FetchLite.FetchUser();
+        //    public List<Comment> Comments { get; set; } = Store.Migrate.FetchLite.FetchComment();
+        //}
 
 
         [HttpGet]

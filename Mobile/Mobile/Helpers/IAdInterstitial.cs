@@ -1,11 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace Mobile.Helpers
 {
-    public interface IAdInterstitial
+    public interface IAdmobInterstitialAds
     {
-        void ShowAd();
+        Task Display(string adId);
     }
 }

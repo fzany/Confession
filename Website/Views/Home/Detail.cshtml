@@ -10,7 +10,9 @@
         {
             <a href="@Url.Action("Edit","Home")/@Model.ConfessLoader.Guid" class="ui-shadow ui-btn ui-corner-all ui-btn-inline ui-btn-icon-left ui-icon-star">Edit</a>
             <a href="#deleteDialog" class="ui-shadow ui-btn ui-corner-all ui-btn-inline ui-btn-icon-left ui-icon-delete" data-rel="popup" data-position-to="window" data-transition="pop">Delete</a>
-
+            @*<a href="#deleteDialog">
+                    <img src="https://res.cloudinary.com/fzany-inc/image/upload/v1551647743/icons8-trash-filled-30_xsfxns.png" />
+                </a>*@
             @*@Html.ActionLink("Edit", "Edit", "Home", Model.ConfessLoader.Guid);
                 @Html.ActionLink("Delete", "Delete", "Home", new { id = Model.ConfessLoader.Guid });*@
             <div data-role="popup" id="deleteDialog" data-overlay-theme="b" data-theme="b" data-dismissible="false" style="max-width:400px;">
@@ -36,9 +38,15 @@
 
 <p>@Model.ConfessLoader.Date</p>
 <div class="ui-nodisc-icon">
-    <a href='@Url.Action("Liker", "Home")?guid=@Model.ConfessLoader.Guid&ownerguid=@Model.ConfessLoader.Owner_Guid&parentguid=@Model.ConfessLoader.Guid&iscomment=false' class="ui-btn ui-shadow ui-corner-all ui-btn-b ui-icon-check ui-btn-icon-notext ui-btn-inline"></a>
+    <a class="vertical" href='@Url.Action("Liker", "Home")?guid=@Model.ConfessLoader.Guid&ownerguid=@Model.ConfessLoader.Owner_Guid&parentguid=@Model.ConfessLoader.Guid&iscomment=false'>
+        <img class="vertical" src="https://res.cloudinary.com/fzany-inc/image/upload/v1551645521/icons8-facebook-like-30_p91tyy.png" />
+    </a>
+    @*<a href='@Url.Action("Liker", "Home")?guid=@Model.ConfessLoader.Guid&ownerguid=@Model.ConfessLoader.Owner_Guid&parentguid=@Model.ConfessLoader.Guid&iscomment=false' class="ui-btn ui-shadow ui-corner-all ui-btn-b ui-icon-check ui-btn-icon-notext ui-btn-inline"></a>*@
     <span class="ui-btn-inline">@Model.ConfessLoader.Likes</span>
-    <a href='@Url.Action("DisLiker", "Home")?guid=@Model.ConfessLoader.Guid&ownerguid=@Model.ConfessLoader.Owner_Guid&parentguid=@Model.ConfessLoader.Guid&iscomment=false' class="ui-btn ui-shadow ui-corner-all ui-btn-b ui-icon-delete ui-btn-icon-notext ui-btn-inline"></a>
+    <a class="vertical" href='@Url.Action("DisLiker", "Home")?guid=@Model.ConfessLoader.Guid&ownerguid=@Model.ConfessLoader.Owner_Guid&parentguid=@Model.ConfessLoader.Guid&iscomment=false'>
+        <img class="vertical" src="https://res.cloudinary.com/fzany-inc/image/upload/v1551646163/icons8-thumbs-down-30_pv1nw6.png" />
+    </a>
+    @*<a href='@Url.Action("DisLiker", "Home")?guid=@Model.ConfessLoader.Guid&ownerguid=@Model.ConfessLoader.Owner_Guid&parentguid=@Model.ConfessLoader.Guid&iscomment=false' class="ui-btn ui-shadow ui-corner-all ui-btn-b ui-icon-delete ui-btn-icon-notext ui-btn-inline"></a>*@
     <span class="ui-btn-inline">@Model.ConfessLoader.DisLikes</span>
     <a class="ui-btn ui-shadow ui-corner-all ui-btn-b ui-icon-comment ui-btn-icon-notext ui-btn-inline"></a>
     <span class="ui-btn-inline">@Model.ConfessLoader.CommentCount</span>
@@ -55,8 +63,10 @@
 {
     @if (Model.Loaders.Count > 0)
     {
+
+
         string datafil = "false";
-        if(Model.Loaders.Count > 5)
+        if (Model.Loaders.Count > 5)
         {
             datafil = "true";
         }
@@ -68,18 +78,29 @@
                 <li>
                     <div class="ui-nodisc-icon">
                         <span class="ui-btn-inline">@con.Date</span>
-                        <a href='@Url.Action("Liker", "Home")?guid=@con.Guid&ownerguid=@con.Owner_Guid&parentguid=@Model.ConfessLoader.Guid&iscomment=true' class="ui-btn ui-shadow ui-corner-all ui-btn-b ui-icon-check ui-btn-icon-notext ui-btn-inline"></a>
+                        <a class="vertical" href='@Url.Action("Liker", "Home")?guid=@con.Guid&ownerguid=@con.Owner_Guid&parentguid=@Model.ConfessLoader.Guid&iscomment=true'>
+                            <img class="vertical"
+                                 src="https://res.cloudinary.com/fzany-inc/image/upload/v1551645521/icons8-facebook-like-30_p91tyy.png" />
+                        </a>
+                        @*<a href='@Url.Action("Liker", "Home")?guid=@con.Guid&ownerguid=@con.Owner_Guid&parentguid=@Model.ConfessLoader.Guid&iscomment=true' class="ui-btn ui-shadow ui-corner-all ui-btn-b ui-icon-check ui-btn-icon-notext ui-btn-inline"></a>*@
                         <span class="ui-btn-inline" style="color:@con.LikeColorString">@con.Likes</span>
-                        <a href='@Url.Action("DisLiker", "Home")?guid=@con.Guid&ownerguid=@con.Owner_Guid&parentguid=@Model.ConfessLoader.Guid&iscomment=true' class="ui-btn ui-shadow ui-corner-all ui-btn-b ui-icon-delete ui-btn-icon-notext ui-btn-inline"></a>
+                        <a class="vertical" href='@Url.Action("DisLiker", "Home")?guid=@con.Guid&ownerguid=@con.Owner_Guid&parentguid=@Model.ConfessLoader.Guid&iscomment=true'>
+                            <img class="vertical"
+                                 src="https://res.cloudinary.com/fzany-inc/image/upload/v1551645806/icons8-thumbs-down-filled-30_o0ct6i.png" />
+                        </a>
+                        @*<a href='@Url.Action("DisLiker", "Home")?guid=@con.Guid&ownerguid=@con.Owner_Guid&parentguid=@Model.ConfessLoader.Guid&iscomment=true' class="ui-btn ui-shadow ui-corner-all ui-btn-b ui-icon-delete ui-btn-icon-notext ui-btn-inline"></a>*@
                         <span class="ui-btn-inline" style="color:@con.DislikeColorString">@con.DisLikes</span>
                         @{
                             if (con.DeleteVisibility)
                             {
-                                <a href='@Url.Action("DeleteComment", "Home")?guid=@con.Guid&parentguid=@Model.ConfessLoader.Guid' class="ui-btn ui-shadow ui-corner-all ui-btn-b ui-icon-delete ui-btn-icon-notext ui-btn-inline">Delete</a>
+                                <a class="vertical" href='@Url.Action("DeleteComment", "Home")?guid=@con.Guid&parentguid=@Model.ConfessLoader.Guid'>
+                                    <img class="vertical" src="https://res.cloudinary.com/fzany-inc/image/upload/v1551647743/icons8-trash-filled-30_xsfxns.png" />
+                                </a>
+                                @*<a  class="ui-btn ui-shadow ui-corner-all ui-btn-b ui-icon-delete ui-btn-icon-notext ui-btn-inline">Delete</a>*@
                             }
                         }
                     </div>
-                    <h3>@con.Body</h3>
+                    <h3 style="white-space:normal">@con.Body</h3>
                 </li>
             }
 
@@ -89,14 +110,13 @@
 
 @using (Html.BeginForm())
 {
-        <div>
-            <h3>Post a comment.</h3>
+    <div>
+        <h3>Post a comment.</h3>
 
-            @Html.TextAreaFor(d => Model.Comment.Body, new { @placeholder = "Enter some texts here" })
-            @*<input type="hidden" id="@Model.Comment.Confess_Guid" name="@Model.ConfessLoader.Guid" />*@
+        @Html.TextAreaFor(d => Model.Comment.Body, new { @placeholder = "Enter some texts here" })
 
-            @Html.HiddenFor(model => model.Comment.Confess_Guid, new { Value = Model.ConfessLoader.Guid, id= Model.ConfessLoader.Guid })
+        @Html.HiddenFor(model => model.Comment.Confess_Guid, new { Value = Model.ConfessLoader.Guid, id = Model.ConfessLoader.Guid })
 
-            <button data-ajax="false" type="submit" class="ui-btn ui-corner-all ui-shadow ui-btn-b ui-btn-icon-left ui-icon-check">Submit</button>
-        </div>
+        <button data-ajax="false" type="submit" class="ui-btn ui-corner-all ui-shadow ui-btn-b ui-btn-icon-left ui-icon-check">Submit</button>
+    </div>
 }

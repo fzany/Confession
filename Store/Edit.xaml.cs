@@ -60,6 +60,11 @@ namespace Store
                 ChangeLoading(false);
                 return;
             }
+            if (body_text.Text.Length < 200)
+            {
+                await new MessageDialog("Please type more texts for the Body").ShowAsync();
+                return;
+            }
             try
             {
                 Confess fetch = await Online.ConfessClass.FetchOneConfessByGuid(confess.Guid);
@@ -133,6 +138,20 @@ namespace Store
         private void title_text_TextChanged(object sender, TextChangedEventArgs e)
         {
             title_text.Text = Logic.ToTitle(title_text.Text);
+        }
+
+        private void body_text_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            int val = body_text.Text.Length;
+            int min = 200;
+            if (val > min)
+            {
+                body_text.Header = "Body";
+            }
+            else
+            {
+                body_text.Header = $"Body( type {min - val} characters or more)";
+            }
         }
     }
 }

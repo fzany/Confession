@@ -13,18 +13,18 @@ namespace Mobile
         private List<ConfessLoader> loaders = new List<ConfessLoader>() { };
         private LoadMode Mode = LoadMode.None;
         private string CurrentCategory = string.Empty;
-        public string AdUnitId { get; set; } = "ca-app-pub-4507736790505069/3601851826";
+        
         private bool IsRunLoader = false;
         public MainPage()
         {
             InitializeComponent();
+            AdmobControl admobControl = new AdmobControl()
+            {
+                AdUnitId = AppConstants.BannerId
+            };
+            Ads.Children.Add(admobControl);
             Mode = LoadMode.None;
-            Subscriptions();
-            if (Device.RuntimePlatform == Device.iOS)
-                AdUnitId = "ca-app-pub-4507736790505069/3601851826";
-            else if (Device.RuntimePlatform == Device.Android)
-                AdUnitId = "ca-app-pub-4507736790505069/3601851826";
-           
+            Subscriptions();           
         }
         protected override void OnAppearing()
         {

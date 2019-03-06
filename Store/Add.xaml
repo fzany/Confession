@@ -15,7 +15,7 @@
                 <TextBlock Text="Add Confession" HorizontalAlignment="Center" Foreground="Black" FontSize="50"/>
                 <TextBox Header="Title" Name="title_text"/>
                 <ComboBox Name="categories" MinWidth="400" Header="Category" HorizontalAlignment="Stretch"/>
-                <TextBox Header="Body" Name="body_text"/>
+                <TextBox Header="Body" Name="body_text" TextChanged="body_text_TextChanged"/>
                 <Button Content="Publish" Click="Add_Tapped" HorizontalAlignment="Stretch"/>
                 <ProgressBar IsEnabled="False"  Visibility="Collapsed" IsIndeterminate="True"  x:Name="loadingBox"/>
             </StackPanel>

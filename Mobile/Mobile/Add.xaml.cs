@@ -3,7 +3,6 @@ using Mobile.Helpers;
 using Mobile.Models;
 using System;
 using System.Linq;
-using Xamarin.Essentials;
 using Xamarin.Forms;
 using Xamarin.Forms.Xaml;
 
@@ -15,6 +14,11 @@ namespace Mobile
         public Add()
         {
             InitializeComponent();
+            AdmobControl admobControl = new AdmobControl()
+            {
+                AdUnitId = AppConstants.BannerId
+            };
+            Ads.Children.Add(admobControl);
             LoadData();
         }
         private void LoadData()
@@ -51,8 +55,13 @@ namespace Mobile
                 DependencyService.Get<IMessage>().ShortAlert("Please type a Body");
                 return;
             }
+            if (body.Text.Length < 200)
+            {
+                DependencyService.Get<IMessage>().ShortAlert("Please type more texts for the Body");
+                return;
+            }
 
-          
+
             try
             {
                 ChangeLoading(true);
@@ -82,6 +91,20 @@ namespace Mobile
         private void title_TextChanged(object sender, TextChangedEventArgs e)
         {
             title.Text = Logic.ToTitle(title.Text);
+        }
+
+        private void body_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            int val = body.Text.Length;
+            int min = 200;
+            if (val > min)
+            {
+                counter.Text = "Body";
+            }
+            else
+            {
+                counter.Text = $"Body( type {min - val} characters or more)";
+            }
         }
     }
 }

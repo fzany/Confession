@@ -85,7 +85,7 @@
             <StackPanel>
                 <CommandBar DefaultLabelPosition="Right" IsSticky="True" IsOpen="True" x:Name="myCommand">
                     <CommandBar.Background>
-                        <ImageBrush ImageSource="/Images/confesslogo512.png" Stretch="Uniform"/>
+                        <SolidColorBrush Color="Transparent"/>
                     </CommandBar.Background>
                     <AppBarToggleButton Icon="Home" Tapped="Refresh_Tapped"/>
                     <AppBarToggleButton Icon="Add" Tapped="Add_Tapped" />

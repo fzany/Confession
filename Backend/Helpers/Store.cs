@@ -324,7 +324,7 @@ namespace Backend.Helpers
                     loaders.Add(loader);
                     loader = new ConfessLoader();
                 }
-                loaders.OrderByDescending(d => d.DateReal);
+                loaders = loaders.OrderByDescending(d => d.DateReal.Date).Reverse().ToList();
                 return loaders;
             }
 

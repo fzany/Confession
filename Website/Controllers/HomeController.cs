@@ -29,6 +29,15 @@ namespace Website.Controllers
             };
             Response.Cookies.Append(key, value, option);
         }
+        //CurrentConfessGuid
+        private void SetCurrent(string guid)
+        {
+            CreateCookie(Constants.CurrentConfessGuid, guid);
+        }
+        private string GetCurrent()
+        {
+            return GetCookie(Constants.CurrentConfessGuid);
+        }
         private string GetKey()
         {
             string getKey = GetCookie(Constants.key);
@@ -147,6 +156,7 @@ namespace Website.Controllers
         public async Task<IActionResult> Detail()
         {
             string id = Request.Path.Value.Split('/').LastOrDefault();
+            SetCurrent(id);
             try
             {
                 //Confess confess = await Store.ConfessClass.FetchOneConfessByGuid(id, GetToken(GetKey()));
@@ -261,13 +271,15 @@ namespace Website.Controllers
         {
             Comment newComment = confessed.Comment;
             newComment.Owner_Guid = GetKey();
-            if (!string.IsNullOrEmpty(newComment.Confess_Guid))
+            newComment.Confess_Guid = GetCurrent();
+            if (!string.IsNullOrWhiteSpace(newComment.Body))
             {
                 await Store.CommentClass.CreateComment(newComment, newComment.Confess_Guid, GetToken(GetKey()), GetKey());
             }
 
-            //return RedirectToActionPermanent($"Detail/{newComment.Confess_Guid}", "Home");
-            return View("Detail");
+            return RedirectToActionPermanent($"Detail/{newComment.Confess_Guid}", "Home");
+            //return View("Detail");
+           // return View();
         }
 
         public async Task<IActionResult> Delete(Modeller confessed)

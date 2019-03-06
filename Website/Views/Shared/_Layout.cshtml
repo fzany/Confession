@@ -1,29 +1,131 @@
 ﻿@model Website.Models.Modeller
 
 <!DOCTYPE html>
-<html>
+<html lang="en-US" prefix="og: http://ogp.me/ns#">
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>@ViewData["Title"] - Website</title>
+
+    <meta name="apple-mobile-web-app-title" content="Confessor: Confess Anonymously">
+    <meta name="application-name" content="Confessor: Confess Anonymously">
+    <meta name="msapplication-TileColor" content="#2196F3">
+    <meta name="msapplication-TileImage" content="https://res.cloudinary.com/fzany-inc/image/upload/v1548436737/faviconconfess_xlybpd.png">
+    <meta name="theme-color" content="#2196F3">
+
+    <meta name="google-site-verification" content="qP9P1RIYb27-gUpUNzPgddHcU8A259sl0O78r0gEHTg" />
+    <meta name="msvalidate.01" content="5BF91AEFCC5780E9A488279462E6A59A" />
+    <meta property="og:image" content="https://res.cloudinary.com/fzany-inc/image/upload/v1548436737/faviconconfess_xlybpd.png" />
+    <meta name="twitter:site" content="confessorapp">
+    <meta name="twitter:image" content="https://res.cloudinary.com/fzany-inc/image/upload/v1548436737/faviconconfess_xlybpd.png">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+
+    <meta name="news_keywords" content="gamification, books, writers, readers, novel, coding, technology, book, internet" />
+    <meta name="original-source" content="https://confessor.azurewebsites.net" />
+
+    <meta property="fb:app_id" content="2300226063634964" />
+    <meta property="og:image:secure_url" content="https://res.cloudinary.com/fzany-inc/image/upload/v1548436737/faviconconfess_xlybpd.png" />
+
+    <meta name="description" content="We've all got events and occurrences that sometimes bothers us.  We believe sharing such situations anonymously with other users would relieve the emotional burden and help fresh thoughts flow into your minds. " />
+    <meta name="robots" content="noodp" />
+    <link rel="canonical" href="https://confessor.azurewebsites.net/" />
+    <meta property="og:locale" content="en_US" />
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Confessor: Confess Anonymously" />
+    <meta property="og:description" content="We've all got events and occurrences that sometimes bothers us.  We believe sharing such situations anonymously with other users would relieve the emotional burden and help fresh thoughts flow into your minds. " />
+    <meta property="og:url" content="https://confessor.azurewebsites.net/" />
+    <meta property="og:site_name" content="Confessor" />
+    <meta name="twitter:card" content="summary" />
+    <meta name="twitter:description" content="We've all got events and occurrences that sometimes bothers us.  We believe sharing such situations anonymously with other users would relieve the emotional burden and help fresh thoughts flow into your minds. " />
+    <meta name="twitter:title" content="Confessor: Confess Anonymously" />
+    <script type='application/ld+json'>
+        {"context":"http:\/\/schema.org","type":"WebSite","id":"#website","url":"https:\/\/www.confessor.azurewebsites.net\/","name":"Confessor","potentialAction":{"type":"SearchAction","target":"https:\/\/www.confessor.azurewebsites.net\/?s={search_term_string}","query-input":"required name=search_term_string"}}
+    </script>
+
+    <link rel="alternate" type="application/rss+xml" title="Confessor &raquo; Feed" href="https://confessor.azurewebsites.net/feed/" />
 
     <link rel="shortcut icon" href="https://res.cloudinary.com/fzany-inc/image/upload/v1548436737/faviconconfess_xlybpd.png" />
     <link rel="stylesheet" href="https://code.jquery.com/mobile/1.4.5/jquery.mobile-1.4.5.min.css" />
     <script type="text/javascript" src="https://code.jquery.com/jquery-1.11.1.min.js"></script>
     <script type="text/javascript" src="https://code.jquery.com/mobile/1.4.5/jquery.mobile-1.4.5.min.js"></script>
     @*<script src="~/Scripts/jquery.unobtrusive-ajax.js"></script>*@
+    <style type="text/css">
+        .limi {
+            max-height: 40px;
+            padding: 0 !important;
+            margin: 0 !important;
+        }
+
+        .imager {
+            max-height: 40px;
+            object-fit: cover;
+            display: inline-block;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .center {
+            align-items: center;
+            margin: auto;
+            width: 90%;
+            padding: 3px;
+            overflow: hidden;
+        }
+
+        .vertical {
+            vertical-align: middle;
+        }
+
+        a:link {
+            text-decoration: none;
+        }
+
+        a:visited {
+            text-decoration: none;
+        }
+
+        a:hover {
+            text-decoration: underline;
+        }
+
+        a:active {
+            text-decoration: underline;
+        }
+        body {
+            align-content: center;
+            text-align: center !important;
+        }
+        .limit{
+            max-width:1000px !important;
+            margin:auto !important;
+        }
+     
+    </style>
 </head>
 <body>
-    <div data-role="header" data-position="fixed">
+    <div data-role="header" class="limit" data-position="fixed">
         <h1>@Html.ActionLink("Confessor", "Index", new { id = "All" })</h1>
         <a href="#nav-panel" data-icon="bars" data-iconpos="notext">Menu</a>
         <a href="#popupAdd" data-rel="popup" data-position-to="window" data-icon="plus" data-iconpos="notext" data-transition="pop">Add</a>
     </div><!-- /header -->
-    <div role="main" class="ui-content jqm-content jqm-fullwidth">
-        @RenderBody()
-    </div><!-- /content -->
-    <div data-role="footer" data-position="fixed">
-        <h4>&copy; @DateTime.Now.Year - Booksrite</h4>
+
+
+        <div role="main" style="padding-left:3px; padding-right:3px; padding-bottom:0; padding-top:0;" class="ui-content jqm-content jqm-fullwidth limit">
+            @RenderBody()
+        </div><!-- /content -->
+    <div data-role="footer" class="limit" data-position="fixed">
+        @*<h4>&copy; @DateTime.Now.Year - Booksrite</h4>*@
+        @*<div class="center">*@
+            <a class="limi ui-btn ui-shadow ui-corner-all ui-btn-icon-left" target="_blank"
+               href='https://play.google.com/store/apps/details?id=com.booksrite.confessor&pcampaignid=MKT-Other-global-all-co-prtnr-py-PartBadge-Mar2515-1'>
+                <img class="imager" alt='Get it on Google Play' src='https://res.cloudinary.com/fzany-inc/image/upload/v1551631447/google-play-badge_didbo9.png' />
+            </a>
+            <a class="limi ui-btn ui-shadow ui-corner-all ui-btn-icon-right" target="_blank"
+               href='//www.microsoft.com/store/apps/9ns7z5jpnf72?ocid=badge'>
+                <img class="imager" src='https://assets.windowsphone.com/13484911-a6ab-4170-8b7e-795c1e8b4165/English_get_L_InvariantCulture_Default.png' alt='Confessor Windows Link' />
+            </a>
+        @*</div>*@
+
     </div><!-- /footer -->
     <div data-role="panel" data-position-fixed="true" data-display="push" data-theme="b" id="nav-panel">
         <ul data-role="listview">

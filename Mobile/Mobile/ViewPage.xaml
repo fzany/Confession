@@ -76,7 +76,7 @@
 
                 </StackLayout>
             </ScrollView>
-            <local:AdMobView VerticalOptions="EndAndExpand" AdUnitId="{Binding AdUnitId}"/>
+            <StackLayout x:Name="Ads" VerticalOptions="EndAndExpand"/>
             <Button VerticalOptions="EndAndExpand" Text="View Comments" x:Name="commentButton" Clicked="Open_Comment" TextColor="White" BackgroundColor="{StaticResource Primary}"/>
         </StackLayout>
 

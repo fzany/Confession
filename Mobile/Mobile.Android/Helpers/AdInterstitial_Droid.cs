@@ -1,41 +1,86 @@
-﻿using Android.Gms.Ads;
+﻿using System;
+using Android.Gms.Ads;
+using System.Threading.Tasks;
+using Xamarin.Forms;
 using Mobile.Droid.Helpers;
 using Mobile.Helpers;
-using Xamarin.Forms;
 
-[assembly: Dependency(typeof(AdInterstitial_Droid))]
+[assembly: Dependency(typeof(InterstitialAdsImplementation))]
 namespace Mobile.Droid.Helpers
 {
-    public class AdInterstitial_Droid : IAdInterstitial
+    public class InterstitialAdsImplementation : IAdmobInterstitialAds
     {
-        private InterstitialAd interstitialAd;
-
-        public AdInterstitial_Droid()
+        public Task Display(string adId)
         {
-            interstitialAd = new InterstitialAd(Android.App.Application.Context)
+            var displayTask = new TaskCompletionSource<bool>();
+            InterstitialAd AdInterstitial = new InterstitialAd(context: Xamarin.Forms.Forms.Context)
             {
-                // TODO: change this id to your admob id 
-                AdUnitId = "ca-app-pub-4507736790505069/8628793705"
+                AdUnitId = adId
             };
-            LoadAd();
-        }
-
-        private void LoadAd()
-        {
-            AdRequest.Builder requestbuilder = new AdRequest.Builder();
-            requestbuilder.AddTestDevice("1BE57C53121A02D9EF3DD79A87C60D3C");
-            requestbuilder.AddTestDevice("18A3018B75CEBC33EC09FF6C6BFCB37E");
-            interstitialAd.LoadAd(requestbuilder.Build());
-        }
-
-        public void ShowAd()
-        {
-            if (interstitialAd.IsLoaded)
             {
-                interstitialAd.Show();
+                var adInterstitialListener = new AdInterstitialListener(AdInterstitial)
+                {
+                    AdClosed = () =>
+                    {
+                        if (displayTask != null)
+                        {
+                            displayTask.TrySetResult(AdInterstitial.IsLoaded);
+                            displayTask = null;
+                        }
+                    },
+                    AdFailed = () =>
+                    {
+                        if (displayTask != null)
+                        {
+                            displayTask.TrySetResult(AdInterstitial.IsLoaded);
+                            displayTask = null;
+                        }
+                    }
+                };
+
+                AdRequest.Builder requestBuilder = new AdRequest.Builder();
+                AdInterstitial.AdListener = adInterstitialListener;
+                AdInterstitial.LoadAd(requestBuilder.Build());
             }
 
-            LoadAd();
+            return Task.WhenAll(displayTask.Task);
+        }
+    }
+
+    public class AdInterstitialListener : AdListener
+    {
+        private readonly InterstitialAd _interstitialAd;
+
+        public AdInterstitialListener(InterstitialAd interstitialAd)
+        {
+            _interstitialAd = interstitialAd;
+        }
+
+        public Action AdLoaded { get; set; }
+        public Action AdClosed { get; set; }
+        public Action AdFailed { get; set; }
+
+        public override void OnAdLoaded()
+        {
+            base.OnAdLoaded();
+
+            if (_interstitialAd.IsLoaded)
+            {
+                _interstitialAd.Show();
+            }
+            AdLoaded?.Invoke();
+        }
+
+        public override void OnAdClosed()
+        {
+            base.OnAdClosed();
+            AdClosed?.Invoke();
+        }
+
+        public override void OnAdFailedToLoad(int errorCode)
+        {
+            base.OnAdFailedToLoad(errorCode);
+            AdFailed?.Invoke();
         }
     }
 }

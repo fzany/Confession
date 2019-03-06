@@ -19,7 +19,6 @@ namespace Backend.Controllers
         {
             try
             {
-               
                 //prepare responses
                 List<ConfessLoader> response = Store.ConfessClass.FetchAllConfess(key);
 

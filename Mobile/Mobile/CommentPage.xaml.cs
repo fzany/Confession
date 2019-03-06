@@ -13,19 +13,25 @@ namespace Mobile
     [XamlCompilation(XamlCompilationOptions.Compile)]
     public partial class CommentPage : ContentPage
     {
-        public string AdUnitId { get; set; } = "ca-app-pub-4507736790505069/3601851826";
+        
         private List<CommentLoader> loaders = new List<CommentLoader>();
         private ConfessLoader newloader = new ConfessLoader();
 
         public CommentPage()
         {
             InitializeComponent();
+          
         }
 
         private string guid = string.Empty;
         public CommentPage(string _guid, string _name)
         {
             InitializeComponent();
+            AdmobControl admobControl = new AdmobControl()
+            {
+                AdUnitId = AppConstants.BannerId
+            };
+            Ads.Children.Add(admobControl);
             guid = _guid;
             title_text.Text = _name;
         }
@@ -110,7 +116,10 @@ namespace Mobile
                 Crashes.TrackError(ex);
             }
             //reload data
-            DependencyService.Get<IAdInterstitial>().ShowAd();
+            if (AppConstants.ShowAds)
+            {
+                await DependencyService.Get<IAdmobInterstitialAds>().Display(AppConstants.InterstitialAdId);
+            }
         }
         private async void Delete_t_Comment(object sender, EventArgs e)
         {

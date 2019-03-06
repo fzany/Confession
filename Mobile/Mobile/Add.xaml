@@ -16,15 +16,15 @@
 
                     <Label Text="Category" FontFamily="{StaticResource Rob}" FontSize="Small"/>
                     <Picker  FontFamily="{StaticResource Rob}"  VerticalOptions="Center" HorizontalOptions="FillAndExpand" x:Name="cat" Title="Choose Category"/>
-                    <Label Text="Body" FontFamily="{StaticResource Rob}" FontSize="Small"/>
-                    <Editor FontFamily="{StaticResource Rob}" IsSpellCheckEnabled="True" AutoSize="TextChanges" x:Name="body"/>
+                    <Label Text="Body" x:Name="counter" FontFamily="{StaticResource Rob}" FontSize="Small"/>
+                    <Editor FontFamily="{StaticResource Rob}" TextChanged="body_TextChanged" IsSpellCheckEnabled="True" AutoSize="TextChanges" x:Name="body"/>
                     <ActivityIndicator IsEnabled="False" IsRunning="False" IsVisible="False" x:Name="loadingBox"/>
                     <Button FontFamily="{StaticResource Rob}" Text="Publish" Clicked="CreateButton_Clicked" HorizontalOptions="FillAndExpand" x:Name="createButton"/>
                     <Label FontFamily="{StaticResource Rob}" Text="All Confessions are Anonymous!" HorizontalOptions="CenterAndExpand" FontSize="Micro"/>
 
                 </StackLayout>
             </ScrollView>
-            <local:AdBanner Size="Standardbanner" VerticalOptions="EndAndExpand"/>
+            <StackLayout x:Name="Ads" VerticalOptions="EndAndExpand"/>
         </StackLayout>
 
     </ContentPage.Content>

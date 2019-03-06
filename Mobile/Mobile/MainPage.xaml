@@ -63,7 +63,7 @@
                 </ListView.ItemTemplate>
             </ListView>
             <!--<local:AdBanner Size="Standardbanner" VerticalOptions="EndAndExpand"/>-->
-            <local:AdMobView AdUnitId="{Binding AdUnitId}" Grid.Row="1" />
+            <StackLayout x:Name="Ads" VerticalOptions="EndAndExpand" Grid.Row="1"/>
 
         </StackLayout>
     </ContentPage.Content>

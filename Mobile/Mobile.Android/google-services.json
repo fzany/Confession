@@ -15,6 +15,14 @@
       },
       "oauth_client": [
         {
+          "client_id": "103704469080-p6i6dfs2k4n54k1rctrpq3d25dfj1tf2.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.booksrite.confessor",
+            "certificate_hash": "938d9ea4d286f5b74507698a5785b248c28cd761"
+          }
+        },
+        {
           "client_id": "103704469080-7nrfb7lhsgivlcdpqtk3m9orges0kp21.apps.googleusercontent.com",
           "client_type": 3
         }
@@ -29,13 +37,19 @@
           "status": 1
         },
         "appinvite_service": {
-          "status": 1,
-          "other_platform_oauth_client": []
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "103704469080-7nrfb7lhsgivlcdpqtk3m9orges0kp21.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
         },
         "ads_service": {
           "status": 2
         }
-      }
+      },
+      "admob_app_id": "ca-app-pub-4507736790505069~9315189412"
     }
   ],
   "configuration_version": "1"

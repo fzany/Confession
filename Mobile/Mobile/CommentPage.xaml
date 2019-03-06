@@ -62,8 +62,7 @@
                     </DataTemplate>
                 </ListView.ItemTemplate>
             </ListView>
-            <local:AdMobView AdUnitId="{Binding AdUnitId}"/>
-
+            <StackLayout x:Name="Ads" VerticalOptions="EndAndExpand"/>
             <Grid VerticalOptions="EndAndExpand" Margin="0,10,0,0" HeightRequest="80">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="*"/>

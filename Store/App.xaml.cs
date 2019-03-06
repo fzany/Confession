@@ -18,6 +18,7 @@ using Microsoft.AppCenter;
 using Microsoft.AppCenter.Analytics;
 using Microsoft.AppCenter.Crashes;
 using Microsoft.AppCenter.Push;
+using Microsoft.Services.Store.Engagement;
 
 namespace Store
 {
@@ -36,7 +37,8 @@ namespace Store
             this.Suspending += OnSuspending;
 
             AppCenter.Start("d822e171-9f7e-4efb-866a-2e53a641aa7d", typeof(Analytics), typeof(Crashes), typeof(Push));
-
+            StoreServicesEngagementManager engagementManager = StoreServicesEngagementManager.GetDefault();
+            engagementManager.RegisterNotificationChannelAsync();
         }
 
         /// <summary>

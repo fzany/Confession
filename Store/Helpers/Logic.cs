@@ -18,25 +18,22 @@ namespace Uwp.Helpers
         internal static string GetToken()
         {
             SaveToken().Wait();
-            // load a composite setting that roams between devices
-            ApplicationDataContainer roamingSettings = Windows.Storage.ApplicationData.Current.RoamingSettings;
-            Windows.Storage.ApplicationDataCompositeValue composite = (ApplicationDataCompositeValue)roamingSettings.Values[Constants.RoamingInfo];
-            if (composite != null)
+
+            if (ApplicationData.Current.LocalSettings.Values.ContainsKey(Constants.Token))
             {
-                return composite[Constants.Token] as string;
+                return ApplicationData.Current.LocalSettings.Values[Constants.Token].ToString();
             }
-            return string.Empty;
+            else
+                return string.Empty;
+
         }
+
         private static async Task<string> SaveToken()
         {
             string token = await BaseClient.GetEntities($"setting/authorize?key={GetKey()}", "");
-            // Save a composite setting that will be roamed between devices
-            ApplicationDataContainer roamingSettings = Windows.Storage.ApplicationData.Current.RoamingSettings;
-            Windows.Storage.ApplicationDataCompositeValue composite = new Windows.Storage.ApplicationDataCompositeValue
-            {
-                [Constants.Token] = JsonConvert.DeserializeObject<string>(token)
-            };
-            roamingSettings.Values[Constants.RoamingInfo] = composite;
+
+            ApplicationData.Current.LocalSettings.Values[Constants.Token] = token;
+
             return token;
         }
         public static Color GetColorFromHex(string colorStr)
@@ -59,33 +56,20 @@ namespace Uwp.Helpers
 
         internal static string GetKey()
         {
-            // load a composite setting that roams between devices
-            ApplicationDataContainer roamingSettings = Windows.Storage.ApplicationData.Current.RoamingSettings;
-            Windows.Storage.ApplicationDataCompositeValue composite = (ApplicationDataCompositeValue)roamingSettings.Values[Constants.RoamingInfo];
-            if (composite != null)
+            if (ApplicationData.Current.LocalSettings.Values.ContainsKey(Constants.key))
             {
-                if (!(composite[Constants.key] is string key))
-                {
-                    return SetKey();
-                }
-                return key;
+                return ApplicationData.Current.LocalSettings.Values[Constants.key].ToString();
             }
             else
-            {
                 return SetKey();
-            }
+
         }
 
         internal static string SetKey()
         {
             string key = Guid.NewGuid().ToString();
-            // Save a composite setting that will be roamed between devices
-            ApplicationDataContainer roamingSettings = Windows.Storage.ApplicationData.Current.RoamingSettings;
-            Windows.Storage.ApplicationDataCompositeValue composite = new Windows.Storage.ApplicationDataCompositeValue
-            {
-                [Constants.key] = key
-            };
-            roamingSettings.Values[Constants.RoamingInfo] = composite;
+            ApplicationData.Current.LocalSettings.Values[Constants.key] = key;
+
             return key;
         }
         public static string ToTitle(string s)

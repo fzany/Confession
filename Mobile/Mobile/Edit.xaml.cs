@@ -17,7 +17,7 @@ namespace Mobile
             InitializeComponent();
             LoadData();
         }
-        private void LoadData()
+        private async void LoadData()
         {
             //switch (Device.RuntimePlatform)
             //{
@@ -25,13 +25,21 @@ namespace Mobile
             //        back_button.IsVisible = true;
             //        break;
             //}
-            DependencyService.Get<IAdInterstitial>().ShowAd();
+            if (AppConstants.ShowAds)
+            {
+                await DependencyService.Get<IAdmobInterstitialAds>().Display(AppConstants.InterstitialAdId);
+            }
         }
 
         private ConfessLoader confess;
         public Edit(ConfessLoader _confess)
         {
             InitializeComponent();
+            AdmobControl admobControl = new AdmobControl()
+            {
+                AdUnitId = AppConstants.BannerId
+            };
+            Ads.Children.Add(admobControl);
             confess = _confess;
             cat.ItemsSource = Logic.Categories.ToList();
             this.BindingContext = _confess;
@@ -100,6 +108,11 @@ namespace Mobile
                 ChangeLoading(false);
                 return;
             }
+            if (body.Text.Length < 200)
+            {
+                DependencyService.Get<IMessage>().ShortAlert("Please type more texts for the Body");
+                return;
+            }
             try
             {
                 Confess fetch = await Store.ConfessClass.FetchOneConfessByGuid(confess.Guid);
@@ -123,5 +136,19 @@ namespace Mobile
             }
         }
 
+       
+        private void body_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            var val = body.Text.Length;
+            int min = 200;
+            if (val > min)
+            {
+                counter.Text = "Body";
+            }
+            else
+            {
+                counter.Text = $"Body( type {min - val} characters or more)";
+            }
+        }
     }
 }

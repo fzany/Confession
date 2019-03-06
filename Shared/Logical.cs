@@ -9,7 +9,7 @@ namespace Shared
         public static string Setter(string id)
         {
             if(string.IsNullOrEmpty(id))
-                return System.Guid.NewGuid().ToString().Replace("-", "");
+                return MongoDB.Bson.ObjectId.GenerateNewId().ToString();
             return id;
         }
     }

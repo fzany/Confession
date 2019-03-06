@@ -16,6 +16,5 @@ namespace Website.Models
         public List<CommentLoader> Loaders { get; set; }
         public Comment Comment { get; set; } = new Comment() { };
 
-
     }
 }

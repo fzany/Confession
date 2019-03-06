@@ -50,7 +50,7 @@
                         <TextBlock Text="{Binding Seen}" Grid.Column="7"/>
                         <FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#xE7B3;" Grid.Column="6"/>
                     </Grid>
-                    <TextBlock Text="{Binding Body}"/>
+                    <TextBlock Text="{Binding Body}" TextWrapping="WrapWholeWords"/>
                 </StackPanel>
 
                 <ListView 

@@ -112,6 +112,10 @@
       <DependentUpon>Edit.xaml</DependentUpon>
     </Compile>
     <Compile Include="Helpers\BaseClient.cs" />
+    <Compile Include="Helpers\BsonConstant.cs" />
+    <Compile Include="Helpers\BsonTypes.cs" />
+    <Compile Include="Helpers\BsonUtil.cs" />
+    <Compile Include="Helpers\ObjectIds.cs" />
     <Compile Include="Helpers\Online.cs" />
     <Compile Include="Helpers\Constants.cs" />
     <Compile Include="Helpers\HttpConnection.cs" />
@@ -246,6 +250,9 @@
   <ItemGroup>
     <SDKReference Include="Microsoft.Advertising.Xaml, Version=10.0">
       <Name>Microsoft Advertising SDK for XAML</Name>
+    </SDKReference>
+    <SDKReference Include="Microsoft.Services.Store.Engagement, Version=10.0">
+      <Name>Microsoft Engagement Framework</Name>
     </SDKReference>
     <SDKReference Include="Microsoft.VCLibs, Version=14.0">
       <Name>Visual C++ 2015 Runtime for Universal Windows Platform Apps</Name>

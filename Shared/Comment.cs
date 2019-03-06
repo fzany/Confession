@@ -1,4 +1,5 @@
-﻿using MongoDB.Bson.Serialization.Attributes;
+﻿using MongoDB.Bson;
+using MongoDB.Bson.Serialization.Attributes;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
@@ -10,8 +11,8 @@ namespace Shared
     {
         [BsonId]
         [BsonRepresentation(MongoDB.Bson.BsonType.ObjectId)]
-        public string Id { get; set; } = System.Guid.NewGuid().ToString().Replace("-", "");
-        public string Guid { get; set; } = System.Guid.NewGuid().ToString().Replace("-", "");
+        public string Id { get; set; } = ObjectId.GenerateNewId().ToString();
+        public string Guid { get; set; } = ObjectId.GenerateNewId().ToString();
         public string Body { get; set; } = string.Empty;
         [BsonDateTimeOptions(Kind =DateTimeKind.Utc)]
         public DateTime Date { get; set; } = DateTime.UtcNow;

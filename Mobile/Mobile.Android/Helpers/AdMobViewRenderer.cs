@@ -7,64 +7,49 @@ using System.ComponentModel;
 using Xamarin.Forms;
 using Xamarin.Forms.Platform.Android;
 
-[assembly: ExportRenderer(typeof(AdMobView), typeof(AdMobViewRenderer))]
+[assembly: ExportRenderer(typeof(AdmobControl), typeof(AdMobRenderer))]
 namespace Mobile.Droid.Helpers
 {
-    public class AdMobViewRenderer : ViewRenderer<AdMobView, AdView>
+    public class AdMobRenderer : ViewRenderer<AdmobControl, AdView>
     {
-        public AdMobViewRenderer(Context context) : base(context) { }
+        public AdMobRenderer(Context context) : base(context)
+        {
+        }
 
-        protected override void OnElementChanged(ElementChangedEventArgs<AdMobView> e)
+        private int GetSmartBannerDpHeight()
+        {
+            var dpHeight = Resources.DisplayMetrics.HeightPixels / Resources.DisplayMetrics.Density;
+
+            if (dpHeight <= 400)
+            {
+                return 40;
+            }
+            if (dpHeight <= 720)
+            {
+                return 62;
+            }
+            return 102;
+        }
+
+        protected override void OnElementChanged(ElementChangedEventArgs<AdmobControl> e)
         {
             base.OnElementChanged(e);
 
-            if (e.NewElement != null && Control == null)
+            if (Control == null)
             {
-                SetNativeControl(CreateAdView());
+                var adView = new AdView(Context)
+                {
+                    AdSize = AdSize.SmartBanner,
+                    AdUnitId = Element.AdUnitId
+                };
+
+                var requestbuilder = new AdRequest.Builder();
+               // requestbuilder.AddTestDevice("18A3018B75CEBC33EC09FF6C6BFCB37E");
+                adView.LoadAd(requestbuilder.Build());
+                e.NewElement.HeightRequest = GetSmartBannerDpHeight();
+
+                SetNativeControl(adView);
             }
-        }
-        //protected override void OnElementChanged(ElementChangedEventArgs e)
-        //{
-        //    base.OnElementChanged(e);
-
-        //    if (e.NewElement != null && Control == null)
-        //        SetNativeControl(CreateAdView());
-        //}
-
-        protected override void OnElementPropertyChanged(object sender, PropertyChangedEventArgs e)
-        {
-            base.OnElementPropertyChanged(sender, e);
-            if (e.PropertyName == nameof(AdView.AdUnitId))
-            {
-                Control.AdUnitId = Element.AdUnitId;
-            }
-        }
-        //protected override void OnElementPropertyChanged(object sender, PropertyChangedEventArgs e)
-        //{
-        //    base.OnElementPropertyChanged(sender, e);
-        //    if (e.PropertyName == nameof(AdView.AdUnitId))
-        //    {
-        //        Control.AdUnitId = Element.AdUnitId;
-        //    }
-        //}
-
-        private AdView CreateAdView()
-        {
-            AdView adView = new AdView(Context)
-            {
-                AdSize = AdSize.SmartBanner,
-                AdUnitId = Element.AdUnitId
-            };
-
-            adView.LayoutParameters = new LinearLayout.LayoutParams(LayoutParams.MatchParent, LayoutParams.MatchParent);
-          //  adView.AdUnitId = "ca-app-pub-4507736790505069/3601851826"; //ca-app-pub-4507736790505069~9315189412  //unit id: 
-
-            AdRequest.Builder requestbuilder = new AdRequest.Builder();
-            requestbuilder.AddTestDevice("1BE57C53121A02D9EF3DD79A87C60D3C");
-            requestbuilder.AddTestDevice("18A3018B75CEBC33EC09FF6C6BFCB37E");
-            adView.LoadAd(requestbuilder.Build());
-
-            return adView;
         }
     }
 }
