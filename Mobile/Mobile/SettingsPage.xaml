@@ -1,0 +1,30 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:helpers="clr-namespace:Mobile.Helpers"
+             x:Class="Mobile.SettingsPage"  Padding="5"  BackgroundColor="Azure">
+    <ContentPage.Content>
+        <StackLayout Spacing="10">
+            <StackLayout Orientation="Horizontal" BackgroundColor="{StaticResource Primary}" >
+                <Image Source="logophone.png" Aspect="AspectFit" HeightRequest="50" WidthRequest="50"/>
+                <Label Text="Confessor: Settings" FontSize="Large" FontFamily="{StaticResource Rob}" FontAttributes="Bold" TextColor="White" VerticalOptions="CenterAndExpand"/>
+            </StackLayout>
+
+            <!--<Label Text="Accounts" FontSize="Medium" HorizontalOptions="FillAndExpand">
+                <Label.GestureRecognizers>
+                    <TapGestureRecognizer NumberOfTapsRequired="1" Tapped="Accounts_TapGestureRecognizer_Tapped"/>
+                </Label.GestureRecognizers>
+            </Label>
+
+            <BoxView HeightRequest="1" BackgroundColor="Silver" HorizontalOptions="FillAndExpand"/>-->
+
+            <Label TextColor="Red" FontAttributes="Bold" Text="Reset Identity" FontSize="Medium" HorizontalOptions="FillAndExpand">
+                <Label.GestureRecognizers>
+                    <TapGestureRecognizer NumberOfTapsRequired="1" Tapped="Clear_Tapped"/>
+                </Label.GestureRecognizers>
+            </Label>
+            <BoxView HeightRequest="1" BackgroundColor="Silver" HorizontalOptions="FillAndExpand"/>
+            <StackLayout x:Name="Ads" VerticalOptions="EndAndExpand"/>
+        </StackLayout>
+    </ContentPage.Content>
+</ContentPage>

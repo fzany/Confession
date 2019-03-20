@@ -38,6 +38,8 @@ namespace Mobile.Models
 
         public string DeleteLogo { get; set; } = Constants.FontAwe.Trash;
         public bool DeleteVisibility { get; set; } = false;
+
+        public bool IsAdVisible { get; set; } = false;
     }
     public class CommentPoster
     {

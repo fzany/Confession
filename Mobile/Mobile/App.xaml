@@ -7,9 +7,6 @@
             <OnPlatform x:Key="FSolid"  x:TypeArguments="x:String" Android="FaSolid.otf#Font Awesome 5 Free Solid" iOS="FaSolid">
                 <On Platform ="UWP">/Assets/Fonts/FaSolid.otf#Font Awesome 5 Free Solid</On>
             </OnPlatform>
-            <OnPlatform x:Key="Ink"  x:TypeArguments="x:String" Android="Inkfree.ttf#Ink Free" iOS="Inkfree">
-                <On Platform ="UWP">/Assets/Fonts/Inkfree.ttf#Ink Free</On>
-            </OnPlatform>
             <OnPlatform x:Key="Rob"  x:TypeArguments="x:String" Android="RobotoRegular.ttf#Roboto" iOS="RobotoRegular">
                 <On Platform ="UWP">/Assets/Fonts/RobotoRegular.ttf#Roboto</On>
             </OnPlatform>
@@ -17,7 +14,8 @@
             <Color x:Key="Primary">#1976D2</Color>
             <Color x:Key="PrimaryDark">#1976D2</Color>
             <Color x:Key="Primarylight">#03A9F4</Color>
-
+            <Color x:Key="Primaryblend">#2196F3</Color>
+            
             <Style TargetType="ActivityIndicator">
                 <Setter Property="Color" Value="#1976D2" />
             </Style>

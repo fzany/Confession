@@ -40,7 +40,7 @@ namespace Shared
                 }
                 else
                 {
-                    result = $"{remainder} months ago";
+                    result = $"{quotient} months ago";
                 }
             }
             else
@@ -52,7 +52,7 @@ namespace Shared
                 }
                 else
                 {
-                    result = $"{remainder} years ago";
+                    result = $"{quotient} years ago";
                 }
             }
 

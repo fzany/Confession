@@ -209,11 +209,13 @@ namespace Backend.Helpers
                 contextLite.Confess.Insert(confess);
                 //context.Confess.InsertOne(confess);
             }
-            public static void UpdateConfess(Confess confess)
+            public static void UpdateConfess(Confess incoming)
             {
-                Confess confes = contextLite.Confess.FindOne(d => d.Guid == confess.Guid);
-                confess.Id = confes.Id;
-                contextLite.Confess.Update(confess);
+                Confess confes = contextLite.Confess.FindOne(d => d.Guid == incoming.Guid);
+                confes.Title = incoming.Title;
+                confes.Body = incoming.Body;
+                confes.Category = incoming.Category;
+                contextLite.Confess.Update(confes);
 
                 // FilterDefinition<Confess> filter = Builders<Confess>.Filter.Eq(u => u.Guid, confess.Guid);
                 // context.Confess.ReplaceOne(filter, confess);
@@ -401,6 +403,11 @@ namespace Backend.Helpers
             public static void DeleteComment(string guid)
             {
                 contextLite.Comment.Delete(d => d.Guid == guid);
+
+                //delete others
+                contextLite.Likes.Delete(d => d.Comment_Guid == guid);
+                contextLite.Dislikes.Delete(d => d.Comment_Guid == guid);
+
                 //FilterDefinitionBuilder<Comment> builder = Builders<Comment>.Filter;
                 //FilterDefinition<Comment> idFilter = builder.Eq(r => r.Guid, guid);
                 //context.Comment.DeleteOne(idFilter);
@@ -409,6 +416,12 @@ namespace Backend.Helpers
             public static void DeleteCommentWithConfessGuid(string confessguid)
             {
                 contextLite.Comment.Delete(d => d.Confess_Guid == confessguid);
+
+                //delete others
+                contextLite.Likes.Delete(d=>d.Confess_Guid == confessguid);
+                contextLite.Dislikes.Delete(d => d.Confess_Guid == confessguid);
+                contextLite.Seen.Delete(d => d.Confess_Guid == confessguid);
+
                 //FilterDefinitionBuilder<Comment> builder = Builders<Comment>.Filter;
                 //FilterDefinition<Comment> idFilter = builder.Eq(r => r.Confess_Guid, confessguid);
                 //context.Comment.DeleteMany(idFilter);

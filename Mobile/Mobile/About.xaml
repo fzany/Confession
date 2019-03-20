@@ -7,7 +7,7 @@
             <ScrollView>
                 <StackLayout>
                     <Image Source="confesslogo512.png" Aspect="AspectFit" HeightRequest="200" WidthRequest="200"/>
-                    <Label x:Name="appname" FontSize="Large" FontFamily="{StaticResource Ink}" FontAttributes="Bold" TextColor="White"/>
+                    <Label x:Name="appname" FontSize="Large" FontFamily="{StaticResource Rob}" FontAttributes="Bold" TextColor="White"/>
                     <Label x:Name="describe"  TextColor="White"/>
 
                     <Label Text=""/>
@@ -27,8 +27,8 @@
                     <Label Text="All post and comments are anonymous." TextColor="White"/>
 
                     <Label Text=""/>
-                    <Label Text="Credits" FontSize="Small" FontAttributes="Bold" TextColor="White"/>
-                    <Label Text="Booksrite.com" TextColor="White"/>
+                    <Label Text="Website" FontSize="Small" FontAttributes="Bold" TextColor="White"/>
+                    <Label Text="ConfessorApp.org" TextColor="White"/>
                 </StackLayout>
             </ScrollView>
             <StackLayout x:Name="Ads" VerticalOptions="EndAndExpand"/>

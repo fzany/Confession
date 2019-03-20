@@ -1,10 +1,12 @@
 ﻿using Newtonsoft.Json;
 using Store.Helpers;
 using System;
+using System.Net.Http;
 using System.Net.NetworkInformation;
 using System.Threading.Tasks;
 using Windows.Storage;
 using Windows.UI;
+using Windows.UI.Xaml.Media;
 
 namespace Uwp.Helpers
 {
@@ -36,18 +38,21 @@ namespace Uwp.Helpers
 
             return token;
         }
-        public static Color GetColorFromHex(string colorStr)
+        public static Windows.UI.Xaml.Media.Brush GetColorFromHex(string colorStr)
         {
-
-            //Target hex string
-            colorStr = colorStr.Replace("#", string.Empty);
-            // from #RRGGBB string
-            byte r = (byte)System.Convert.ToUInt32(colorStr.Substring(0, 2), 16);
-            byte g = (byte)System.Convert.ToUInt32(colorStr.Substring(2, 2), 16);
-            byte b = (byte)System.Convert.ToUInt32(colorStr.Substring(4, 2), 16);
-            //get the color
-            Color color = Color.FromArgb(255, r, g, b);
-            return color;
+            colorStr = colorStr.Replace("#", "");
+            if (colorStr.Length == 6)
+            {
+                return new SolidColorBrush(ColorHelper.FromArgb(255,
+                    byte.Parse(colorStr.Substring(0, 2), System.Globalization.NumberStyles.HexNumber),
+                    byte.Parse(colorStr.Substring(2, 2), System.Globalization.NumberStyles.HexNumber),
+                    byte.Parse(colorStr.Substring(4, 2), System.Globalization.NumberStyles.HexNumber)));
+            }
+            else
+            {
+                return new SolidColorBrush(Colors.Black);
+            }
+        
         }
         internal static bool IsInternet()
         {

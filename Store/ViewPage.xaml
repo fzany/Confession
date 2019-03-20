@@ -6,90 +6,118 @@
        xmlns:UI="using:Microsoft.Advertising.WinRT.UI"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    xmlns:Windows10FallCreatorsUpdate="http://schemas.microsoft.com/winfx/2006/xaml/presentation?IsApiContractPresent(Windows.Foundation.UniversalApiContract, 5)"
+    xmlns:local1="using:Store.Helpers"
     mc:Ignorable="d"
     Background="Azure" Padding="5">
     <Grid Padding="5">
-        <ScrollViewer VerticalAlignment="Stretch">
-            <StackPanel Windows10FallCreatorsUpdate:Spacing="5" VerticalAlignment="Stretch">
-                <StackPanel Orientation="Horizontal" Background="#1976D2" >
-                    <Image Source="/Images/logo50.png" Height="50" Width="50"/>
-                    <TextBlock Text="Confessor: View Confession" FontSize="20px" FontFamily="Ink Free" FontWeight="Bold" Foreground="White" VerticalAlignment="Center"/>
-                </StackPanel>
-                <StackPanel Orientation="Horizontal" Windows10FallCreatorsUpdate:Spacing="10">
-                    <Button Content="Edit" x:Name="EditTool" FontWeight="Bold" Click="EditButtonClicked"/>
-                    <Button Content="Delete" x:Name="DeleteTool" FontWeight="Bold" Click="DeleteButtonClicked"/>
-                </StackPanel>
-                <StackPanel>
-                    <TextBlock Text="{Binding Title}" FontWeight="Bold" FontSize="25px" />
-                    <TextBlock VerticalAlignment="Center" HorizontalAlignment="Stretch" Text="{Binding Category}" FontWeight="Bold"/>
-                    <TextBlock Text="{Binding Date}" FontStyle="Italic"/>
-                    <Grid HorizontalAlignment="Left">
-                        <Grid.Resources>
-                            <Style TargetType="TextBlock">
-                                <Setter Property="VerticalAlignment" Value="Center" />
-                                <Setter Property="FontSize" Value="25px" />
-                            </Style>
-                        </Grid.Resources>
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="25"/>
-                            <ColumnDefinition Width="25"/>
-                            <ColumnDefinition Width="25"/>
-                            <ColumnDefinition Width="25"/>
-                            <ColumnDefinition Width="25"/>
-                            <ColumnDefinition Width="25"/>
-                            <ColumnDefinition Width="25"/>
-                            <ColumnDefinition Width="25"/>
-                        </Grid.ColumnDefinitions>
-                        <TextBlock Text="{Binding Likes}" Grid.Column="1"/>
-                        <SymbolIcon Symbol="Like" Grid.Column="0" Tapped="Like_Tapped" Tag="{Binding Guid}" VerticalAlignment="Center"  Foreground="{Binding LikeColor}"/>
-                        <TextBlock Text="{Binding DisLikes}" Grid.Column="3"/>
-                        <SymbolIcon Symbol="Dislike" Grid.Column="2"  Tapped="Dislike_Tapped"  Tag="{Binding Guid}" VerticalAlignment="Center"  Foreground="{Binding DislikeColor}"/>
-                        <TextBlock Text="{Binding CommentCount}" Grid.Column="5"/>
-                        <SymbolIcon Symbol="Comment" Grid.Column="4" VerticalAlignment="Center"  Foreground="{Binding LikeColor}"/>
-                        <TextBlock Text="{Binding Seen}" Grid.Column="7"/>
-                        <FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#xE7B3;" Grid.Column="6"/>
+        <ScrollViewer>
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
+                <Grid Padding="10,5" Grid.Row="0">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+                    <SymbolIcon Grid.Column="0" Margin="0,0,50,0" Symbol="Back" Visibility="Collapsed" x:Name="BackTool" Tapped="BackButtonClicked" Foreground="Black" HorizontalAlignment="Left"/>
+                    <SymbolIcon Grid.Column="1" Symbol="Edit" x:Name="EditTool" Tapped="EditButtonClicked" Foreground="Black" HorizontalAlignment="Left"/>
+                    <SymbolIcon Grid.Column="2" Margin="10,0" Symbol="Delete"  x:Name="DeleteTool" Tapped="DeleteButtonClicked" Foreground="Black" HorizontalAlignment="Right"/>
+                </Grid>
+                <StackPanel Grid.Row="1">
+                    <TextBlock Text="{Binding Title}" HorizontalAlignment="Center" FontWeight="Bold" FontSize="25px" Foreground="Black" TextWrapping="Wrap" />
+                    <Grid Padding="5,0">
+                        <StackPanel CornerRadius="5" Padding="4,0" HorizontalAlignment="Left" Background="#1976D2">
+                            <TextBlock VerticalAlignment="Center" HorizontalAlignment="Stretch" Text="{Binding Category}" Foreground="White"/>
+                        </StackPanel>
+                        <StackPanel CornerRadius="5" Padding="4,0" Margin="10,0,0,0" HorizontalAlignment="Right" Background="#1976D2">
+                            <TextBlock Text="{Binding Date}" FontStyle="Italic" Foreground="White"/>
+                        </StackPanel>
                     </Grid>
-                    <TextBlock Text="{Binding Body}" TextWrapping="WrapWholeWords"/>
+                    <Grid Padding="10,0" >
+                        <Grid HorizontalAlignment="Left">
+                            <Grid.Resources>
+                                <Style TargetType="TextBlock">
+                                    <Setter Property="VerticalAlignment" Value="Center" />
+                                    <Setter Property="FontSize" Value="25px" />
+                                </Style>
+                            </Grid.Resources>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="25"/>
+                                <ColumnDefinition Width="25"/>
+                                <ColumnDefinition Width="25"/>
+                                <ColumnDefinition Width="25"/>
+                                <ColumnDefinition Width="25"/>
+                                <ColumnDefinition Width="25"/>
+                                <ColumnDefinition Width="25"/>
+                                <ColumnDefinition Width="25"/>
+                            </Grid.ColumnDefinitions>
+                            <SymbolIcon Symbol="Like" Grid.Column="0" Tapped="Like_Tapped" Tag="{Binding Guid}" VerticalAlignment="Center"  Foreground="{Binding LikeColor}"/>
+                            <TextBlock Text="{Binding Likes}" Grid.Column="1" Foreground="Black"/>
+                            <SymbolIcon Symbol="Dislike" Grid.Column="2"  Tapped="Dislike_Tapped"  Tag="{Binding Guid}" VerticalAlignment="Center"  Foreground="{Binding DislikeColor}"/>
+                            <TextBlock Text="{Binding DisLikes}" Grid.Column="3" Foreground="Black"/>
+                            <SymbolIcon Symbol="Comment" Grid.Column="4" VerticalAlignment="Center" Foreground="Black"/>
+                            <TextBlock Text="{Binding CommentCount}" Grid.Column="5" Foreground="Black"/>
+                            <SymbolIcon Symbol="View" Grid.Column="6" Foreground="Black"/>
+                            <TextBlock Text="{Binding Seen}" Grid.Column="7" Foreground="Black"/>
+                        </Grid>
+                        <SymbolIcon Symbol="ReShare" Tapped="Share_Tapped" Foreground="#1976D2" HorizontalAlignment="Right"/>
+                    </Grid>
+                    <TextBlock FontSize="20" Text="{Binding Body}" TextWrapping="WrapWholeWords"  Foreground="Black"/>
                 </StackPanel>
-
-                <ListView 
-                              Header="Comments:" x:Name="List_View" 
+                <ProgressBar Grid.Row="2" IsEnabled="False" Visibility="Collapsed" IsIndeterminate="True"  x:Name="loadingBox"/>
+                <ListView Grid.Row="3"
+                               x:Name="List_View"  Margin="0,20,0,0"
                               SelectionMode="None">
+                    <ListView.Header>
+                        <TextBlock Text="Comments:" Foreground="Black"/>
+                    </ListView.Header>
                     <ListView.ItemTemplate>
                         <DataTemplate>
-                            <StackPanel Background="Silver" Margin="3" Padding="3">
+                            <StackPanel VerticalAlignment="Top" CornerRadius="10" Background="Silver" Margin="3" Padding="10,3" >
+                                <TextBlock Text="{Binding Body}" Foreground="Black" TextWrapping="WrapWholeWords" HorizontalAlignment="Center" />
                                 <Grid>
                                     <Grid.Resources>
                                         <Style TargetType="TextBlock">
                                             <Setter Property="VerticalAlignment" Value="Center" />
-                                            <Setter Property="FontSize" Value="Small"/>
+                                            <Setter Property="FontSize" Value="14"/>
                                         </Style>
                                     </Grid.Resources>
                                     <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="Auto"/>
                                         <ColumnDefinition Width="25"/>
                                         <ColumnDefinition Width="25"/>
                                         <ColumnDefinition Width="25"/>
                                         <ColumnDefinition Width="25"/>
                                         <ColumnDefinition Width="25"/>
-                                        <ColumnDefinition Width="25"/>
-                                        <ColumnDefinition Width="25"/>
+                                        <ColumnDefinition Width="*"/>
                                     </Grid.ColumnDefinitions>
-                                    <TextBlock Text="{Binding Date}"  FontStyle="Italic" Grid.Column="0"/>
-                                    <TextBlock Margin="5,0,0,0" Text="{Binding Likes}"  Grid.Column="2"/>
-                                    <SymbolIcon Symbol="Like" Tag="{Binding Guid}" Tapped="Like_Tapped_Comment" Grid.Column="1" Foreground="{Binding LikeColor}"/>
-                                    <TextBlock Margin="5,0,0,0" Text="{Binding DisLikes}"  Grid.Column="4"/>
-                                    <SymbolIcon Margin="5,0,0,0" Symbol="Dislike" Tapped="Dislike_t_Comment" Tag="{Binding Guid}" Grid.Column="3" Foreground="{Binding DislikeColor}"/>
-                                    <SymbolIcon Margin="5,0,0,0" Symbol="Delete" Tapped="Delete_t_Comment" Visibility="{Binding DeleteVisibility}" Tag="{Binding Guid}" Grid.Column="5"/>
+                                    <SymbolIcon Symbol="Like" Tag="{Binding Guid}" Tapped="Like_Tapped_Comment" Grid.Column="0" Foreground="{Binding LikeColor}"/>
+                                    <TextBlock Margin="5,0,0,0" Text="{Binding Likes}"  Grid.Column="1" Foreground="Black"/>
+                                    <SymbolIcon Margin="5,0,0,0" Symbol="Dislike" Tapped="Dislike_t_Comment" Tag="{Binding Guid}" Grid.Column="2" Foreground="{Binding DislikeColor}"/>
+                                    <TextBlock Margin="5,0,0,0" Text="{Binding DisLikes}"  Grid.Column="3" Foreground="Black"/>
+                                    <SymbolIcon Margin="5,0,0,0" Symbol="Delete" Tapped="Delete_t_Comment" Visibility="{Binding DeleteVisibility}" Tag="{Binding Guid}" Grid.Column="4" Foreground="Black"/>
+                                    <StackPanel CornerRadius="5"  Grid.Column="5" Padding="4,0" HorizontalAlignment="Right" Background="#1976D2">
+                                        <TextBlock Text="{Binding Date}" Foreground="White"/>
+                                    </StackPanel>
                                 </Grid>
-                                <TextBlock Text="{Binding Body}" />
                             </StackPanel>
                         </DataTemplate>
                     </ListView.ItemTemplate>
                 </ListView>
 
-                <Grid VerticalAlignment="Bottom" Margin="0,10,0,0">
+                <UI:AdControl Grid.Row="4" VerticalAlignment="Bottom" x:Name="minorAdd"
+  		ApplicationId="9ns7z5jpnf72"
+ 		AdUnitId="1100038159"
+ 		HorizontalAlignment="Center"
+ 		Width="728"
+ 		Height="90"/>
+                <Grid Grid.Row="5" VerticalAlignment="Bottom" Margin="0,10,0,0">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="*"/>
                         <ColumnDefinition Width="Auto"/>
@@ -97,15 +125,9 @@
                     <TextBox PlaceholderText="Comment here." x:Name="comment_Input" Grid.Column="0" InputScope="Chat" AcceptsReturn="True" IsSpellCheckEnabled="True"/>
                     <SymbolIcon Symbol="Send" Foreground="#1976D2" Tapped="Send_Tapped"  Width="50" Height="50"  Grid.Column="1"/>
                 </Grid>
-                <ProgressBar IsEnabled="False" Visibility="Collapsed" IsIndeterminate="True"  x:Name="loadingBox"/>
-                <UI:AdControl VerticalAlignment="Bottom"
-  		ApplicationId="9ns7z5jpnf72"
- 		AdUnitId="1100038159"
- 		HorizontalAlignment="Center"
- 		Width="728"
- 		Height="90"/>
 
-            </StackPanel>
+            </Grid>
         </ScrollViewer>
+        <!--<Button Click="CommentClicked" Background="#1976D2" Grid.Row="5" HorizontalAlignment="Stretch" Foreground="White" VerticalAlignment="Bottom" Content="View Comments"/>-->
     </Grid>
 </Page>

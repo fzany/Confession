@@ -24,8 +24,8 @@ namespace Store.Models
         public string Date { get; set; } = string.Empty;
         public string Owner_Guid { get; set; } = string.Empty;
 
-        public Color LikeColor { get; set; }
-        public Color DislikeColor { get; set; }
+        public Windows.UI.Xaml.Media.Brush LikeColor { get; set; }
+        public Windows.UI.Xaml.Media.Brush DislikeColor { get; set; }
 
         public string LikeColorString { get; set; } = string.Empty;
         public string DislikeColorString { get; set; } = string.Empty;

@@ -14,6 +14,8 @@ namespace Mobile
             MasterPage.ListView.ItemSelected += ListView_ItemSelected;
             MasterPage.MyButton.Clicked += MyButton_Clicked;
             MasterPage.AllButton.Clicked += AllButton_Clicked;
+
+           
         }
         private void AllButton_Clicked(object sender, System.EventArgs e)
         {

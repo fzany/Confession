@@ -35,6 +35,7 @@ namespace Mobile.Models
         public string Category { get; set; } = string.Empty;
         public string CommentCount { get; set; } = string.Empty;
         public string CommentLogo { get; set; } = Constants.FontAwe.Comments;
+        public string Share_Logo { get; set; } = Constants.FontAwe.Share;
 
         public Color LikeColor { get; set; }
         public Color DislikeColor { get; set; }
@@ -44,6 +45,8 @@ namespace Mobile.Models
 
         public string Seen { get; set; } = string.Empty;
         public string SeenLogo { get; set; } = Constants.FontAwe.Eye;
+
+        public bool IsAdVisible { get; set; } = false;
     }
     public class ConfessSender
     {

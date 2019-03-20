@@ -1,11 +1,5 @@
-﻿using Store.Helpers;
-using Store.Models;
-using System;
-using System.Collections.Generic;
-using Uwp.Helpers;
-using Uwp.Models;
-using Windows.UI.Popups;
-using Windows.UI.Xaml;
+﻿using Store.Models;
+using Windows.UI.Core;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Navigation;
@@ -23,17 +17,52 @@ namespace Store
         {
             this.InitializeComponent();
             this.NavigationCacheMode = Windows.UI.Xaml.Navigation.NavigationCacheMode.Enabled;
+
+            //register back request event for current view
+            SystemNavigationManager.GetForCurrentView().BackRequested += MainPage_BackRequested;
+
         }
+
+        private void MainPage_BackRequested(object sender, BackRequestedEventArgs e)
+        {
+            if (Frame.CanGoBack)
+            {
+                Frame.GoBack();
+                e.Handled = true;
+            }
+            else
+            {
+                Navigator.GoBack();
+                e.Handled = true;
+            }
+        }
+
         protected override void OnNavigatedTo(NavigationEventArgs e)
         {
             base.OnNavigatedTo(e);
-            Navigator.Navigate(typeof(Homer));
+            this.Navigator.Navigate(typeof(Homer));
+
+            string str = Windows.System.Profile.AnalyticsInfo.VersionInfo.DeviceFamily;
+            //if (str == "Windows.Desktop")
+            //{
+            //    //...
+            //}
+            if (str == "Windows.Mobile")
+            {
+                myBanner.Visibility = Windows.UI.Xaml.Visibility.Collapsed;
+                myBanner2.Visibility = Windows.UI.Xaml.Visibility.Collapsed;
+            }
+            else
+            {
+                myBanner.Visibility = Windows.UI.Xaml.Visibility.Visible;
+                myBanner2.Visibility = Windows.UI.Xaml.Visibility.Visible;
+            }
         }
-      
+
 
         private void NavigationViewItem_Tapped(object sender, TappedRoutedEventArgs e)
         {
-            NavigationViewItem objecter = (NavigationViewItem)sender;
+            OneCode.Windows.UWP.Controls.NavigationViewItem objecter = (OneCode.Windows.UWP.Controls.NavigationViewItem)sender;
             object content = objecter.Content;
             Navigator.Navigate(typeof(Homer), new HomerLoader() { Category = content.ToString(), loadMode = Models.LoadMode.Category });
         }
@@ -56,6 +85,11 @@ namespace Store
         private void AllConfession_Tapped(object sender, TappedRoutedEventArgs e)
         {
             Navigator.Navigate(typeof(Homer), new HomerLoader() { loadMode = Models.LoadMode.None });
+        }
+
+        private void Settings_Clicked(object sender, TappedRoutedEventArgs e)
+        {
+            Navigator.Navigate(typeof(SettingsPage));
         }
     }
 }

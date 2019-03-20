@@ -1,0 +1,44 @@
+﻿@model Website.Models.Modeller
+
+@{
+    ViewData["Title"] = "Home Page";
+}
+
+@if (Model.ConfessLoaders != null)
+{
+    foreach (var con in Model.ConfessLoaders)
+    {
+        <div class="col-md-4" style="padding-left:5px;padding-right:5px;">
+            <a href='@Url.Action("Detail","Home")/@con.Guid' class="card">
+                <h6>@con.Title</h6>
+                <div class="text">
+                    @con.Body
+                </div>
+                    <div class="row" style="border-top: 1px solid #eee; margin-top: 10px;">
+                        <div class="col-6">
+                            <span class="badge badge-secondary" style="padding: 4px 6px 6px 6px;">@con.Category</span>
+                        </div>
+                        <div class="col-6 text-right">
+                            @con.Date
+                        </div>
+
+                    </div>
+            </a>
+        </div>
+
+
+        @*<li data-role="list-divider">
+            <span class="ui-nodisc-icon">
+                <img class="vertical" src="https://res.cloudinary.com/fzany-inc/image/upload/v1551645521/icons8-facebook-like-14_aaethh.png" />
+                <span class="ui-btn-inline ui-corner-all">@con.Likes</span>
+                <img class="vertical" src="https://res.cloudinary.com/fzany-inc/image/upload/v1551646163/icons8-thumbs-down-14_wcxh7c.png" />
+                <span class="ui-btn-inline ui-corner-all">@con.DisLikes</span>
+                <img class="vertical" src="https://res.cloudinary.com/fzany-inc/image/upload/v1551644633/comment-black_htxdh2.png" />
+                <span class="ui-btn-inline ui-corner-all">@con.CommentCount</span>
+                <img class="vertical" src="https://res.cloudinary.com/fzany-inc/image/upload/v1551644541/eye-black_owsr1r.png" />
+                <span class="ui-btn-inline ui-corner-all">@con.Seen</span>
+            </span>
+           </li>*@
+       
+    }
+}

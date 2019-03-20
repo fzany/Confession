@@ -13,26 +13,27 @@ namespace Mobile
     [XamlCompilation(XamlCompilationOptions.Compile)]
     public partial class CommentPage : ContentPage
     {
-        
+
         private List<CommentLoader> loaders = new List<CommentLoader>();
         private ConfessLoader newloader = new ConfessLoader();
 
         public CommentPage()
         {
             InitializeComponent();
-          
+
         }
 
-        private string guid = string.Empty;
+        private string confess_guid = string.Empty;
         public CommentPage(string _guid, string _name)
         {
             InitializeComponent();
             AdmobControl admobControl = new AdmobControl()
             {
-                AdUnitId = AppConstants.BannerId
+                AdUnitId = AppConstants.CommentBannerId,
+                HorizontalOptions = LayoutOptions.CenterAndExpand
             };
             Ads.Children.Add(admobControl);
-            guid = _guid;
+            confess_guid = _guid;
             title_text.Text = _name;
         }
         protected override void OnAppearing()
@@ -50,8 +51,8 @@ namespace Mobile
             try
             {
                 ChangeLoadingComments(true);
-                loaders = await Store.CommentClass.FetchComment(guid);
-
+                loaders = await Store.CommentClass.FetchComment(confess_guid);
+                int adCounter = 0;
                 foreach (CommentLoader load in loaders)
                 {
                     if (!string.IsNullOrEmpty(load.LikeColorString))
@@ -63,6 +64,23 @@ namespace Mobile
                     {
                         load.DislikeColor = Color.FromHex(load.DislikeColorString);
                     }
+
+                    //set ad visibility to every 6 items
+                    adCounter++;
+                    if (adCounter >= 4)
+                    {
+                        load.IsAdVisible = true;
+                        adCounter = 0;
+                    }
+                    else if (loaders.Count < 5)
+                    {
+                        if (adCounter == 1)
+                        {
+                            load.IsAdVisible = true;
+                            Ads.IsVisible = false;
+                        }
+                    }
+                   
                 }
                 List_View.ItemsSource = null;
                 loaders.Reverse();
@@ -98,9 +116,9 @@ namespace Mobile
             }
             try
             {
-                Comment newComment = new Comment() { Body = comment_Input.Text, Confess_Guid = guid, Owner_Guid = await Logic.GetKey() };
-                newloader = await Store.CommentClass.CreateComment(newComment, guid);
-                var data= Logic.ProcessConfessLoader(newloader);
+                Comment newComment = new Comment() { Body = comment_Input.Text, Confess_Guid = confess_guid, Owner_Guid = await Logic.GetKey() };
+                newloader = await Store.CommentClass.CreateComment(newComment, confess_guid);
+                ConfessLoader data = Logic.ProcessConfessLoader(newloader);
                 MessagingCenter.Send<object, ConfessLoader>(this, Constants.ReloadViewPage, data);
                 // ViewPage viewPage = new ViewPage()
                 // {
@@ -181,7 +199,7 @@ namespace Mobile
                 DependencyService.Get<IMessage>().ShortAlert(Constants.No_Internet);
                 return;
             }
-            Label label = (Label)sender;
+            StackLayout label = (StackLayout)sender;
             string guid = label.ClassId;
             CommentLoader load = new CommentLoader();
             if (loaders.Any(d => d.Guid.Equals(guid)))
@@ -200,8 +218,7 @@ namespace Mobile
                 //post a new like 
                 try
                 {
-                    ConfessSender result = await Store.LikeClass.Post(guid, true, guid);
-
+                    ConfessSender result = await Store.LikeClass.Post(guid, true, confess_guid);
 
                     ConfessLoader data = Logic.ProcessConfessLoader(result.Loader);
                     MessagingCenter.Send<object, ConfessLoader>(this, Constants.ReloadViewPage, data);
@@ -210,7 +227,7 @@ namespace Mobile
                     //{
                     //    BindingContext = data
                     //};
-                    label.TextColor = Color.FromHex("#1976D2");
+                   // label.TextColor = Color.FromHex("#1976D2");
                     LoadData();
                     //                   label.TextColor = Color.Gray;
 
@@ -235,7 +252,7 @@ namespace Mobile
                 DependencyService.Get<IMessage>().ShortAlert(Constants.No_Internet);
                 return;
             }
-            Label label = (Label)sender;
+            StackLayout label = (StackLayout)sender;
             string guid = label.ClassId;
             CommentLoader load = new CommentLoader();
             if (loaders.Any(d => d.Guid.Equals(guid)))
@@ -254,9 +271,8 @@ namespace Mobile
                 //post a new like 
                 try
                 {
-                    ConfessSender result = await Store.DislikeClass.Post(guid, true, guid);
+                    ConfessSender result = await Store.DislikeClass.Post(guid, true, confess_guid);
                     ConfessLoader data = Logic.ProcessConfessLoader(result.Loader);
-                    MessagingCenter.Send<object, ConfessLoader>(this, Constants.ReloadViewPage, data);
 
                     //ViewPage viewPage = new ViewPage()
                     //{
@@ -269,6 +285,8 @@ namespace Mobile
                     {
                         VibrateNow();
                     }
+                    MessagingCenter.Send<object, ConfessLoader>(this, Constants.ReloadViewPage, data);
+
                 }
                 catch (Exception ex)
                 {

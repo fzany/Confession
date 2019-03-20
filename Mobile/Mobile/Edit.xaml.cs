@@ -37,7 +37,8 @@ namespace Mobile
             InitializeComponent();
             AdmobControl admobControl = new AdmobControl()
             {
-                AdUnitId = AppConstants.BannerId
+                AdUnitId = AppConstants.HomeBannerId,
+                HorizontalOptions = LayoutOptions.CenterAndExpand
             };
             Ads.Children.Add(admobControl);
             confess = _confess;
@@ -89,37 +90,37 @@ namespace Mobile
                 DependencyService.Get<IMessage>().ShortAlert(Constants.No_Internet);
                 return;
             }
-            ChangeLoading(true);
             if (string.IsNullOrEmpty(title.Text))
             {
                 DependencyService.Get<IMessage>().ShortAlert("Please type a Title");
-                ChangeLoading(false);
                 return;
             }
             if (cat.SelectedItem == null)
             {
                 DependencyService.Get<IMessage>().ShortAlert("Please choose a Category");
-                ChangeLoading(false);
                 return;
             }
             if (string.IsNullOrEmpty(body.Text))
             {
                 DependencyService.Get<IMessage>().ShortAlert("Please type a Body");
-                ChangeLoading(false);
                 return;
             }
-            if (body.Text.Length < 200)
+            if (body.Text.Length < 100)
             {
                 DependencyService.Get<IMessage>().ShortAlert("Please type more texts for the Body");
                 return;
             }
+            ChangeLoading(true);
+
             try
             {
-                Confess fetch = await Store.ConfessClass.FetchOneConfessByGuid(confess.Guid);
-                fetch.Title = title.Text;
-                fetch.Body = body.Text;
-                fetch.Category = cat.SelectedItem.ToString();
-
+                Confess fetch = new Confess
+                {
+                    Guid = confess.Guid,
+                    Title = title.Text,
+                    Body = body.Text,
+                    Category = cat.SelectedItem.ToString()
+                };
                 //Save
                 await Store.ConfessClass.UpdateConfess(fetch);
                 DependencyService.Get<IMessage>().ShortAlert("Updated");
@@ -136,11 +137,11 @@ namespace Mobile
             }
         }
 
-       
+
         private void body_TextChanged(object sender, TextChangedEventArgs e)
         {
-            var val = body.Text.Length;
-            int min = 200;
+            int val = body.Text.Length;
+            int min = 100;
             if (val > min)
             {
                 counter.Text = "Body";

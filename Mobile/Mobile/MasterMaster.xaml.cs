@@ -30,6 +30,7 @@ namespace Mobile
             MyButton = My_Button;
             Info_Label.Text = Constants.FontAwe.Info_circle;
             Share_Label.Text = Constants.FontAwe.Share;
+            Settings_Label.Text = Constants.FontAwe.Cog;
             LoadData();
         }
 
@@ -79,8 +80,15 @@ namespace Mobile
             await Share.RequestAsync(new ShareTextRequest
             {
                 Uri = "https://play.google.com/store/apps/details?id=com.booksrite.confessor",
+                Subject = "Share Confessor App with friends.",
+                Text = $"We all have secrets. {Environment.NewLine}Now you can share some anonymously here.  {Environment.NewLine}Download Confessor at:",
                 Title = "Share Confessor App with friends."
             });
+        }
+
+        private async void Settings_Tapped(object sender, EventArgs e)
+        {
+            await Navigation.PushModalAsync(new SettingsPage());
         }
     }
 }

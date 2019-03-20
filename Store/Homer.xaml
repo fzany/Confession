@@ -2,64 +2,143 @@
     x:Class="Store.Homer"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    xmlns:local="using:Store"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:UI="using:Microsoft.Advertising.WinRT.UI"
     mc:Ignorable="d"
-    Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+    Background="Azure">
 
     <Grid>
         <StackPanel>
-            <TextBlock Text="Empty Data" x:Name="EmptyD" Visibility="Collapsed" HorizontalAlignment="Center" FontFamily="Ink Free"/>
-            <TextBlock Text="😥" x:Name="Empt" Visibility="Collapsed" FontSize="50" HorizontalAlignment="Center" FontFamily="Ink Free"/>
+            <TextBlock Text="Empty" Foreground="Black" x:Name="EmptyD" Visibility="Collapsed" HorizontalAlignment="Center" FontFamily="Ink Free"/>
+            <TextBlock Text="😥" x:Name="Empt" Visibility="Collapsed" FontSize="50px" HorizontalAlignment="Center" FontFamily="Ink Free"/>
             <ProgressBar IsEnabled="False" Visibility="Collapsed" IsIndeterminate="True"  x:Name="loadingBox"/>
-            <ListView x:Name="List_View" Tapped="List_View_ItemSelected" MaxHeight="600">
-                <ListView.ItemTemplate>
-                    <DataTemplate>
-                        <StackPanel Margin="0,2">
-                            <StackPanel  Orientation="Horizontal">
-                                <TextBlock Text="{Binding Category}" FontWeight="Bold"/>
-                                <TextBlock Text=":" FontWeight="Bold"/>
-                                <TextBlock Text="{Binding Title}" FontWeight="Bold"/>
-                            </StackPanel>
-
-                            <Grid>
-                                <Grid.Resources>
-                                    <ResourceDictionary>
-                                        <Style TargetType="TextBlock">
-                                            <Setter Property="FontSize" Value="14" />
-                                        </Style>
-                                    </ResourceDictionary>
-                                </Grid.Resources>
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="Auto"/>
-                                    <ColumnDefinition Width="25"/>
-                                    <ColumnDefinition Width="25"/>
-                                    <ColumnDefinition Width="25"/>
-                                    <ColumnDefinition Width="25"/>
-                                    <ColumnDefinition Width="25"/>
-                                    <ColumnDefinition Width="25"/>
-                                    <ColumnDefinition Width="25"/>
-                                    <ColumnDefinition Width="25"/>
-                                </Grid.ColumnDefinitions>
-                                <TextBlock Text="{Binding Date}" FontStyle="Italic" Grid.Column="0" VerticalAlignment="Center"/>
-                                <TextBlock Margin="5,0,0,0" Text="{Binding Likes}" Grid.Column="2" VerticalAlignment="Center"/>
-                                <SymbolIcon Margin="5,0,0,0" Symbol="Like" Grid.Column="1" VerticalAlignment="Center"  Foreground="{Binding LikeColor}"/>
-                                <TextBlock Margin="5,0,0,0" Text="{Binding DisLikes}" Grid.Column="4" VerticalAlignment="Center"/>
-                                <SymbolIcon Symbol="Dislike" Grid.Column="3" VerticalAlignment="Center"  Foreground="{Binding DislikeColor}"/>
-                                <TextBlock Margin="5,0,0,0" Text="{Binding CommentCount}" Grid.Column="6" VerticalAlignment="Center"/>
-                                <SymbolIcon Symbol="Comment" Grid.Column="5" VerticalAlignment="Center"  Foreground="{Binding LikeColor}"/>
-                                <TextBlock Margin="5,0,0,0" Text="{Binding Seen}" Grid.Column="8" VerticalAlignment="Center"/>
-                                <FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#xE7B3;" Grid.Column="7" VerticalAlignment="Center"/>
-                            </Grid>
-                            <TextBlock Text="{Binding Body}" MaxLines="2" HorizontalAlignment="Stretch" TextWrapping="Wrap"/>
-                            <Line Height="5" HorizontalAlignment="Stretch" />
-                        </StackPanel>
-                    </DataTemplate>
-                </ListView.ItemTemplate>
-            </ListView>
-
         </StackPanel>
+        <!--<labs:ResponsiveGridView
+            ItemHeight="80" Visibility="Collapsed"
+            DesiredHeight="100" 
+          DesiredWidth="360"
+            SelectionChanged="List_View_SelectionChanged"
+            x:Name="List_View2">
+             <labs:ResponsiveGridView.ItemTemplate>
+            <DataTemplate>
+                    <StackPanel>
+                        <StackPanel CornerRadius="10" Background="#F0F0F0" Margin="3" Padding="3" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+                            <StackPanel VerticalAlignment="Center">
+                                <TextBlock Text="{Binding Title}" Foreground="Black" FontWeight="Bold" HorizontalAlignment="Center"/>
+                                <TextBlock Text="{Binding Body}" Foreground="Black" MaxLines="2" HorizontalAlignment="Stretch" TextAlignment="Center" TextWrapping="Wrap"/>
+                                <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                                    <StackPanel CornerRadius="5" Padding="4,0" HorizontalAlignment="Left" Background="#1976D2">
+                                        <TextBlock Text="{Binding Category}" Foreground="White"/>
+                                    </StackPanel>
+                                    <Grid HorizontalAlignment="Center">
+                                        <Grid.Resources>
+                                            <ResourceDictionary>
+                                                <Style TargetType="TextBlock">
+                                                    <Setter Property="FontSize" Value="14px" />
+                                                </Style>
+                                            </ResourceDictionary>
+                                        </Grid.Resources>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="25"/>
+                                            <ColumnDefinition Width="25"/>
+                                            <ColumnDefinition Width="25"/>
+                                            <ColumnDefinition Width="25"/>
+                                            <ColumnDefinition Width="25"/>
+                                            <ColumnDefinition Width="25"/>
+                                            <ColumnDefinition Width="25"/>
+                                            <ColumnDefinition Width="25"/>
+                                        </Grid.ColumnDefinitions>
+                                        <SymbolIcon Margin="5,0,0,0" Symbol="Like" Grid.Column="0" VerticalAlignment="Center"  Foreground="{Binding LikeColor}"/>
+                                        <TextBlock Margin="5,0,0,0" Text="{Binding Likes}" Grid.Column="1" Foreground="Black" VerticalAlignment="Center"/>
+                                        <SymbolIcon Symbol="Dislike" Grid.Column="2" VerticalAlignment="Center"  Foreground="{Binding DislikeColor}"/>
+                                        <TextBlock Margin="5,0,0,0" Text="{Binding DisLikes}" Grid.Column="3" Foreground="Black" VerticalAlignment="Center"/>
+                                        <SymbolIcon Symbol="Comment" Grid.Column="4" VerticalAlignment="Center"  Foreground="{Binding LikeColor}"/>
+                                        <TextBlock Margin="5,0,0,0" Text="{Binding CommentCount}" Grid.Column="5" Foreground="Black" VerticalAlignment="Center"/>
+                                        <FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#xE7B3;" Grid.Column="6" VerticalAlignment="Center"/>
+                                        <TextBlock Margin="5,0,0,0" Text="{Binding Seen}" Grid.Column="7" Foreground="Black" VerticalAlignment="Center"/>
+                                    </Grid>
+                                    <StackPanel CornerRadius="5" Padding="4,0" HorizontalAlignment="Right" Background="#1976D2">
+                                        <TextBlock Text="{Binding Date}" Foreground="White" VerticalAlignment="Center"/>
+                                    </StackPanel>
+                                </StackPanel>
+                            </StackPanel>
+                        </StackPanel>
+                        <StackPanel CornerRadius="10" Margin="3" Padding="3" HorizontalAlignment="Stretch">
+                            <UI:AdControl HorizontalAlignment="Center" Visibility="{Binding ShowAds}"
+  		ApplicationId="9ns7z5jpnf72"
+ 		AdUnitId="1100038160" 
+ 		Width="320"
+ 		Height="50"/>
+                        </StackPanel>
+                    </StackPanel>
+                </DataTemplate>
+            </labs:ResponsiveGridView.ItemTemplate>
+        </labs:ResponsiveGridView>-->
+
+        <ListView x:Name="List_View" ScrollViewer.VerticalScrollBarVisibility="Visible"
+                  Tapped="List_View_ItemSelected" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+            <ListView.ItemTemplate>
+                <DataTemplate>
+                    <StackPanel HorizontalAlignment="Center" Width="{Binding ElementName=List_View, Mode=OneWay, Path=ActualWidth}" Height="Auto">
+                        <Grid Padding="10,0">
+                            <StackPanel CornerRadius="10" Background="#F0F0F0" Margin="3" Padding="0,8" VerticalAlignment="Stretch">
+                                <StackPanel VerticalAlignment="Center">
+                                    <TextBlock Text="{Binding Title}" Foreground="Black" FontWeight="Bold" HorizontalAlignment="Center"/>
+                                    <TextBlock Text="{Binding Body}" Foreground="Black"  MaxLines="2" HorizontalAlignment="Stretch" TextAlignment="Center" TextWrapping="Wrap"/>
+                                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,5">
+                                        <StackPanel CornerRadius="5" Padding="4,0" HorizontalAlignment="Left" Background="#1976D2">
+                                            <TextBlock Text="{Binding Category}" Foreground="White"/>
+                                        </StackPanel>
+                                        <Grid HorizontalAlignment="Center" Margin="5,0,5,0">
+                                            <Grid.Resources>
+                                                <ResourceDictionary>
+                                                    <Style TargetType="TextBlock">
+                                                        <Setter Property="FontSize" Value="14px" />
+                                                    </Style>
+                                                </ResourceDictionary>
+                                            </Grid.Resources>
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="*"/>
+                                                <ColumnDefinition Width="*"/>
+                                                <ColumnDefinition Width="*"/>
+                                                <ColumnDefinition Width="*"/>
+                                            </Grid.ColumnDefinitions>
+                                            <StackPanel Orientation="Horizontal" Grid.Column="0" Margin="5,0">
+                                                <SymbolIcon Margin="0,0,3,0" Symbol="Like" VerticalAlignment="Center"  Foreground="{Binding LikeColor}"/>
+                                                <TextBlock Text="{Binding Likes}" Foreground="Black" VerticalAlignment="Center"/>
+                                            </StackPanel>
+                                            <StackPanel Orientation="Horizontal" Grid.Column="1" Margin="5,0">
+                                                <SymbolIcon Margin="0,0,3,0" Symbol="Dislike" VerticalAlignment="Center"  Foreground="{Binding DislikeColor}"/>
+                                                <TextBlock Text="{Binding DisLikes}"  Foreground="Black" VerticalAlignment="Center"/>
+                                            </StackPanel>
+                                            <StackPanel Orientation="Horizontal" Grid.Column="2" Margin="5,0">
+                                                <SymbolIcon Margin="0,0,3,0" Symbol="Comment" VerticalAlignment="Center"  Foreground="{Binding LikeColor}"/>
+                                                <TextBlock Text="{Binding CommentCount}"  Foreground="Black" VerticalAlignment="Center"/>
+                                            </StackPanel>
+                                            <StackPanel Orientation="Horizontal" Grid.Column="3" Margin="5,0">
+                                                <SymbolIcon Margin="0,0,3,0" Symbol="View" VerticalAlignment="Center" Foreground="Black" />
+                                                <TextBlock Text="{Binding Seen}"  Foreground="Black" VerticalAlignment="Center"/>
+                                            </StackPanel>
+                                        </Grid>
+                                        <StackPanel CornerRadius="5" Padding="4,0" HorizontalAlignment="Right" Background="#1976D2">
+                                            <TextBlock Text="{Binding Date}" Foreground="White" VerticalAlignment="Center"/>
+                                        </StackPanel>
+                                    </StackPanel>
+                                </StackPanel>
+                            </StackPanel>
+                        </Grid>
+                        <UI:AdControl HorizontalAlignment="Center" Visibility="{Binding ShowAds}"
+  		ApplicationId="9ns7z5jpnf72"
+ 		AdUnitId="1100038160" 
+ 		Width="320"
+ 		Height="50"/>
+                    </StackPanel>
+                </DataTemplate>
+            </ListView.ItemTemplate>
+        </ListView>
+
+
 
     </Grid>
 </Page>

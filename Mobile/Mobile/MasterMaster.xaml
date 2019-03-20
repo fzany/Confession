@@ -5,11 +5,16 @@
              Title="Master">
     <StackLayout>
         <StackLayout Orientation="Horizontal" BackgroundColor="{StaticResource Primary}" >
-            <Image Source="logo50.png" Aspect="AspectFit" HeightRequest="50" WidthRequest="50"/>
-            <Label Text="Confessor" FontSize="Large" FontFamily="{StaticResource Ink}" FontAttributes="Bold" TextColor="White" VerticalOptions="CenterAndExpand"/>
+            <Image Source="logophone.png" Aspect="AspectFit" HeightRequest="50" WidthRequest="50"/>
+            <Label Text="Confessor" FontSize="Large" FontFamily="{StaticResource Rob}" FontAttributes="Bold" TextColor="White" VerticalOptions="CenterAndExpand"/>
             <Label  FontFamily="{StaticResource FSolid}" x:Name="Share_Label" VerticalOptions="CenterAndExpand" HorizontalOptions="EndAndExpand" TextColor="White" FontSize="Large">
                 <Label.GestureRecognizers>
                     <TapGestureRecognizer NumberOfTapsRequired="1" Tapped="Share_Tapped"/>
+                </Label.GestureRecognizers>
+            </Label>
+            <Label  FontFamily="{StaticResource FSolid}" x:Name="Settings_Label" VerticalOptions="CenterAndExpand" HorizontalOptions="EndAndExpand" TextColor="White" FontSize="Large">
+                <Label.GestureRecognizers>
+                    <TapGestureRecognizer NumberOfTapsRequired="1" Tapped="Settings_Tapped"/>
                 </Label.GestureRecognizers>
             </Label>
             <Label Margin="0,0,10,0"  FontFamily="{StaticResource FSolid}" x:Name="Info_Label" VerticalOptions="CenterAndExpand" HorizontalOptions="EndAndExpand" TextColor="White" FontSize="Large">
@@ -43,8 +48,8 @@
             </ListView.ItemTemplate>
         </ListView>
         <StackLayout Padding="5">
-            <Button Text="All Confessions" x:Name="All_Button" BackgroundColor="{StaticResource Primarylight}" FontFamily="{StaticResource Rob}" TextColor="White"/>
-            <Button Text="My Confessions" x:Name="My_Button" BackgroundColor="{StaticResource Primarylight}" FontFamily="{StaticResource Rob}" TextColor="White"/>
+            <Button Text="All" x:Name="All_Button" BackgroundColor="{StaticResource Primarylight}" FontFamily="{StaticResource Rob}" TextColor="White"/>
+            <Button Text="Mine" x:Name="My_Button" BackgroundColor="{StaticResource Primarylight}" FontFamily="{StaticResource Rob}" TextColor="White"/>
         </StackLayout>
     </StackLayout>
 </ContentPage>

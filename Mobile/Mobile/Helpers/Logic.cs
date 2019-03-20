@@ -1,4 +1,5 @@
-﻿using Mobile.Models;
+﻿using Microsoft.AppCenter;
+using Mobile.Models;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
@@ -42,6 +43,7 @@ namespace Mobile.Helpers
 
         public static async Task<Logger> GetDeviceInformation()
         {
+            Guid? installId = await AppCenter.GetInstallIdAsync();
             Logger logger = new Logger
             {
                 Model = DeviceInfo.Model,
@@ -51,7 +53,8 @@ namespace Mobile.Helpers
                 Idiom = DeviceInfo.Idiom.ToString(),
                 Platform = DeviceInfo.Platform.ToString(),
                 VersionString = DeviceInfo.VersionString,
-                Key = await Logic.GetKey()
+                Key = await Logic.GetKey(),
+                AppCenterID = installId.Value.ToString()
 
             };
 
@@ -136,7 +139,7 @@ namespace Mobile.Helpers
             return System.Globalization.CultureInfo.InvariantCulture.TextInfo.ToTitleCase(input);
         }
 
-        private static async Task<string> Createkey()
+        public static async Task<string> Createkey()
         {
             string key = Guid.NewGuid().ToString();
             try

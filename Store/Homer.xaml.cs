@@ -1,21 +1,15 @@
-﻿using Store.Helpers;
+﻿using Microsoft.AppCenter;
+using Store.Helpers;
 using Store.Models;
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
-using System.Runtime.InteropServices.WindowsRuntime;
 using Uwp.Helpers;
 using Uwp.Models;
-using Windows.Foundation;
-using Windows.Foundation.Collections;
 using Windows.UI.Popups;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
-using Windows.UI.Xaml.Controls.Primitives;
-using Windows.UI.Xaml.Data;
 using Windows.UI.Xaml.Input;
-using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Navigation;
 
 // The Blank Page item template is documented at https://go.microsoft.com/fwlink/?LinkId=234238
@@ -38,37 +32,48 @@ namespace Store
         protected override void OnNavigatedTo(NavigationEventArgs e)
         {
             base.OnNavigatedTo(e);
-            if (e.Parameter is HomerLoader && (HomerLoader)e.Parameter != null)
+            try
             {
-                HomerLoader home = (HomerLoader)e.Parameter;
-                if (!string.IsNullOrEmpty(home.Category))
+                if (e.Parameter is HomerLoader && (HomerLoader)e.Parameter != null)
                 {
-                    CurrentCategory = home.Category;
-                    Mode = home.loadMode;
-                    LoadData();
+                    HomerLoader home = (HomerLoader)e.Parameter;
+                    if (!string.IsNullOrEmpty(home.Category))
+                    {
+                        CurrentCategory = home.Category;
+                        Mode = home.loadMode;
+                        LoadData();
+                    }
+                    else
+                    {
+                        Mode = home.loadMode;
+                        LoadData();
+                    }
                 }
                 else
                 {
-                    Mode = home.loadMode;
                     LoadData();
                 }
             }
-            else
+            catch (Exception)
             {
-                LoadData();
+
             }
         }
-      
+
         private async void LoadData()
         {
+            AppCenter.SetUserId(Logic.GetKey());
 
             if (!Logic.IsInternet())
             {
                 await new MessageDialog("No INTERNET connection has been found.").ShowAsync();
 
-                EmptyD.Visibility = Visibility.Visible;
-                Empt.Visibility = Visibility.Visible;
-                EmptyD.Text = Constants.No_Internet;
+                if (loaders == null || loaders.Count == 0)
+                {
+                    EmptyD.Visibility = Visibility.Visible;
+                    Empt.Visibility = Visibility.Visible;
+                    EmptyD.Text = Constants.No_Internet;
+                }
                 return;
             }
 
@@ -81,26 +86,21 @@ namespace Store
                     case LoadMode.None:
                         {
                             loaders = await Online.ConfessClass.FetchAllConfess();
-                            ChangeLoading(false);
-                            SetLoaders(loaders);
                             break;
                         }
                     case LoadMode.Category:
                         {
                             loaders = await Online.ConfessClass.FetchConfessByCategory(CurrentCategory);
-                            ChangeLoading(false);
-                            SetLoaders(loaders);
                             break;
                         }
                     case LoadMode.Mine:
                         {
                             loaders = await Online.ConfessClass.FetchMyConfessions();
-                            ChangeLoading(false);
-                            SetLoaders(loaders);
                             break;
                         }
                 }
-
+                ChangeLoading(false);
+                SetLoaders(loaders);
             }
             catch (Exception)
             {
@@ -113,21 +113,47 @@ namespace Store
                 return;
             }
 
+            int adcounter = 0;
+
+                      
             foreach (ConfessLoader load in loaders_new)
             {
                 if (!string.IsNullOrEmpty(load.LikeColorString))
                 {
                     load.LikeColor = Logic.GetColorFromHex(load.LikeColorString);
                 }
+                else
+                {
+                    load.LikeColor = Logic.GetColorFromHex("#000000");
+                }
 
                 if (!string.IsNullOrEmpty(load.DislikeColorString))
                 {
                     load.DislikeColor = Logic.GetColorFromHex(load.DislikeColorString);
                 }
+                else
+                {
+                    load.DislikeColor = Logic.GetColorFromHex("#000000");
+                }
+
+                //Set adShow
+
+                string str = Windows.System.Profile.AnalyticsInfo.VersionInfo.DeviceFamily;
+                if (str == "Windows.Mobile")
+                {
+                    adcounter++;
+                    if (adcounter > 8)
+                    {
+                        load.ShowAds = Visibility.Visible;
+                        adcounter = 0;
+                    }
+                }
             }
 
-            List_View.ItemsSource = null;
             loaders_new.Reverse();
+
+            loaders_new.Insert(0, loaders_new.FirstOrDefault());
+
             List_View.ItemsSource = null;
             List_View.ItemsSource = loaders_new;
             if (loaders_new.Count == 0)
@@ -140,21 +166,21 @@ namespace Store
                 EmptyD.Visibility = Visibility.Collapsed;
                 Empt.Visibility = Visibility.Collapsed;
             }
-            ChangeLoading(false);
         }
         private void List_View_ItemSelected(object sender, TappedRoutedEventArgs e)
         {
             try
             {
-                if (List_View.SelectedItem == null)
+                ListView view = sender as ListView;
+                if (view.SelectedItem == null)
                 {
                     return;
                 }
-                var confessrr = List_View.SelectedItem as ConfessLoader;
-                Frame.Navigate(typeof(ViewPage), List_View.SelectedItem as ConfessLoader);
-                List_View.SelectedItem = null;
+                ConfessLoader confessrr = view.SelectedItem as ConfessLoader;
+                Frame.Navigate(typeof(ViewPage), confessrr);
+                view.SelectedItem = null;
             }
-            catch (Exception)
+            catch (Exception ex)
             {
             }
 
@@ -163,9 +189,31 @@ namespace Store
         {
             loadingBox.IsEnabled = value;
             if (value)
+            {
                 loadingBox.Visibility = Visibility.Visible;
+            }
             else
+            {
                 loadingBox.Visibility = Visibility.Collapsed;
+            }
+        }
+
+        private void List_View_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            try
+            {
+                ListView view = sender as ListView;
+                if (view.SelectedItem == null)
+                {
+                    return;
+                }
+                ConfessLoader confessrr = view.SelectedItem as ConfessLoader;
+                Frame.Navigate(typeof(ViewPage), view.SelectedItem as ConfessLoader);
+                view.SelectedItem = null;
+            }
+            catch (Exception)
+            {
+            }
         }
     }
 }

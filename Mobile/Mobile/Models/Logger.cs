@@ -14,6 +14,6 @@ namespace Mobile.Models
         public string DeviceType { get; set; } = string.Empty;
         public string Name { get; set; } = string.Empty;
         public string Key { get; set; } = string.Empty;
-
+        public string AppCenterID { get; set; }
     }
 }

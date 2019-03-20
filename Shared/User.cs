@@ -12,5 +12,6 @@ namespace Shared
         public string Id { get; set; } = MongoDB.Bson.ObjectId.GenerateNewId().ToString();
         public string Guid { get; set; } = MongoDB.Bson.ObjectId.GenerateNewId().ToString();
         public string Name { get; set; } = string.Empty;
+       
     }
 }

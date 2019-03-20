@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Uwp.Helpers;
 using Uwp.Models;
+using Windows.ApplicationModel.DataTransfer;
 using Windows.UI;
 using Windows.UI.Popups;
 using Windows.UI.Xaml;
@@ -29,6 +30,34 @@ namespace Store
         public ViewPage()
         {
             this.InitializeComponent();
+            //ads
+            string str = Windows.System.Profile.AnalyticsInfo.VersionInfo.DeviceFamily;
+            if (str == "Windows.Mobile")
+            {
+                minorAdd.Width = 320;
+                minorAdd.Height = 50;
+            }
+            else
+            {
+                BackTool.Visibility = Visibility.Visible;
+            }
+           DataTransferManager dataTransferManager = DataTransferManager.GetForCurrentView();
+           dataTransferManager.DataRequested += DataTransferManager_DataRequested;
+        }
+
+        private void DataTransferManager_DataRequested(DataTransferManager sender, DataRequestedEventArgs args)
+        {
+            DataRequest request = args.Request;
+            request.Data.SetText($"{confess.Title}:{Environment.NewLine}{confess.Body}{Environment.NewLine}{Environment.NewLine}Post and Read more confessions at:");
+            request.Data.Properties.Title = confess.Title;
+            request.Data.Properties.Description = "Share this confession with friends.";
+            request.Data.SetWebLink(new Uri("https://www.microsoft.com/en-ng/p/confessor-confess-anonymously/9ns7z5jpnf72?rtc=1"));
+
+        }
+
+        private void Share_Tapped(object sender, TappedRoutedEventArgs e)
+        {
+            DataTransferManager.ShowShareUI();
         }
 
         protected override void OnNavigatedTo(NavigationEventArgs e)
@@ -37,10 +66,8 @@ namespace Store
             {
                 confess = (ConfessLoader)e.Parameter;
                 this.DataContext = confess;
-
-                LoadSettings();
                 LoadData();
-
+                LoadSettings();
             }
         }
         private void ChangeLoading(bool value)
@@ -55,54 +82,6 @@ namespace Store
                 loadingBox.Visibility = Visibility.Collapsed;
             }
         }
-        private async void LoadData()
-        {
-            if (!Logic.IsInternet())
-            {
-                await new MessageDialog("No INTERNET connection has been found.").ShowAsync();
-                return;
-            }
-            try
-            {
-                ChangeLoading(true);
-                loaders = await Online.CommentClass.FetchComment(confess.Guid);
-
-                foreach (CommentLoader load in loaders)
-                {
-                    if (!string.IsNullOrEmpty(load.LikeColorString))
-                    {
-                        load.LikeColor = Logic.GetColorFromHex(load.LikeColorString);
-                    }
-
-                    if (!string.IsNullOrEmpty(load.DislikeColorString))
-                    {
-                        load.DislikeColor = Logic.GetColorFromHex(load.DislikeColorString);
-                    }
-                }
-                if (loaders.Count > 0)
-                {
-                    List_View.ItemsSource = null;
-                    loaders.Reverse();
-                    List_View.ItemsSource = loaders;
-                }
-                if (loaders.Count != 0)
-                {
-                    List_View.Visibility = Visibility.Visible;
-                }
-                else
-                {
-                    List_View.Visibility = Visibility.Collapsed;
-                }
-
-                ChangeLoading(false);
-            }
-            catch (Exception)
-            {
-
-                ChangeLoading(false);
-            }
-        }
-
         private void LoadSettings()
         {
             try
@@ -213,6 +192,113 @@ namespace Store
             }
         }
 
+        private void EditButtonClicked(object sender, RoutedEventArgs e)
+        {
+            Frame.Navigate(typeof(Edit), confess);
+        }
+
+        private async void DeleteButtonClicked(object sender, RoutedEventArgs e)
+        {
+            if (!Logic.IsInternet())
+            {
+                await new MessageDialog("No INTERNET connection has been found.").ShowAsync();
+                return;
+            }
+            await new MessageDialog("You can't like your Confession.").ShowAsync();
+
+            MessageDialog answer = new MessageDialog("Do you want to delete this Confession?", "Confirmation");
+            answer.Commands.Add(new UICommand("Yes", null));
+            answer.Commands.Add(new UICommand("No", null));
+            answer.DefaultCommandIndex = 0;
+            answer.CancelCommandIndex = 1;
+            IUICommand cmd = await answer.ShowAsync();
+
+            if (cmd.Label == "Yes")
+            {
+                try
+                {
+                    await Online.ConfessClass.DeleteConfess(confess.Guid);
+
+                }
+                catch (Exception)
+                {
+
+                }
+                await new MessageDialog("Deleted").ShowAsync();
+
+                //call the mainpage to reload the list and  refresh
+                Frame.Navigate(typeof(Homer));
+            }
+        }
+
+        private void BackButtonClicked(object sender, TappedRoutedEventArgs e)
+        {
+            //BackTool
+            if (Frame.CanGoBack)
+            {
+                Frame.GoBack();
+            }
+        }
+
+        private void CommentClicked(object sender, RoutedEventArgs e)
+        {
+            Frame.Navigate(typeof(CommentPage), confess);
+        }
+        private async void LoadData()
+        {
+            if (!Logic.IsInternet())
+            {
+                await new MessageDialog("No INTERNET connection has been found.").ShowAsync();
+                return;
+            }
+            try
+            {
+                ChangeLoading(true);
+                loaders = await Online.CommentClass.FetchComment(confess.Guid);
+
+                foreach (CommentLoader load in loaders)
+                {
+                    if (!string.IsNullOrEmpty(load.LikeColorString))
+                    {
+                        load.LikeColor = Logic.GetColorFromHex(load.LikeColorString);
+                    }
+                    else
+                    {
+                        load.LikeColor = Logic.GetColorFromHex("#000000");
+                    }
+
+                    if (!string.IsNullOrEmpty(load.DislikeColorString))
+                    {
+                        load.DislikeColor = Logic.GetColorFromHex(load.DislikeColorString);
+                    }
+                    else
+                    {
+                        load.DislikeColor = Logic.GetColorFromHex("#000000");
+                    }
+                }
+                if (loaders.Count > 0)
+                {
+                    // List_View.ItemsSource = null;
+                    loaders.Reverse();
+                    List_View.ItemsSource = loaders;
+                }
+                if (loaders.Count != 0)
+                {
+                    List_View.Visibility = Visibility.Visible;
+                }
+                else
+                {
+                    List_View.Visibility = Visibility.Collapsed;
+                }
+
+                ChangeLoading(false);
+            }
+            catch (Exception)
+            {
+
+                ChangeLoading(false);
+            }
+        }
         private async void Like_Tapped_Comment(object sender, TappedRoutedEventArgs e)
         {
             if (!Logic.IsInternet())
@@ -244,7 +330,7 @@ namespace Store
                     ConfessLoader data = result.Loader;
                     this.DataContext = data;
 
-                    label.Foreground = new SolidColorBrush(Logic.GetColorFromHex("#1976D2"));
+                    label.Foreground = Logic.GetColorFromHex("#1976D2");
                     LoadData();
                 }
                 catch (Exception)
@@ -355,45 +441,6 @@ namespace Store
             catch (Exception)
             {
 
-            }
-        }
-
-        private void EditButtonClicked(object sender, RoutedEventArgs e)
-        {
-            Frame.Navigate(typeof(Edit), confess);
-        }
-
-        private async void DeleteButtonClicked(object sender, RoutedEventArgs e)
-        {
-            if (!Logic.IsInternet())
-            {
-                await new MessageDialog("No INTERNET connection has been found.").ShowAsync();
-                return;
-            }
-            await new MessageDialog("You can't like your Confession.").ShowAsync();
-
-            MessageDialog answer = new MessageDialog("Do you want to delete this Confession?", "Confirmation");
-            answer.Commands.Add(new UICommand("Yes", null));
-            answer.Commands.Add(new UICommand("No", null));
-            answer.DefaultCommandIndex = 0;
-            answer.CancelCommandIndex = 1;
-            IUICommand cmd = await answer.ShowAsync();
-
-            if (cmd.Label == "Yes")
-            {
-                try
-                {
-                    await Online.ConfessClass.DeleteConfess(confess.Guid);
-
-                }
-                catch (Exception)
-                {
-
-                }
-                await new MessageDialog("Deleted").ShowAsync();
-
-                //call the mainpage to reload the list and  refresh
-                Frame.Navigate(typeof(Homer));
             }
         }
     }

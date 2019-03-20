@@ -1,9 +1,9 @@
-﻿using Microsoft.AppCenter.Crashes;
+﻿using Microsoft.AppCenter;
+using Microsoft.AppCenter.Crashes;
 using Mobile.Helpers;
 using Mobile.Models;
 using System;
 using System.Collections.Generic;
-using System.Threading.Tasks;
 using Xamarin.Forms;
 
 namespace Mobile
@@ -13,24 +13,27 @@ namespace Mobile
         private List<ConfessLoader> loaders = new List<ConfessLoader>() { };
         private LoadMode Mode = LoadMode.None;
         private string CurrentCategory = string.Empty;
-        
+
         private bool IsRunLoader = false;
         public MainPage()
         {
             InitializeComponent();
-            AdmobControl admobControl = new AdmobControl()
-            {
-                AdUnitId = AppConstants.BannerId
-            };
-            Ads.Children.Add(admobControl);
+            //AdmobControl admobControl = new AdmobControl()
+            //{
+            //    AdUnitId = AppConstants.HomeBannerId,HorizontalOptions = LayoutOptions.CenterAndExpand
+            //};
+            // Ads.Children.Add(admobControl);
+
             Mode = LoadMode.None;
-            Subscriptions();           
+            Subscriptions();
         }
         protected override void OnAppearing()
         {
             //Task.Run(() => LoadData());
-            if(!IsRunLoader)
-            LoadData();
+            if (!IsRunLoader)
+            {
+                LoadData();
+            }
         }
         private async void LoadData()
         {
@@ -43,6 +46,7 @@ namespace Mobile
                 EmptyD.Text = Constants.No_Internet;
                 return;
             }
+            AppCenter.SetUserId(await Logic.GetKey());
 
             try
             {
@@ -85,6 +89,7 @@ namespace Mobile
                 return;
             }
 
+            int adCounter = 0;
             foreach (ConfessLoader load in loaders_new)
             {
                 if (!string.IsNullOrEmpty(load.LikeColorString))
@@ -96,6 +101,15 @@ namespace Mobile
                 {
                     load.DislikeColor = Color.FromHex(load.DislikeColorString);
                 }
+
+                //set ad visibility to every 6 items
+                adCounter++;
+                if (adCounter >= 10)
+                {
+                    load.IsAdVisible = true;
+                    adCounter = 0;
+                }
+
             }
 
             List_View.ItemsSource = null;
@@ -176,5 +190,7 @@ namespace Mobile
             Mode = LoadMode.None;
             LoadData();
         }
+
+
     }
 }

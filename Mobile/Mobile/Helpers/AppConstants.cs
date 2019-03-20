@@ -25,7 +25,7 @@ namespace Mobile.Helpers
         /// These Ids are test Ids from https://developers.google.com/admob/android/test-ads
         /// </summary>
         /// <value>The banner identifier.</value>
-        public static string BannerId
+        public static string HomeBannerId
         {
 
             get
@@ -47,6 +47,35 @@ namespace Mobile.Helpers
             }
         }
 
+        public static string CommentBannerId
+        {
+            get
+            {
+                switch (Device.RuntimePlatform)
+                {
+                    case Device.Android:
+                        return "ca-app-pub-4507736790505069/8783931635"; 
+                    default:
+                        return "ca-app-pub-4507736790505069/8783931635";
+                }
+              
+            }
+        }
+        public static string ViewPageBannerId
+        {
+            get
+            {
+                switch (Device.RuntimePlatform)
+                {
+                    case Device.Android:
+                        return "ca-app-pub-4507736790505069/4405702921";
+                    default:
+                        return "ca-app-pub-4507736790505069/4405702921";
+                }
+
+            }
+        }
+        
         /// <summary>
         /// These Ids are test Ids from https://developers.google.com/admob/android/test-ads
         /// </summary>
@@ -76,17 +105,29 @@ namespace Mobile.Helpers
         {
             get
             {
-                //_adCounter++;
-                //if (_adCounter % 5 == 0)
-                //{
-                //    return true;
-                //}
-                //return false;
-                return true;
+                _adCounter++;
+                if (_adCounter % 10 == 0)
+                {
+                    return true;
+                }
+                return false;
             }
         }
 
         private static int _adCounter;
 
+        private static int _postCounter;
+        public static bool ShowPostConfession
+        {
+            get
+            {
+                _postCounter++;
+                if(_postCounter % 5 == 0)
+                {
+                    return true;
+                }
+                return false;
+            }
+        }
     }
 }

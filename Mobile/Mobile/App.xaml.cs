@@ -16,6 +16,7 @@ namespace Mobile
             InitializeComponent();
 
             MainPage = new NavigationPage(new Master());
+            //MainPage = new Master();
         }
 
         protected override void OnStart()

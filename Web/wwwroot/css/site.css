@@ -1,0 +1,36 @@
+﻿
+
+/* Hide/rearrange for smaller screens */
+@media screen and (max-width: 767px) {
+    .apps {
+        display: none;
+    }
+    .appsmini{
+        display:block;
+    }
+}
+@media (min-width: 768px) {
+    .apps {
+        display: block;
+    }
+
+    .appsmini {
+        display: none;
+    }
+}
+
+/* 
+  ##Device = Tablets, Ipads (portrait)
+  ##Screen = B/w 768px to 1024px
+*/
+
+@media (min-width: 768px) and (max-width: 1024px) {
+
+    .apps {
+        display: none;
+    }
+
+    .appsmini {
+        display: block;
+    }
+}

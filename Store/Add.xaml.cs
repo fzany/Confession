@@ -36,6 +36,15 @@ namespace Store
         private void LoadData()
         {
             categories.ItemsSource = Logic.Categories.ToList();
+
+            //ads
+            string str = Windows.System.Profile.AnalyticsInfo.VersionInfo.DeviceFamily;
+            if (str == "Windows.Mobile")
+            {
+                minorAdd.Width = 320;
+                minorAdd.Height = 50;
+            }
+            
         }
 
        
@@ -69,7 +78,7 @@ namespace Store
                 await new MessageDialog("Please type a Body").ShowAsync();
                 return;
             }
-            if (body_text.Text.Length < 200)
+            if (body_text.Text.Length < 100)
             {
                 await new MessageDialog("Please type more texts for the Body").ShowAsync();
                 return;
@@ -108,14 +117,14 @@ namespace Store
         private void body_text_TextChanged(object sender, TextChangedEventArgs e)
         {
             int val = body_text.Text.Length;
-            int min = 200;
+            int min = 100;
             if (val > min)
             {
-                body_text.Header = "Body";
+                body_header.Text = "Body";
             }
             else
             {
-                body_text.Header = $"Body( type {min - val} characters or more)";
+                body_header.Text = $"Body( type {min - val} characters or more)";
             }
         }
     }

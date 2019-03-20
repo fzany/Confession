@@ -20,6 +20,14 @@ namespace Store
         public Edit()
         {
             this.InitializeComponent();
+
+            //ads
+            string str = Windows.System.Profile.AnalyticsInfo.VersionInfo.DeviceFamily;
+            if (str == "Windows.Mobile")
+            {
+                minorAdd.Width = 320;
+                minorAdd.Height = 50;
+            }
         }
 
 
@@ -30,8 +38,10 @@ namespace Store
             if (e.Parameter is ConfessLoader && (ConfessLoader)e.Parameter != null)
             {
                 confess = (ConfessLoader)e.Parameter;
-                this.DataContext = confess;
+                title_text.Text = confess.Title;
+                body_text.Text = confess.Body;
                 categories.ItemsSource = Uwp.Helpers.Logic.Categories.ToList();
+                categories.SelectedValue = confess.Category;
             }
         }
         private async void Update_Tapped(object sender, RoutedEventArgs e)
@@ -60,17 +70,21 @@ namespace Store
                 ChangeLoading(false);
                 return;
             }
-            if (body_text.Text.Length < 200)
+            if (body_text.Text.Length < 100)
             {
                 await new MessageDialog("Please type more texts for the Body").ShowAsync();
                 return;
             }
             try
             {
-                Confess fetch = await Online.ConfessClass.FetchOneConfessByGuid(confess.Guid);
-                fetch.Title = title_text.Text;
-                fetch.Body = body_text.Text;
-                fetch.Category = categories.SelectedItem.ToString();
+                Confess fetch = new Confess
+                {
+                    Title = title_text.Text,
+                    Body = body_text.Text,
+                    Category = categories.SelectedItem.ToString(),
+                    Guid = confess.Guid
+                };
+
 
                 //Save
                 await Online.ConfessClass.UpdateConfess(fetch);
@@ -131,9 +145,13 @@ namespace Store
         {
             loadingBox.IsEnabled = value;
             if (value)
+            {
                 loadingBox.Visibility = Visibility.Visible;
+            }
             else
+            {
                 loadingBox.Visibility = Visibility.Collapsed;
+            }
         }
         private void title_text_TextChanged(object sender, TextChangedEventArgs e)
         {
@@ -143,14 +161,14 @@ namespace Store
         private void body_text_TextChanged(object sender, TextChangedEventArgs e)
         {
             int val = body_text.Text.Length;
-            int min = 200;
+            int min = 100;
             if (val > min)
             {
-                body_text.Header = "Body";
+                body_header.Text = "Body";
             }
             else
             {
-                body_text.Header = $"Body( type {min - val} characters or more)";
+                body_header.Text = $"Body( type {min - val} characters or more)";
             }
         }
     }

@@ -26,7 +26,7 @@ namespace Mobile
             InitializeComponent();
             AdmobControl admobControl = new AdmobControl()
             {
-                AdUnitId = AppConstants.BannerId
+                AdUnitId = AppConstants.ViewPageBannerId, HorizontalOptions = LayoutOptions.CenterAndExpand
             };
             Ads.Children.Add(admobControl);
             confess = _confess;
@@ -52,6 +52,15 @@ namespace Mobile
             {
                 this.BindingContext = arg;
             });
+
+            if (AppConstants.ShowPostConfession)
+            {
+                bool answer = await DisplayAlert("Get it off your chest!", $"We all have secrets. {Environment.NewLine}Now you can share some anonymously here.", "Take me there 😊.", "Not now 😥.");
+                if (answer)
+                {
+                    await Navigation.PushModalAsync(new Add());
+                }
+            }
         }
         private void VibrateNow()
         {
@@ -124,7 +133,7 @@ namespace Mobile
                 DependencyService.Get<IMessage>().ShortAlert(Constants.No_Internet);
                 return;
             }
-            Label label = (Label)sender;
+            StackLayout label = (StackLayout)sender;
             string guid = label.ClassId;
             if (confess.Owner_Guid == await Logic.GetKey())
             {
@@ -150,7 +159,7 @@ namespace Mobile
                             this.BindingContext = Logic.ProcessConfessLoader(result.Loader);
                         }
 
-                        label.TextColor = Color.Gray;
+                       // label.ch.TextColor = Color.Gray;
                         VibrateNow();
                     }
                 }
@@ -170,7 +179,7 @@ namespace Mobile
             }
             try
             {
-                Label label = (Label)sender;
+                StackLayout label = (StackLayout)sender;
                 string guid = label.ClassId;
                 //check if this user owns this confession
 
@@ -195,7 +204,7 @@ namespace Mobile
                             this.BindingContext = Logic.ProcessConfessLoader(result.Loader);
                         }
 
-                        label.TextColor = Color.Gray;
+                       // label.TextColor = Color.Gray;
                         VibrateNow();
                     }
                 }
@@ -243,5 +252,18 @@ namespace Mobile
             //pop it up. 
             await Navigation.PushModalAsync(new CommentPage(confess.Guid, confess.Title));
         }
+
+        private async void Share_Tapped(object sender, EventArgs e)
+        {
+            await Share.RequestAsync(new ShareTextRequest
+            {
+                Uri = "https://play.google.com/store/apps/details?id=com.booksrite.confessor",
+                Subject = confess.Title,
+                Text = $"{confess.Title}:{Environment.NewLine}{confess.Body}{Environment.NewLine}{Environment.NewLine}Post and Read more confessions at:",
+                Title = "Share this confession with friends."
+            });
+
+        }
+
     }
 }

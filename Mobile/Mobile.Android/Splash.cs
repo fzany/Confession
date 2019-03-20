@@ -19,7 +19,7 @@ namespace Mobile.Droid
         protected override void OnCreate(Bundle savedInstanceState)
         {
             base.OnCreate(savedInstanceState);
-            Xamarin.Essentials.Platform.Init(this, savedInstanceState); // add this line to your code
+           // Xamarin.Essentials.Platform.Init(this, savedInstanceState); // add this line to your code
             // Create your application here
             Intent intent = new Intent(this, typeof(MainActivity));
             StartActivity(intent);

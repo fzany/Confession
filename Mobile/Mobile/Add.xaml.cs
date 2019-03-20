@@ -16,7 +16,8 @@ namespace Mobile
             InitializeComponent();
             AdmobControl admobControl = new AdmobControl()
             {
-                AdUnitId = AppConstants.BannerId
+                AdUnitId = AppConstants.HomeBannerId,
+                HorizontalOptions = LayoutOptions.CenterAndExpand
             };
             Ads.Children.Add(admobControl);
             LoadData();
@@ -55,7 +56,7 @@ namespace Mobile
                 DependencyService.Get<IMessage>().ShortAlert("Please type a Body");
                 return;
             }
-            if (body.Text.Length < 200)
+            if (body.Text.Length < 100)
             {
                 DependencyService.Get<IMessage>().ShortAlert("Please type more texts for the Body");
                 return;
@@ -96,7 +97,7 @@ namespace Mobile
         private void body_TextChanged(object sender, TextChangedEventArgs e)
         {
             int val = body.Text.Length;
-            int min = 200;
+            int min = 100;
             if (val > min)
             {
                 counter.Text = "Body";

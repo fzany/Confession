@@ -6,18 +6,18 @@
     <ContentPage.Content>
         <StackLayout>
             <StackLayout Orientation="Horizontal" BackgroundColor="{StaticResource Primary}" >
-                <Image Source="logo50.png" Aspect="AspectFit" HeightRequest="50" WidthRequest="50"/>
-                <Label Text="Confessor: Add Confession" FontSize="Large" FontFamily="{StaticResource Ink}" FontAttributes="Bold" TextColor="White" VerticalOptions="CenterAndExpand"/>
+                <Image Source="logophone.png" Aspect="AspectFit" HeightRequest="50" WidthRequest="50"/>
+                <Label Text="Confessor: Add Confession" FontSize="Large" FontFamily="{StaticResource Rob}" FontAttributes="Bold" TextColor="White" VerticalOptions="CenterAndExpand"/>
             </StackLayout>
             <ScrollView Orientation="Vertical">
                 <StackLayout VerticalOptions="FillAndExpand">
                     <Label Text="Title" FontFamily="{StaticResource Rob}" FontSize="Small" />
-                    <Entry x:Name="title" FontFamily="{StaticResource Rob}" IsSpellCheckEnabled="True" IsTextPredictionEnabled="True" TextChanged="title_TextChanged"/>
+                    <Entry x:Name="title" Placeholder="Type here" FontFamily="{StaticResource Rob}" IsSpellCheckEnabled="True" IsTextPredictionEnabled="True" TextChanged="title_TextChanged"/>
 
                     <Label Text="Category" FontFamily="{StaticResource Rob}" FontSize="Small"/>
                     <Picker  FontFamily="{StaticResource Rob}"  VerticalOptions="Center" HorizontalOptions="FillAndExpand" x:Name="cat" Title="Choose Category"/>
                     <Label Text="Body" x:Name="counter" FontFamily="{StaticResource Rob}" FontSize="Small"/>
-                    <Editor FontFamily="{StaticResource Rob}" TextChanged="body_TextChanged" IsSpellCheckEnabled="True" AutoSize="TextChanges" x:Name="body"/>
+                    <Editor FontFamily="{StaticResource Rob}" Placeholder="Type here" TextChanged="body_TextChanged" IsSpellCheckEnabled="True" AutoSize="TextChanges" x:Name="body"/>
                     <ActivityIndicator IsEnabled="False" IsRunning="False" IsVisible="False" x:Name="loadingBox"/>
                     <Button FontFamily="{StaticResource Rob}" Text="Publish" Clicked="CreateButton_Clicked" HorizontalOptions="FillAndExpand" x:Name="createButton"/>
                     <Label FontFamily="{StaticResource Rob}" Text="All Confessions are Anonymous!" HorizontalOptions="CenterAndExpand" FontSize="Micro"/>

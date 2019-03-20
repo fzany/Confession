@@ -15,7 +15,8 @@ namespace Mobile
             InitializeComponent();
             AdmobControl admobControl = new AdmobControl()
             {
-                AdUnitId = AppConstants.BannerId
+                AdUnitId = AppConstants.HomeBannerId,
+                HorizontalOptions = LayoutOptions.CenterAndExpand
             };
             Ads.Children.Add(admobControl);
             appname.Text = AppInfo.Name;

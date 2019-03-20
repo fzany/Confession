@@ -30,8 +30,10 @@ namespace Uwp.Models
         public string CommentCount { get; set; } = string.Empty;
         public string CommentLogo { get; set; } = Constants.FontAwe.Comments;
 
-        public Color LikeColor { get; set; }
-        public Color DislikeColor { get; set; }
+        public Windows.UI.Xaml.Media.Brush LikeColor { get; set; }
+        public Windows.UI.Xaml.Media.Brush DislikeColor { get; set; }
+
+        public Windows.UI.Xaml.Visibility ShowAds { get; set; } = Windows.UI.Xaml.Visibility.Collapsed;
 
         public string LikeColorString { get; set; } = string.Empty;
         public string DislikeColorString { get; set; } = string.Empty;

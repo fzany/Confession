@@ -1,0 +1,243 @@
+﻿@model Website.Models.Modeller
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - Web</title>
+
+    <meta name="apple-mobile-web-app-title" content="Confessor: Confess Anonymously">
+    <meta name="application-name" content="Confessor: Confess Anonymously">
+    <meta name="msapplication-TileColor" content="#2196F3">
+    <meta name="msapplication-TileImage" content="https://res.cloudinary.com/fzany-inc/image/upload/v1548436737/faviconconfess_xlybpd.png">
+    <meta name="theme-color" content="#2196F3">
+
+    <meta name="google-site-verification" content="qP9P1RIYb27-gUpUNzPgddHcU8A259sl0O78r0gEHTg" />
+    <meta name="msvalidate.01" content="5BF91AEFCC5780E9A488279462E6A59A" />
+    <meta property="og:image" content="https://res.cloudinary.com/fzany-inc/image/upload/v1548436737/faviconconfess_xlybpd.png" />
+    <meta name="twitter:site" content="confessorapp">
+    <meta name="twitter:image" content="https://res.cloudinary.com/fzany-inc/image/upload/v1548436737/faviconconfess_xlybpd.png">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+
+    <meta name="news_keywords" content="gamification, books, writers, readers, novel, coding, technology, book, internet" />
+    <meta name="original-source" content="https://confessor.azurewebsites.net" />
+
+    <meta property="fb:app_id" content="2300226063634964" />
+    <meta property="og:image:secure_url" content="https://res.cloudinary.com/fzany-inc/image/upload/v1548436737/faviconconfess_xlybpd.png" />
+
+    <meta name="description" content="We've all got events and occurrences that sometimes bothers us.  We believe sharing such situations anonymously with other users would relieve the emotional burden and help fresh thoughts flow into your minds. " />
+    <meta name="robots" content="noodp" />
+    <link rel="canonical" href="https://www.confessorapp.org/" />
+    <meta property="og:locale" content="en_US" />
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Confessor: Confess Anonymously" />
+    <meta property="og:description" content="We've all got events and occurrences that sometimes bothers us.  We believe sharing such situations anonymously with other users would relieve the emotional burden and help fresh thoughts flow into your minds. " />
+    <meta property="og:url" content="https://www.confessorapp.org/" />
+    <meta property="og:site_name" content="Confessor" />
+    <meta name="twitter:card" content="summary" />
+    <meta name="twitter:description" content="We've all got events and occurrences that sometimes bothers us.  We believe sharing such situations anonymously with other users would relieve the emotional burden and help fresh thoughts flow into your minds. " />
+    <meta name="twitter:title" content="Confessor: Confess Anonymously" />
+    <script type='application/ld+json'>
+        {"context":"http:\/\/schema.org","type":"WebSite","id":"#website","url":"https:\/\/www.confessorapp.org\/","name":"Confessor","potentialAction":{"type":"SearchAction","target":"https:\/\/www.confessor.azurewebsites.net\/?s={search_term_string}","query-input":"required name=search_term_string"}}
+    </script>
+
+    <link rel="alternate" type="application/rss+xml" title="Confessor &raquo; Feed" href="https://www.confessorapp.org/feed/" />
+
+    <link rel="shortcut icon" href="https://res.cloudinary.com/fzany-inc/image/upload/v1548436737/faviconconfess_xlybpd.png" />
+    <link rel="stylesheet" href="https://code.jquery.com/mobile/1.4.5/jquery.mobile-1.4.5.min.css" />
+    <!-- Required meta tags -->
+    <!-- Bootstrap CSS and Font Awesome CDN-->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/css/bootstrap.min.css" integrity="sha384-PsH8R72JQ3SOdhVi3uxftmaW6Vc51MKb0q5P2rRUpPvrszuE4W1povHYgTpBfshb" crossorigin="anonymous">
+
+
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+
+
+
+    <style type="text/css">
+        body {
+            background-color: #eee;
+        }
+
+        a {
+            color: black;
+        }
+
+            a:link {
+                text-decoration: none;
+                text-decoration-color: black;
+            }
+
+            a:visited {
+                text-decoration: none;
+                text-decoration-color: black;
+            }
+
+            a:hover {
+                text-decoration: none;
+                text-decoration-color: black;
+            }
+
+        .card {
+            background-color: #fff;
+            padding: 10px 10px 7px 10px;
+            margin-top: 5px;
+            margin-bottom: 5px;
+        }
+
+        .vertical {
+            vertical-align: middle;
+        }
+
+        .limi {
+            /*max-height: 60px;*/
+            padding: 0 !important;
+            margin: 0 !important;
+        }
+
+        .imager {
+            height: 100px;
+            object-fit: cover;
+            display: inline-block;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .imager2 {
+            height: 40px;
+            object-fit: cover;
+            display: inline-block;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .text {
+            overflow: hidden;
+            text-overflow: ellipsis;
+            display: -webkit-box;
+            line-height: 20px; /* fallback */
+            max-height: 40px; /* fallback */
+            -webkit-line-clamp: 2; /* number of lines to show */
+            -webkit-box-orient: vertical;
+        }
+        .appsmini {
+            margin: auto !important;
+        }
+    </style>
+    <link href="~/css/site.css" rel="stylesheet" />
+</head>
+<body>
+    <div class="container-fluid">
+        <h1>@Html.ActionLink("Confessor", "Index", new { id = "All" })</h1>
+        <div class="row">
+            <div class="col-md-3">
+                <div class="card">
+                    <ul class="list-group list-group-flush">
+                        <li class="list-group-item"> <a href="#" class="card-link">Add Confession</a></li>
+                        <li class="list-group-item">@Html.ActionLink("My Confessions", "Index", new { id = "mine" })</li>
+                    </ul>
+                    <div class="card-footer apps">
+                        <div id="mspb-tax3axn4q9bh" class="9ns7z5jpnf72"></div>
+                        <script src="https://storebadge.azureedge.net/src/badge-1.8.1.js"></script>
+                        <script>
+                            mspb('9ns7z5jpnf72', function (badge) {
+                                document.getElementById('mspb-tax3axn4q9bh').innerHTML = badge;
+                            });
+                        </script>
+                        <a class="limi" target="_blank" href='https://play.google.com/store/apps/details?id=com.booksrite.confessor&pcampaignid=MKT-Other-global-all-co-prtnr-py-PartBadge-Mar2515-1'>
+                            <img class="imager" alt='Get it on Google Play' src='https://play.google.com/intl/en_us/badges/images/generic/en_badge_web_generic.png' />
+                        </a>
+                    </div>
+                   
+                </div>
+            </div>
+            <div class="col-md-9">
+                <div class="row">
+                    <div class="col-md-9" style="padding-left:5px;">
+                        <form class="form-inline">
+                            <div class="form-group">
+                                <span class="input-group-btn">
+                                    <select class="form-control" id="category">
+                                        <option>@Html.ActionLink("All", "Index", new { id = "All" })</option>
+
+                                        @{ if (Model != null)
+                                            {
+                                                if (Model.Categories != null)
+                                                {
+                                                    if (Model.Categories.Count() > 0)
+                                                    {
+                                                        foreach (var con in Model.Categories)
+                                                        {
+                                                            <option>@Html.ActionLink(con, "Index", new { id = con })</option>
+                                                        }
+                                                    }
+                                                }
+                                            } }
+
+                                    </select>
+                                </span>
+                            </div>
+                            <div class="form-group">
+                                <div class="input-group">
+                                    <input type="text" class="form-control" placeholder="Search for..." aria-label="Search for...">
+                                    <span class="input-group-btn">
+                                        <button class="btn btn-secondary" type="button">Go!</button>
+                                    </span>
+                                </div>
+                            </div>
+
+
+                        </form>
+                    </div>
+                    <div class="col-md-3">
+                        <form class="form-inline">
+                            <div class="form-group">
+                                <label for="sortby">Sorted by</label>
+                                <select class="form-control" id="sortby">
+                                    <option>Most viewed</option>
+                                    <option>Recently added</option>
+                                </select>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+                <br>
+                <div class="row">
+                    @RenderBody()
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- jQuery first, then Popper.js, then Bootstrap JS -->
+    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN"
+            crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.3/umd/popper.min.js" integrity="sha384-vFJXuSJphROIrBnz7yo7oB41mKfc8JzQZiCq4NCceLEaO4IHwicKwpJf9c9IpFgh"
+            crossorigin="anonymous"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/js/bootstrap.min.js" integrity="sha384-alpBpkh1PFOepccYVYDB4do5UnbKysX5WZXm3XxPqe5iKTfUKjNkCk9SaVuEZflJ"
+            crossorigin="anonymous"></script>
+
+    <partial name="_CookieConsentPartial" />
+
+    <div class="container body-content">
+        <hr />
+        <footer>
+            <p>&copy; @DateTime.Now.Year - Booksrite</p>
+            <div class="appsmini">
+                <div style="display:flex">
+                    <a class="limi ui-btn ui-shadow ui-corner-all ui-btn-icon-left" target="_blank"
+                       href='https://play.google.com/store/apps/details?id=com.booksrite.confessor&pcampaignid=MKT-Other-global-all-co-prtnr-py-PartBadge-Mar2515-1'>
+                        <img class="imager2" alt='Get it on Google Play' src='https://res.cloudinary.com/fzany-inc/image/upload/v1551631447/google-play-badge_didbo9.png' />
+                    </a>
+                    <a class="limi ui-btn ui-shadow ui-corner-all ui-btn-icon-right" target="_blank"
+                       href='//www.microsoft.com/store/apps/9ns7z5jpnf72?ocid=badge'>
+                        <img class="imager2" src='https://assets.windowsphone.com/13484911-a6ab-4170-8b7e-795c1e8b4165/English_get_L_InvariantCulture_Default.png' alt='Confessor Windows Link' />
+                    </a>
+                </div>
+            </div>
+        </footer>
+    </div>
+
+
+</body>
+</html>

@@ -44,7 +44,7 @@ namespace Mobile.Droid.Helpers
                 };
 
                 var requestbuilder = new AdRequest.Builder();
-               // requestbuilder.AddTestDevice("18A3018B75CEBC33EC09FF6C6BFCB37E");
+                requestbuilder.AddTestDevice("18A3018B75CEBC33EC09FF6C6BFCB37E");
                 adView.LoadAd(requestbuilder.Build());
                 e.NewElement.HeightRequest = GetSmartBannerDpHeight();
 
