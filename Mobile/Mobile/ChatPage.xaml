@@ -1,0 +1,76 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:cells="clr-namespace:Mobile.Cells"
+             x:Class="Mobile.ChatPage" BackgroundImage="drop.png">
+    <ContentPage.Resources>
+        <ResourceDictionary>
+            <cells:ChatTemplateSelector x:Key="MessageTemplateSelector"/>
+        </ResourceDictionary>
+    </ContentPage.Resources>
+    <Grid RowSpacing="0" x:Name="Pager"
+           ColumnSpacing="0">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+            <RowDefinition Height="1" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+        <StackLayout Orientation="Horizontal" BackgroundColor="{StaticResource Primary}" Grid.Row="0" >
+            <Image Source="logophone.png" Aspect="AspectFit" HeightRequest="50" WidthRequest="50"/>
+            <Label x:Name="titleLabel" FontSize="Large" FontFamily="{StaticResource Rob}" FontAttributes="Bold" TextColor="White" VerticalOptions="CenterAndExpand"/>
+            <Label Margin="0,0,5,0" FontFamily="{StaticResource FSolid}" x:Name="Settings_Label" VerticalOptions="CenterAndExpand" HorizontalOptions="EndAndExpand" TextColor="White" FontSize="30">
+                <Label.GestureRecognizers>
+                    <TapGestureRecognizer NumberOfTapsRequired="1" Tapped="Settings_Tapped"/>
+                </Label.GestureRecognizers>
+            </Label>
+        </StackLayout>
+        <!--   OUR CHAT VIEWS HERE   -->
+        <cells:ExtendedListView Grid.Row="1" 
+                 ItemTemplate="{StaticResource MessageTemplateSelector}" 
+                 ItemsSource="{Binding Messages}" 
+                 Margin="0"
+                 ItemTapped="OnListTapped"
+                 HasUnevenRows="True" 
+                 IsRefreshing="{Binding IsBusy}"
+                 x:Name="ChatList"
+                 VerticalOptions="FillAndExpand" 
+                 SeparatorColor="Transparent"
+                 ItemAppearingCommand="{Binding MessageAppearingCommand}"
+                 ItemDisappearingCommand="{Binding MessageDisappearingCommand}">
+        </cells:ExtendedListView>
+        <Frame HorizontalOptions="EndAndExpand" 
+                                 Margin="0,0,2,15"
+                                 VerticalOptions="End"
+                                 HasShadow="false" 
+                                 Grid.Row="1"  
+                                 HeightRequest="50" WidthRequest="50"
+                                 CornerRadius="25"
+                                 Padding="1"
+                                 BackgroundColor="White"   
+                                 IsVisible="{Binding ShowScrollTap,Mode=TwoWay}">
+            <StackLayout Spacing="3">
+                <Label Text="{Binding PendingMessageCount}"
+                              HorizontalOptions="CenterAndExpand"
+                              IsVisible="{Binding PendingMessageCountVisible}"
+                              VerticalTextAlignment="Center"
+                              TextColor="{DynamicResource primary}"/>
+                <Image Source="ic_scrolldown"
+                               WidthRequest="30"
+                               HeightRequest="30"
+                               VerticalOptions="CenterAndExpand"/>
+
+            </StackLayout>
+            <Frame.GestureRecognizers>
+                <TapGestureRecognizer Tapped="ScrollTap"/>
+            </Frame.GestureRecognizers>
+        </Frame>
+        <BoxView HorizontalOptions="FillAndExpand"
+                 HeightRequest="1"
+                 BackgroundColor="LightGray"
+                 Grid.Row="2"/>
+
+        <cells:ChatInputBarView Grid.Row="3"
+                                   Margin="0"  x:Name="chatInput"/>
+    </Grid>
+</ContentPage>

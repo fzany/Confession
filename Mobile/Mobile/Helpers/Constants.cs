@@ -6,14 +6,25 @@ namespace Mobile.Helpers
 {
     public class Constants
     {
+        public const string roomID = "roomID";
         public const string key = "user_key";
         public const string Token = "user_token";
         public const string edit_nav = "edit_nav";
         public const string cat_nav = "cat_nav";
+        public const string modify_nav = "modify_nav";
+        public const string send_room = "send_room";
+        public const string go_back = "go_back";
+        public const string update_chatroom_membership_list = "update_chatroom_membership_list";
+        public const string update_chatroom_chat_list = "update_chatroom_chat_list";
         public const string me_nav = "me_nav";
+        public const string re_open_connection = "re_open_connection";
+        public const string set_chat_active_state = "set_chat_inactive";
         public const string none_nav = "none_nav";
+        public const string IsPresented = "IsPresented";
         public const string Logged = "Logged";
+        public const string UserRegistered = "UserRegistered";
         public const string No_Internet = "No Internet";
+        public const string chatname = "chatname";
 
         public const string ReloadViewPage = "rvp";
 

@@ -6,7 +6,7 @@ using System.Text;
 
 namespace Shared
 {
-    public class Logger
+    public class DeviceInfo
     {
         [BsonId]
         [BsonRepresentation(MongoDB.Bson.BsonType.ObjectId)]
@@ -18,7 +18,6 @@ namespace Shared
         public string Idiom { get; set; } = string.Empty;
         public string DeviceType { get; set; } = string.Empty;
         public string Name { get; set; } = string.Empty;
-        public string Key { get; set; } = string.Empty;
 
     }
 }

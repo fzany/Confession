@@ -89,12 +89,12 @@ namespace Mobile
             }
         }
 
-        private void title_TextChanged(object sender, TextChangedEventArgs e)
+        private void Title_TextChanged(object sender, TextChangedEventArgs e)
         {
             title.Text = Logic.ToTitle(title.Text);
         }
 
-        private void body_TextChanged(object sender, TextChangedEventArgs e)
+        private void Body_TextChanged(object sender, TextChangedEventArgs e)
         {
             int val = body.Text.Length;
             int min = 100;

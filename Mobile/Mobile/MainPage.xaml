@@ -2,86 +2,93 @@
 <ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:local="clr-namespace:Mobile.Helpers"
-             x:Class="Mobile.MainPage" Title="Hi" BackgroundColor="Azure" Padding="5" NavigationPage.HasNavigationBar="True">
+             xmlns:views="clr-namespace:SuaveControls.Views;assembly=SuaveControls.FloatingActionButton"
+             x:Class="Mobile.MainPage" BackgroundColor="Azure" BackgroundImage="drop.png" Padding="5" NavigationPage.HasNavigationBar="True">
     <NavigationPage.TitleView>
         <StackLayout Orientation="Horizontal" BackgroundColor="Transparent" HeightRequest="60" >
             <Image Source="logophone.png" Aspect="AspectFit" HeightRequest="50" WidthRequest="50"/>
             <Label Text="Confessor" FontSize="Large" FontFamily="{StaticResource Rob}" FontAttributes="Bold" TextColor="White" VerticalOptions="CenterAndExpand"/>
         </StackLayout>
     </NavigationPage.TitleView>
-   
+
     <ContentPage.ToolbarItems>
-        <ToolbarItem Text="Refresh" Clicked="Refresh_Clicked" Order="Primary" Icon="refresh.png"/>
-        <ToolbarItem Text="Confess" Clicked="Add_Clicked" Order="Primary" Icon="add.png"/>
+        <ToolbarItem Text="Chat Room" Clicked="Click_Clicked" Order="Primary" Icon="chat.png"/>
     </ContentPage.ToolbarItems>
-    <ContentPage.Content>
-        <StackLayout>
-            <Label Text="Empty" x:Name="EmptyD" IsVisible="False" FontFamily="{StaticResource Rob}" HorizontalOptions="CenterAndExpand"/>
-            <Label Text="😥" x:Name="Empt" IsVisible="False" TextColor="{StaticResource Primary}" FontSize="50" FontFamily="{StaticResource Rob}" HorizontalOptions="CenterAndExpand"/>
-            <ActivityIndicator IsEnabled="False" IsRunning="False" IsVisible="False" x:Name="loadingBox"/>
-            <ListView x:Name="List_View" HasUnevenRows="True" SeparatorVisibility="None" HorizontalOptions="FillAndExpand" VerticalOptions="FillAndExpand" ItemSelected="List_View_ItemSelected" >
-                <ListView.ItemTemplate>
-                    <DataTemplate>
-                        <ViewCell>
-                            <StackLayout>
-                                <Frame CornerRadius="5" Margin="3" Padding="3">
-                                    <StackLayout>
-                                        <Label Text="{Binding Title}" FontSize="Medium" Grid.Column="0" FontAttributes="Bold" FontFamily="{StaticResource Rob}" MaxLines="1" HorizontalOptions="CenterAndExpand"/>
 
-                                        <Label Text="{Binding Body}" FontFamily="{StaticResource Rob}" MaxLines="2" LineBreakMode="TailTruncation" HorizontalTextAlignment="Center"/>
-                                        <StackLayout Orientation="Horizontal">
-                                            <Frame CornerRadius="5" Padding="4,0" BackgroundColor="{StaticResource Primarylight}" VerticalOptions="CenterAndExpand" HorizontalOptions="StartAndExpand">
-                                                <Label Text="{Binding Category}" FontAttributes="Bold" TextColor="White" FontFamily="{StaticResource Rob}"/>
-                                            </Frame>
-                                            <Grid HorizontalOptions="CenterAndExpand" VerticalOptions="CenterAndExpand">
-                                                <Grid.Resources>
-                                                    <ResourceDictionary>
-                                                        <Style TargetType="Label">
-                                                            <Setter Property="FontSize" Value="Micro" />
-                                                        </Style>
-                                                    </ResourceDictionary>
-                                                </Grid.Resources>
-                                                <Grid.ColumnDefinitions>
-                                                    <ColumnDefinition Width="*"/>
-                                                    <ColumnDefinition Width="*"/>
-                                                    <ColumnDefinition Width="*"/>
-                                                    <ColumnDefinition Width="*"/>
-                                                </Grid.ColumnDefinitions>
-
-                                                <StackLayout Orientation="Horizontal"  Grid.Column="0">
-                                                    <Label  FontFamily="{StaticResource FSolid}" Text="{Binding LikesLogo}" VerticalOptions="CenterAndExpand"  TextColor="{Binding LikeColor}"/>
-                                                    <Label Text="{Binding Likes}" FontFamily="{StaticResource Rob}" VerticalOptions="CenterAndExpand"/>
-                                                </StackLayout>
-                                                <StackLayout  Orientation="Horizontal"  Grid.Column="1">
-                                                    <Label  FontFamily="{StaticResource FSolid}" Text="{Binding DisLikesLogo}" VerticalOptions="CenterAndExpand" TextColor="{Binding DislikeColor}"/>
-                                                    <Label Text="{Binding DisLikes}" FontFamily="{StaticResource Rob}" VerticalOptions="CenterAndExpand"/>
-                                                </StackLayout>
-                                                <StackLayout  Orientation="Horizontal"  Grid.Column="2">
-                                                    <Label  FontFamily="{StaticResource FSolid}" Text="{Binding CommentLogo}" VerticalOptions="CenterAndExpand"/>
-                                                    <Label Text="{Binding CommentCount}" FontFamily="{StaticResource Rob}" VerticalOptions="CenterAndExpand"/>
-                                                </StackLayout>
-                                                <StackLayout  Orientation="Horizontal"  Grid.Column="3">
-                                                    <Label  FontFamily="{StaticResource FSolid}" Text="{Binding SeenLogo}" VerticalOptions="CenterAndExpand"/>
-                                                    <Label Text="{Binding Seen}" FontFamily="{StaticResource Rob}" VerticalOptions="CenterAndExpand"/>
-                                                </StackLayout>
-                                            </Grid>
-                                            <Frame CornerRadius="5" Padding="4,0" BackgroundColor="{StaticResource Primarylight}" VerticalOptions="CenterAndExpand" HorizontalOptions="EndAndExpand">
-                                                <Label Text="{Binding Date}" TextColor="White" FontFamily="{StaticResource Rob}" FontAttributes="Italic" VerticalOptions="CenterAndExpand" HorizontalOptions="CenterAndExpand"/>
-                                            </Frame>
-                                        </StackLayout>
-                                        <!--<BoxView HeightRequest="1" HorizontalOptions="FillAndExpand" />-->
-                                    </StackLayout>
-                                </Frame>
-                                <local:AdmobControl AdUnitId="ca-app-pub-4507736790505069/4350778903" IsVisible="{Binding IsAdVisible}" HorizontalOptions="CenterAndExpand"/>
-                            </StackLayout>
-                        </ViewCell>
-                    </DataTemplate>
-                </ListView.ItemTemplate>
-            </ListView>
-            <!--<local:AdBanner Size="Standardbanner" VerticalOptions="EndAndExpand"/>-->
-            <!--<StackLayout x:Name="Ads" VerticalOptions="EndAndExpand" Grid.Row="1"/>-->
-
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="8*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="4*"/>
+            <ColumnDefinition Width="Auto"/>
+        </Grid.ColumnDefinitions>
+        <StackLayout x:Name="head" Grid.Row="0" Grid.Column="0"  IsVisible="{Binding IsNoInternet}">
+            <Label Text="No Internet" FontFamily="{StaticResource Rob}" HorizontalOptions="CenterAndExpand"/>
+            <Label Text="😥" TextColor="{StaticResource Primary}" FontSize="50" FontFamily="{StaticResource Rob}" HorizontalOptions="CenterAndExpand"/>
         </StackLayout>
-    </ContentPage.Content>
+        <ListView x:Name="List_View" HasUnevenRows="True" ItemsSource="{Binding Loaders}"
+                  Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" Grid.RowSpan="2"
+                      SeparatorVisibility="None" 
+                      HorizontalOptions="FillAndExpand"
+                      VerticalOptions="FillAndExpand" 
+                      ItemSelected="List_View_ItemSelected" 
+                      IsRefreshing="{Binding IsBusy}"
+                  IsPullToRefreshEnabled="True"
+                  Refreshing="List_View_Refreshing"
+                      CachingStrategy="RecycleElement">
+            <ListView.ItemTemplate>
+                <DataTemplate>
+                    <ViewCell>
+                        <StackLayout>
+                            <Frame CornerRadius="5" Margin="3" Padding="5">
+                                <StackLayout>
+                                    <StackLayout Orientation="Horizontal">
+                                        <Label Text="{Binding Title}" FontSize="Default" Grid.Column="0" FontAttributes="Bold" FontFamily="{StaticResource Rob}" MaxLines="1" HorizontalOptions="StartAndExpand"/>
+                                        <Label Text="{Binding Category}" FontAttributes="Bold" TextColor="Gray" FontFamily="{StaticResource Rob}" HorizontalOptions="EndAndExpand"/>
+                                    </StackLayout>
+
+                                    <Label Text="{Binding Body}" FontFamily="{StaticResource Rob}" MaxLines="2" LineBreakMode="TailTruncation" HorizontalTextAlignment="Start"/>
+                                    <StackLayout Orientation="Horizontal">
+                                        <Grid HorizontalOptions="StartAndExpand" VerticalOptions="CenterAndExpand">
+                                            <Grid.Resources>
+                                                <ResourceDictionary>
+                                                    <Style TargetType="Label">
+                                                        <Setter Property="FontSize" Value="Medium" />
+                                                    </Style>
+                                                </ResourceDictionary>
+                                            </Grid.Resources>
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="*"/>
+                                                <ColumnDefinition Width="*"/>
+                                            </Grid.ColumnDefinitions>
+                                            <StackLayout  Orientation="Horizontal"  Grid.Column="0">
+                                                <Label  FontFamily="{StaticResource FSolid}" Text="{Binding SeenLogo}" VerticalOptions="CenterAndExpand"/>
+                                                <Label Text="{Binding Seen}" FontFamily="{StaticResource Rob}" VerticalOptions="CenterAndExpand"/>
+                                            </StackLayout>
+                                            <StackLayout  Orientation="Horizontal"  Grid.Column="1">
+                                                <Label  FontFamily="{StaticResource FSolid}" Text="{Binding CommentLogo}" VerticalOptions="CenterAndExpand"/>
+                                                <Label Text="{Binding CommentCount}" FontFamily="{StaticResource Rob}" VerticalOptions="CenterAndExpand"/>
+                                            </StackLayout>
+
+                                        </Grid>
+                                        <Frame CornerRadius="5" Padding="4,0" BackgroundColor="Transparent" VerticalOptions="CenterAndExpand" HorizontalOptions="EndAndExpand">
+                                            <Label Text="{Binding Date}" TextColor="Gray" FontFamily="{StaticResource Rob}" FontAttributes="Italic" VerticalOptions="CenterAndExpand"/>
+                                        </Frame>
+                                    </StackLayout>
+                                    <!--<BoxView HeightRequest="1" HorizontalOptions="FillAndExpand" />-->
+                                </StackLayout>
+                            </Frame>
+                            <local:AdmobControl AdUnitId="ca-app-pub-4507736790505069/4350778903" IsVisible="{Binding IsAdVisible}" HorizontalOptions="CenterAndExpand"/>
+                        </StackLayout>
+                    </ViewCell>
+                </DataTemplate>
+            </ListView.ItemTemplate>
+        </ListView>
+        <views:FloatingActionButton Grid.Row="2" Grid.Column="1" VerticalOptions="EndAndExpand" HorizontalOptions="CenterAndExpand" Image="add.png" HeightRequest="90" WidthRequest="78" ButtonColor="{StaticResource PrimaryDark}" Clicked="Add_Clicked" />
+    </Grid>
+
 
 </ContentPage>

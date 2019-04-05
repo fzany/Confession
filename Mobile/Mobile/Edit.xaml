@@ -11,7 +11,7 @@
             <StackLayout Orientation="Horizontal" BackgroundColor="{StaticResource Primary}" >
                
                 <Image Source="logophone.png" Aspect="AspectFit" HeightRequest="50" WidthRequest="50"/>
-                <Label Text="Confessor: Edit Confession" FontSize="Large" FontFamily="{StaticResource Rob}" FontAttributes="Bold" TextColor="White" VerticalOptions="CenterAndExpand"/>
+                <Label Text="Edit Confession" FontSize="Large" FontFamily="{StaticResource Rob}" FontAttributes="Bold" TextColor="White" VerticalOptions="CenterAndExpand"/>
             </StackLayout>
             <ActivityIndicator IsEnabled="False" IsRunning="False" IsVisible="False" x:Name="loadingBox"/>
             <ScrollView>

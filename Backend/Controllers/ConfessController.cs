@@ -116,6 +116,7 @@ namespace Backend.Controllers
             try
             {
                 Store.ConfessClass.CreateConfess(data);
+                Push.PushToEveryone(data);
                 return Ok();
             }
             catch (Exception ex)

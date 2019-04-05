@@ -13,7 +13,7 @@ using Android.Widget;
 
 namespace Mobile.Droid
 {
-    [Activity(Label = "Confessor", Icon = "@mipmap/icon", ScreenOrientation = Android.Content.PM.ScreenOrientation.Portrait, Theme = "@style/SplashTheme", MainLauncher = true, ConfigurationChanges = ConfigChanges.ScreenSize | ConfigChanges.Orientation)]
+    [Activity(Label = "Confessor", LaunchMode = LaunchMode.SingleInstance, Icon = "@mipmap/icon", ScreenOrientation = Android.Content.PM.ScreenOrientation.Portrait, Theme = "@style/SplashTheme", MainLauncher = true, ConfigurationChanges = ConfigChanges.ScreenSize | ConfigChanges.Orientation)]
     public class Splash : Activity
     {
         protected override void OnCreate(Bundle savedInstanceState)

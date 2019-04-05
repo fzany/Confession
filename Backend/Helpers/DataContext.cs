@@ -14,7 +14,7 @@ namespace Backend.Helpers
 
         }
         public IMongoCollection<Confess> Confess => Database.GetCollection<Confess>(typeof(Confess).Name.ToLower());
-        public IMongoCollection<User> User => Database.GetCollection<User>(typeof(User).Name.ToLower());
+        public IMongoCollection<UserData> User => Database.GetCollection<UserData>(typeof(UserData).Name.ToLower());
         public IMongoCollection<Comment> Comment => Database.GetCollection<Comment>(typeof(Comment).Name.ToLower());
 
         public IMongoCollection<Likes> Likes => Database.GetCollection<Likes>(typeof(Likes).Name.ToLower());

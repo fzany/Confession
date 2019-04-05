@@ -18,8 +18,6 @@ namespace Mobile
             InitializeComponent();
         }
         private ConfessLoader confess;
-        private List<CommentLoader> loaders = new List<CommentLoader>();
-        private ConfessLoader newloader = new ConfessLoader();
         
         public ViewPage(ConfessLoader _confess)
         {
@@ -33,12 +31,6 @@ namespace Mobile
             this.BindingContext = confess;
             //commentButton.IsVisible = confess.CommentCount !="0";
             LoadSettings();
-            switch (Device.RuntimePlatform)
-            {
-                case Device.UWP:
-                    back_button.IsVisible = true;
-                    break;
-            }
             
             LoadSubscription();
         }
@@ -62,29 +54,6 @@ namespace Mobile
                 }
             }
         }
-        private void VibrateNow()
-        {
-            try
-            {
-                // Or use specified time
-                TimeSpan duration = TimeSpan.FromMilliseconds(100);
-                Vibration.Vibrate(duration);
-            }
-            catch (FeatureNotSupportedException ex)
-            {
-                Crashes.TrackError(ex);
-            }
-            catch (Exception ex)
-            {
-                Crashes.TrackError(ex);
-            }
-        }
-
-        protected override bool OnBackButtonPressed()
-        {
-            MessagingCenter.Send<object>(this, Constants.none_nav);
-            return base.OnBackButtonPressed();
-        }
 
         private async Task LoadSettings()
         {
@@ -94,21 +63,7 @@ namespace Mobile
                 string key = await Logic.GetKey();
                 EditTool.IsVisible = confess.Owner_Guid == key;
                 DeleteTool.Text = Constants.FontAwe.Trash;
-                DeleteTool.IsVisible = confess.Owner_Guid == key;
-
-                switch (Device.RuntimePlatform)
-                {
-                    case "Windows":
-                        EditTool.FontFamily = "/Assets/FaSolid.otf#Font Awesome 5 Free Solid";
-                        DeleteTool.FontFamily = "/Assets/FaSolid.otf#Font Awesome 5 Free Solid";
-                        break;
-                }
-
-                string isLogged = await Logic.GetLogged();
-                if (string.IsNullOrEmpty(isLogged))
-                {
-                    Store.SettingClass.PostLog();
-                }
+                DeleteTool.IsVisible = confess.Owner_Guid == key;              
             }
             catch (Exception ex)
             {
@@ -160,7 +115,7 @@ namespace Mobile
                         }
 
                        // label.ch.TextColor = Color.Gray;
-                        VibrateNow();
+                        Logic.VibrateNow();
                     }
                 }
                 catch (Exception ex)
@@ -205,7 +160,7 @@ namespace Mobile
                         }
 
                        // label.TextColor = Color.Gray;
-                        VibrateNow();
+                        Logic.VibrateNow();
                     }
                 }
             }
@@ -235,16 +190,11 @@ namespace Mobile
                     Crashes.TrackError(ex);
                 }
                 DependencyService.Get<IMessage>().ShortAlert("Deleted");
-                MessagingCenter.Send<object>(this, Constants.none_nav);
+
+                //delete the guy from the view Model.
+                MessagingCenter.Send<object, ConfessLoader>(this, Constants.modify_nav, confess);
                 await Navigation.PopModalAsync();
             }
-        }
-
-        private async void Back_Tapped(object sender, EventArgs e)
-        {
-            //close this page
-            MessagingCenter.Send<object>(this, Constants.none_nav);
-            await Navigation.PopModalAsync();
         }
 
         private async void Open_Comment(object sender, EventArgs e)

@@ -13,8 +13,10 @@ namespace Shared
         public const string me_nav = "me_nav";
         public const string none_nav = "none_nav";
         public const string BaseURL = "https://confessbackend.azurewebsites.net/";
+        public const string AppCenterBaseURL = "https://api.appcenter.ms/v0.1/apps/fzanyajibs/";
         public const string ContentTypeHeaderJson = "application/json";
         public const string AuthorizationHeaderType = "Bearer";
+        public const string XAPIToken = "X-API-Token";
 
         public static class FontAwe
         {

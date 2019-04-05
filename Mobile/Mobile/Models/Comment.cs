@@ -18,6 +18,10 @@ namespace Mobile.Models
         public DateTime Date { get; set; } = DateTime.UtcNow;
         public string Confess_Guid { get; set; } = string.Empty;
         public string Owner_Guid { get; set; } = string.Empty;
+
+        public CommentQuote Quote { get; set; }
+        public bool QuotedCommentAvailable { get; set; }
+
     }
     public class CommentLoader
     {
@@ -40,6 +44,15 @@ namespace Mobile.Models
         public bool DeleteVisibility { get; set; } = false;
 
         public bool IsAdVisible { get; set; } = false;
+
+        public CommentQuote Quote { get; set; }
+        public bool QuotedCommentAvailable { get; set; }
+    }
+
+
+    public class CommentQuote
+    {
+        public string Body { get; set; }
     }
     public class CommentPoster
     {

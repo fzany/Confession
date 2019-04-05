@@ -5,13 +5,17 @@ using System.Text;
 
 namespace Shared
 {
-    public class User
+    public class UserData
     {
         [BsonId]
         [BsonRepresentation(MongoDB.Bson.BsonType.ObjectId)]
         public string Id { get; set; } = MongoDB.Bson.ObjectId.GenerateNewId().ToString();
-        public string Guid { get; set; } = MongoDB.Bson.ObjectId.GenerateNewId().ToString();
-        public string Name { get; set; } = string.Empty;
-       
+        public string AppCenterID { get; set; }
+        public bool ChatRoomNotification { get; set; }
+        public bool CommentNotification { get; set; }
+        public bool Biometry { get; set; }
+        public List<string> Key { get; set; }
+        public DeviceInfo Logger { get; set; }
+
     }
 }

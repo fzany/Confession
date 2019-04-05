@@ -12,68 +12,87 @@ namespace Backend.Controllers
     public class TestController : ControllerBase
     {
         [HttpGet]
-        [Route("test/fetchall")]
-        public ActionResult<List<Confess>> FetchAll()
+        [Route("test/getusers")]
+        public ActionResult<List<UserData>> GetUsers()
         {
             try
             {
-                //prepare responses
-                List<Confess> response = Store.Migrate.FetchLite.FetchConfess();
-
-                //test for emptiness
-                if (response.Count() == 0)
-                {
-                    return Ok(new List<Confess>() { });
-                }
+                //Store.UserClass.DropUsers();
+                List<UserData> list = Store.UserClass.FetchAll();
 
                 //return data
-                return Ok(response);
+                return Ok(list);
             }
             catch
             {
-                return new List<Confess>();
+                return new List<UserData>();
             }
 
         }
-        [HttpGet]
-        [Route("test/add")]
-        public ActionResult<List<Confess>> Add()
-        {
-            try
-            {
-                Confess confess = new Confess
-                {
-                    Title = "Test Confess",
-                    Body = "This is a test confess",
-                    Category = "Family",
-                    Owner_Guid = "femi"
 
-                };
-                Store.Migrate.Create.CreateConfess(confess);
+        //[HttpGet]
+        //[Route("test/fetchall")]
+        //public ActionResult<List<Confess>> FetchAll()
+        //{
+        //    try
+        //    {
+        //        //prepare responses
+        //        List<Confess> response = Store.Migrate.FetchLite.FetchConfess();
 
-                return Store.Migrate.FetchLite.FetchConfess();
-            }
-            catch (Exception ex)
-            {
-                return StatusCode(500, ex.ToString());
-            }
-        }
+        //        //test for emptiness
+        //        if (response.Count() == 0)
+        //        {
+        //            return Ok(new List<Confess>() { });
+        //        }
 
-        [HttpGet]
-        [Route("test/clear")]
-        public ActionResult Clear()
-        {
-            try
-            {
-                //clear LiteDB first
-                Store.Migrate.ClearLiteDB();
-                return Ok();
-            }
-            catch (Exception ex)
-            {
-                return StatusCode(500, ex.ToString());
-            }
-        }
+        //        //return data
+        //        return Ok(response);
+        //    }
+        //    catch
+        //    {
+        //        return new List<Confess>();
+        //    }
+
+        //}
+        //[HttpGet]
+        //[Route("test/add")]
+        //public ActionResult<List<Confess>> Add()
+        //{
+        //    try
+        //    {
+        //        Confess confess = new Confess
+        //        {
+        //            Title = "Test Confess",
+        //            Body = "This is a test confess",
+        //            Category = "Family",
+        //            Owner_Guid = "femi"
+
+        //        };
+        //        Store.Migrate.Create.CreateConfess(confess);
+
+        //        return Store.Migrate.FetchLite.FetchConfess();
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        return StatusCode(500, ex.ToString());
+        //    }
+        //}
+
+        //[HttpGet]
+        //[Route("test/clear")]
+        //public ActionResult Clear()
+        //{
+        //    try
+        //    {
+        //        //clear LiteDB first
+        //        Store.Migrate.ClearLiteDB();
+        //        return Ok();
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        return StatusCode(500, ex.ToString());
+        //    }
+        //}
 
         //[HttpGet]
         //[Route("test/migrate")]
@@ -107,20 +126,19 @@ namespace Backend.Controllers
         //    public List<Comment> Comments { get; set; } = Store.Migrate.FetchLite.FetchComment();
         //}
 
-
-        [HttpGet]
-        [Route("test/migratetomongo")]
-        public ActionResult<Migrator> MigrateToMongo()
-        {
-            try
-            {
-                var data  = Store.Migrate.MigrateToMongo.LoadMigration();
-                return Ok(data);
-            }
-            catch (Exception ex)
-            {
-                return StatusCode(500, ex.ToString());
-            }
-        }
+        //[HttpGet]
+        //[Route("test/migratetomongo")]
+        //public ActionResult<Migrator> MigrateToMongo()
+        //{
+        //    try
+        //    {
+        //        Migrator data = Store.Migrate.MigrateToMongo.LoadMigration();
+        //        return Ok(data);
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        return StatusCode(500, ex.ToString());
+        //    }
+        //}
     }
 }

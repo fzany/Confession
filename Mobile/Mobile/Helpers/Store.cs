@@ -1,14 +1,195 @@
-﻿using Microsoft.AppCenter.Crashes;
+﻿using Microsoft.AppCenter;
+using Microsoft.AppCenter.Crashes;
 using Mobile.Models;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Threading.Tasks;
 
 namespace Mobile.Helpers
 {
     public class Store
     {
+        public static class GenericClass
+        {
+            internal static async Task<string> GetName()
+            {
+                try
+                {
+                    string url = $"generic/getaname";
+                    string content = await BaseClient.GetEntities(url);
+                    string data = JsonConvert.DeserializeObject<string>(content);
+                    return data;
+                }
+                catch (Exception ex)
+                {
+                    Crashes.TrackError(ex);
+                    return "";
+                }
+            }
+        }
+
+        public static class UserClass
+        {
+            internal static async Task<UserData> Get()
+            {
+                try
+                {
+                    string url = $"user/fetch";
+                    string content = await BaseClient.GetEntities(url);
+                    UserData data = JsonConvert.DeserializeObject<UserData>(content);
+                    return data;
+                }
+                catch (Exception ex)
+                {
+                    Crashes.TrackError(ex);
+                    return new UserData() { };
+                }
+            }
+            public static async Task Add()
+            {
+                Guid? installId = await AppCenter.GetInstallIdAsync();
+                UserData user = new UserData
+                {
+                    AppCenterID = installId.Value.ToString(),
+                    Key = new List<string>() { await Logic.GetKey() },
+                    Biometry = false,
+                    ChatRoomNotification = true,
+                    CommentNotification = true,
+                    Logger = Logic.GetDeviceInformation()
+                };
+
+                try
+                {
+                    string url = "user/add";
+                    await BaseClient.PostEntities(url, JsonConvert.SerializeObject(user));
+                    await Logic.CreateLogged();
+                }
+                catch (Exception ex)
+                {
+                    Crashes.TrackError(ex);
+                }
+            }
+            public static async Task Update(UserData user)
+            {
+                try
+                {
+                    string url = "user/update";
+                    string content = await BaseClient.PutEntities(url, JsonConvert.SerializeObject(user));
+                }
+                catch (Exception ex)
+                {
+                    Crashes.TrackError(ex);
+                }
+            }
+        }
+
+        public static class ChatClass
+        {
+            internal static async Task JoinRoom(string roomID)
+            {
+                try
+                {
+                    if (string.IsNullOrEmpty(roomID))
+                        roomID = await Logic.GetRoomID();
+                    string url = $"chat/join?id={roomID}";
+                    await BaseClient.GetEntities(url);
+                }
+                catch (Exception ex)
+                {
+                    Crashes.TrackError(ex);
+                }
+            }
+
+            internal static async Task LeaveRoom(string roomID)
+            {
+                try
+                {
+                    if (string.IsNullOrEmpty(roomID))
+                        roomID = await Logic.GetRoomID();
+                    string url = $"chat/leave?id={roomID}";
+                    await BaseClient.GetEntities(url);
+                }
+                catch (Exception ex)
+                {
+                    Crashes.TrackError(ex);
+                }
+            }
+            internal static async Task<ObservableCollection<ChatRoomLoader>> Rooms()
+            {
+                try
+                {
+                    string url = $"chat/fetchrooms";
+                    string content = await BaseClient.GetEntities(url);
+                    ObservableCollection<ChatRoomLoader> data = JsonConvert.DeserializeObject<ObservableCollection<ChatRoomLoader>>(content);
+                    return data;
+                }
+                catch (Exception ex)
+                {
+                    Crashes.TrackError(ex);
+                    return new ObservableCollection<ChatRoomLoader>() { };
+                }
+            }
+
+            internal static async Task<ObservableCollection<ChatLoader>> ChatsByRoom(string roomID)
+            {
+                try
+                {
+                    if (string.IsNullOrEmpty(roomID))
+                        roomID = await Logic.GetRoomID();
+                    string url = $"chat/fetchchats?roomID={roomID}";
+                    string content = await BaseClient.GetEntities(url);
+                    ObservableCollection<ChatLoader> data = JsonConvert.DeserializeObject<ObservableCollection<ChatLoader>>(content);
+                    return data;
+                }
+                catch (Exception ex)
+                {
+                    Crashes.TrackError(ex);
+                    return new ObservableCollection<ChatLoader>() { };
+                }
+            }
+
+            public static async Task Add(Chat chat)
+            {
+                try
+                {
+                    string url = "chat/add";
+                    string content = await BaseClient.PostEntities(url, JsonConvert.SerializeObject(chat));
+                }
+                catch (Exception ex)
+                {
+                    Crashes.TrackError(ex);
+                }
+            }
+            public static async Task Update(Chat chat)
+            {
+                try
+                {
+                    string url = "chat/update";
+                    string content = await BaseClient.PutEntities(url, JsonConvert.SerializeObject(chat));
+                }
+                catch (Exception ex)
+                {
+                    Crashes.TrackError(ex);
+                }
+            }
+
+
+            public static async Task Delete(string id)
+            {
+                try
+                {
+                    string url = $"chat/delete?id={id}";
+                    string content = await BaseClient.DeleteEntities(url);
+                }
+                catch (Exception ex)
+                {
+                    Crashes.TrackError(ex);
+                }
+            }
+
+        }
 
         public static class ConfessClass
         {
@@ -49,35 +230,35 @@ namespace Mobile.Helpers
                 }
             }
 
-            public static async Task<List<ConfessLoader>> FetchConfessByCategory(string category)
+            public static async Task<ObservableCollection<ConfessLoader>> FetchConfessByCategory(string category)
             {
                 try
                 {
                     string url = $"confess/fetch/cat?key={await Logic.GetKey()}&cat={category}";
                     string content = await BaseClient.GetEntities(url);
-                    List<ConfessLoader> data = JsonConvert.DeserializeObject<List<ConfessLoader>>(content);
+                    ObservableCollection<ConfessLoader> data = JsonConvert.DeserializeObject<ObservableCollection<ConfessLoader>>(content);
                     return data;
                 }
                 catch (Exception ex)
                 {
                     Crashes.TrackError(ex);
-                    return new List<ConfessLoader>();
+                    return new ObservableCollection<ConfessLoader>();
                 }
             }
 
-            public static async Task<List<ConfessLoader>> FetchMyConfessions()
+            public static async Task<ObservableCollection<ConfessLoader>> FetchMyConfessions()
             {
                 try
                 {
                     string url = $"confess/fetch?key={await Logic.GetKey()}";
                     string content = await BaseClient.GetEntities(url);
-                    List<ConfessLoader> data = JsonConvert.DeserializeObject<List<ConfessLoader>>(content);
+                    ObservableCollection<ConfessLoader> data = JsonConvert.DeserializeObject<ObservableCollection<ConfessLoader>>(content);
                     return data;
                 }
                 catch (Exception ex)
                 {
                     Crashes.TrackError(ex);
-                    return new List<ConfessLoader>();
+                    return new ObservableCollection<ConfessLoader>();
                 }
             }
 
@@ -100,19 +281,19 @@ namespace Mobile.Helpers
 
 
 
-            public static async Task<List<ConfessLoader>> FetchAllConfess()
+            public static async Task<ObservableCollection<ConfessLoader>> FetchAllConfess()
             {
                 try
                 {
                     string url = $"confess/fetchall?key={await Logic.GetKey()}";
                     string content = await BaseClient.GetEntities(url);
-                    List<ConfessLoader> data = JsonConvert.DeserializeObject<List<ConfessLoader>>(content);
+                    ObservableCollection<ConfessLoader> data = JsonConvert.DeserializeObject<ObservableCollection<ConfessLoader>>(content);
                     return data;
                 }
                 catch (Exception ex)
                 {
                     Crashes.TrackError(ex);
-                    return new List<ConfessLoader>();
+                    return new ObservableCollection<ConfessLoader>();
                 }
             }
         }
@@ -134,16 +315,7 @@ namespace Mobile.Helpers
                     return new Setting() { };
                 }
             }
-
-            internal static async void PostLog()
-            {
-                var data = await Logic.GetDeviceInformation();
-                string url = $"settings/log";
-                string content = await BaseClient.PostEntities(url, JsonConvert.SerializeObject(data));
-                await Logic.CreateLogged();
-            }
         }
-
 
         public static class CommentClass
         {
@@ -186,19 +358,19 @@ namespace Mobile.Helpers
                 }
             }
 
-            public static async Task<List<CommentLoader>> FetchComment(string guid)
+            public static async Task<ObservableCollection<CommentLoader>> FetchComment(string guid)
             {
                 try
                 {
                     string url = $"comment/fetch?guid={guid}&key={await Logic.GetKey()}";
                     string content = await BaseClient.GetEntities(url);
-                    List<CommentLoader> data = JsonConvert.DeserializeObject<List<CommentLoader>>(content);
+                    ObservableCollection<CommentLoader> data = JsonConvert.DeserializeObject<ObservableCollection<CommentLoader>>(content);
                     return data;
                 }
                 catch (Exception ex)
                 {
                     Crashes.TrackError(ex);
-                    return new List<CommentLoader>() { };
+                    return new ObservableCollection<CommentLoader>() { };
                 }
             }
         }

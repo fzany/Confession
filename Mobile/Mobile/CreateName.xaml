@@ -1,0 +1,29 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="Mobile.CreateName" Padding="5">
+    <ContentPage.Content>
+        <StackLayout>
+            <StackLayout Orientation="Horizontal" BackgroundColor="{StaticResource Primary}" >
+                <Image Source="logophone.png" Aspect="AspectFit" HeightRequest="50" WidthRequest="50"/>
+                <Label x:Name="titleLabel" FontSize="Large" FontFamily="{StaticResource Rob}" FontAttributes="Bold" TextColor="White" VerticalOptions="CenterAndExpand"/>
+            </StackLayout>
+            <Label Text="Quick Settings" FontSize="Large" FontAttributes="Bold"/>
+            <StackLayout VerticalOptions="CenterAndExpand">
+                <Label Text="Chat Name" FontSize="Medium" VerticalOptions="Center"/>
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+                    <Entry Grid.Column="0" x:Name="ChatName" Placeholder="Not set" FontSize="Medium" VerticalOptions="Center"/>
+                    <Button Grid.Column="1" Text="Random" Clicked="Random_Clicked" VerticalOptions="Center"/>
+                </Grid>
+                <Button HorizontalOptions="FillAndExpand" Text="Save" Clicked="Update_Name" VerticalOptions="Center"/>
+            </StackLayout>
+            <ActivityIndicator IsEnabled="False" IsRunning="False" IsVisible="False" x:Name="loadingBox"/>
+            <Button Text="Join Room" FontSize="25" Margin="0,0,5,0" BackgroundColor="{StaticResource PrimaryDark}" TextColor="White" x:Name="joinButton" Clicked="Join_Clicked" VerticalOptions="EndAndExpand" HorizontalOptions="FillAndExpand"/>
+
+        </StackLayout>
+    </ContentPage.Content>
+</ContentPage>

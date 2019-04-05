@@ -52,7 +52,6 @@ namespace Mobile
                 foreach (string dt in cat)
                 {
                     MenuItems.Add(new MasterItem() { Title = dt, Icon = cat_logos.FirstOrDefault(d => d.Title == dt).Icon });
-
                 }
             }
 
@@ -72,6 +71,7 @@ namespace Mobile
         }
         private async void Info_Tapped(object sender, EventArgs e)
         {
+            MessagingCenter.Send<object>(this, Constants.IsPresented);
             await Navigation.PushModalAsync(new About());
         }
 
@@ -88,6 +88,7 @@ namespace Mobile
 
         private async void Settings_Tapped(object sender, EventArgs e)
         {
+            MessagingCenter.Send<object>(this, Constants.IsPresented);
             await Navigation.PushModalAsync(new SettingsPage());
         }
     }

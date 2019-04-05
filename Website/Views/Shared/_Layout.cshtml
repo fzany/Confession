@@ -7,6 +7,28 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>@ViewData["Title"] - Website</title>
 
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-46154594-2"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag() { dataLayer.push(arguments); }
+        gtag('js', new Date());
+
+        gtag('config', 'UA-46154594-2');
+    </script>
+
+    <!-- Google Tag Manager -->
+    <script>
+        (function (w, d, s, l, i) {
+            w[l] = w[l] || []; w[l].push({
+                'gtm.start':
+                    new Date().getTime(), event: 'gtm.js'
+            }); var f = d.getElementsByTagName(s)[0],
+                j = d.createElement(s), dl = l != 'dataLayer' ? '&l=' + l : ''; j.async = true; j.src =
+                    'https://www.googletagmanager.com/gtm.js?id=' + i + dl; f.parentNode.insertBefore(j, f);
+        })(window, document, 'script', 'dataLayer', 'GTM-KRB2RX8');</script>
+    <!-- End Google Tag Manager -->
+
     <meta name="detectify-verification"
           content="5c57a117a11c347f72d3d4980b704b05" />
     <meta name="apple-mobile-web-app-title" content="Confessor: Confess Anonymously">
@@ -113,20 +135,22 @@
     </div><!-- /header -->
 
 
-        <div role="main" style="padding-left:3px; padding-right:3px; padding-bottom:0; padding-top:0;" class="ui-content jqm-content jqm-fullwidth limit">
-            @RenderBody()
-        </div><!-- /content -->
+    <div role="main" style="padding-left:3px; padding-right:3px; padding-bottom:0; padding-top:0;" class="ui-content jqm-content jqm-fullwidth limit">
+        @RenderBody()
+    </div><!-- /content -->
     <div data-role="footer" class="limit" data-position="fixed">
         @*<h4>&copy; @DateTime.Now.Year - Booksrite</h4>*@
         @*<div class="center">*@
-            <a class="limi ui-btn ui-shadow ui-corner-all ui-btn-icon-left"
-               href='https://play.google.com/store/apps/details?id=com.booksrite.confessor&pcampaignid=MKT-Other-global-all-co-prtnr-py-PartBadge-Mar2515-1'>
-                <img class="imager" alt='Get it on Google Play' src='https://res.cloudinary.com/fzany-inc/image/upload/v1551631447/google-play-badge_didbo9.png' />
-            </a>
-            <a class="limi ui-btn ui-shadow ui-corner-all ui-btn-icon-right"
-               href='//www.microsoft.com/store/apps/9ns7z5jpnf72?ocid=badge'>
-                <img class="imager" src='https://assets.windowsphone.com/13484911-a6ab-4170-8b7e-795c1e8b4165/English_get_L_InvariantCulture_Default.png' alt='Confessor Windows Link' />
-            </a>
+        <button type="button" onclick="location.href='@Url.Action("ChatPage", "Home")'">Chat Room</button>
+
+        <a class="limi ui-btn ui-shadow ui-corner-all ui-btn-icon-left"
+           href='https://play.google.com/store/apps/details?id=com.booksrite.confessor&pcampaignid=MKT-Other-global-all-co-prtnr-py-PartBadge-Mar2515-1'>
+            <img class="imager" alt='Get it on Google Play' src='https://res.cloudinary.com/fzany-inc/image/upload/v1551631447/google-play-badge_didbo9.png' />
+        </a>
+        <a class="limi ui-btn ui-shadow ui-corner-all ui-btn-icon-right"
+           href='//www.microsoft.com/store/apps/9ns7z5jpnf72?ocid=badge'>
+            <img class="imager" src='https://assets.windowsphone.com/13484911-a6ab-4170-8b7e-795c1e8b4165/English_get_L_InvariantCulture_Default.png' alt='Confessor Windows Link' />
+        </a>
         @*</div>*@
 
     </div><!-- /footer -->
@@ -167,5 +191,11 @@
         }
     </div>
     @*<partial name="_CookieConsentPartial" />*@
+    <!-- Google Tag Manager (noscript) -->
+    <noscript>
+        <iframe src="https://www.googletagmanager.com/ns.html?id=GTM-KRB2RX8"
+                height="0" width="0" style="display:none;visibility:hidden"></iframe>
+    </noscript>
+    <!-- End Google Tag Manager (noscript) -->
 </body>
 </html>

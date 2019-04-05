@@ -1,0 +1,58 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:local="clr-namespace:Mobile.Helpers"
+             x:Class="Mobile.ChatLister" BackgroundImage="drop.png">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+        <StackLayout x:Name="head" IsVisible="{Binding IsNoInternet}" Grid.Row="0">
+            <Label Text="No Internet" FontFamily="{StaticResource Rob}" HorizontalOptions="CenterAndExpand"/>
+            <Label Text="😥" TextColor="{StaticResource Primary}" FontSize="50" FontFamily="{StaticResource Rob}" HorizontalOptions="CenterAndExpand"/>
+        </StackLayout>
+        <ListView x:Name="List_View" Grid.Row="1"
+            ItemsSource="{Binding ChatRooms}"
+            ItemSelected="List_View_ItemSelected" 
+                  RowHeight="50"
+             IsRefreshing="{Binding IsBusy}"
+            CachingStrategy="RecycleElement"
+        HasUnevenRows="False" 
+                      SeparatorVisibility="None">
+            <ListView.Header>
+                <StackLayout Orientation="Horizontal" BackgroundColor="{StaticResource Primary}" >
+                    <Image Source="logophone.png" Aspect="AspectFit" HeightRequest="50" WidthRequest="50"/>
+                    <Label Text="Chat Rooms" FontSize="Large" FontFamily="{StaticResource Rob}" FontAttributes="Bold" TextColor="White" VerticalOptions="CenterAndExpand"/>
+                </StackLayout>
+            </ListView.Header>
+            <ListView.ItemTemplate>
+                <DataTemplate>
+                    <ViewCell>
+                        <Frame CornerRadius="5" Margin="3" Padding="3">
+                            <StackLayout Orientation="Horizontal">
+                                <Frame CornerRadius="5" Padding="4,0" BackgroundColor="Transparent" BorderColor="Transparent" VerticalOptions="CenterAndExpand" HorizontalOptions="StartAndExpand">
+                                    <StackLayout Orientation="Horizontal"  Grid.Column="0">
+                                        <Label FontSize="Large" Style="{DynamicResource ListItemDetailTextStyle}" TextColor="LightGray"  FontFamily="{StaticResource FSolid}" Text="{Binding MembersCountLogo}" VerticalOptions="CenterAndExpand"/>
+                                        <Label FontSize="Large" Style="{DynamicResource ListItemDetailTextStyle}" TextColor="LightGray" Text="{Binding MembersCount}" FontFamily="{StaticResource Rob}" VerticalOptions="CenterAndExpand"/>
+                                    </StackLayout>
+                                </Frame>
+                                <Label Text="{Binding Title}" Style="{DynamicResource ListItemTextStyle}" FontSize="Large" FontAttributes="Bold" FontFamily="{StaticResource Rob}" MaxLines="1" HorizontalOptions="CenterAndExpand" HorizontalTextAlignment="Start"/>
+                                <Frame CornerRadius="5" Padding="4,0" BackgroundColor="Transparent" BorderColor="Transparent" VerticalOptions="CenterAndExpand" HorizontalOptions="EndAndExpand">
+                                    <StackLayout Orientation="Horizontal"  Grid.Column="0">
+                                        <Label FontSize="Large" Style="{DynamicResource ListItemDetailTextStyle}" TextColor="LightGray"  FontFamily="{StaticResource FSolid}" Text="{Binding ChatsCountLogo}" VerticalOptions="CenterAndExpand"/>
+                                        <Label FontSize="Large" Style="{DynamicResource ListItemDetailTextStyle}" TextColor="LightGray" Text="{Binding ChatsCount}" FontFamily="{StaticResource Rob}" VerticalOptions="CenterAndExpand"/>
+                                    </StackLayout>
+                                </Frame>
+                            </StackLayout>
+                        </Frame>
+
+                    </ViewCell>
+                </DataTemplate>
+            </ListView.ItemTemplate>
+
+        </ListView>
+        <local:AdmobControl AdUnitId="ca-app-pub-4507736790505069/4350778903" VerticalOptions="EndAndExpand" HorizontalOptions="CenterAndExpand" Grid.Row="2"/>
+    </Grid>
+</ContentPage>

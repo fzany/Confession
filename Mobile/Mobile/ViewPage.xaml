@@ -9,13 +9,8 @@
                 <StackLayout Spacing="5" VerticalOptions="Start">
 
                     <StackLayout Orientation="Horizontal" BackgroundColor="{StaticResource Primary}" >
-                        <Image Source="back.png" IsVisible="False" Aspect="AspectFit" HeightRequest="50" WidthRequest="50" x:Name="back_button">
-                            <Image.GestureRecognizers>
-                                <TapGestureRecognizer NumberOfTapsRequired="1" Tapped="Back_Tapped"/>
-                            </Image.GestureRecognizers>
-                        </Image>
                         <Image Source="logophone.png" Aspect="AspectFit" HeightRequest="50" WidthRequest="50"/>
-                        <Label Text="Confessor: View Confession" FontSize="Large" FontFamily="{StaticResource Rob}" FontAttributes="Bold" TextColor="White" VerticalOptions="CenterAndExpand"/>
+                        <Label Text="View Confession" FontSize="Large" FontFamily="{StaticResource Rob}" FontAttributes="Bold" TextColor="White" VerticalOptions="CenterAndExpand"/>
                     </StackLayout>
                     <StackLayout Orientation="Horizontal">
                         <Label Text="Edit" x:Name="EditTool" HorizontalOptions="StartAndExpand"  FontFamily="{StaticResource FSolid}" FontSize="Large">
@@ -51,12 +46,12 @@
                                 <ColumnDefinition Width="*"/>
                                 <ColumnDefinition Width="*"/>
                                 <ColumnDefinition Width="*"/>
-                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="Auto"/>
                                 <ColumnDefinition Width="*"/>
                             </Grid.ColumnDefinitions>
                             <StackLayout Orientation="Horizontal" Grid.Column="0" ClassId="{Binding Guid}" >
-                                <Label  FontFamily="{StaticResource FSolid}" Text="{Binding LikesLogo}" TextColor="{Binding LikeColor}"/>                     
-                                <Label Text="{Binding Likes}" FontFamily="{StaticResource Rob}"/>
+                                <Label  FontFamily="{StaticResource FSolid}" Text="{Binding LikesLogo}" TextColor="{Binding LikeColor}"/>
+                                <Label Text="{Binding Likes}" FontFamily="{StaticResource Rob}" MaxLines="1"/>
 
                                 <StackLayout.GestureRecognizers>
                                     <TapGestureRecognizer NumberOfTapsRequired="1" Tapped="Like_Tapped"/>
@@ -64,8 +59,8 @@
                             </StackLayout>
 
                             <StackLayout  Orientation="Horizontal" Grid.Column="1"  ClassId="{Binding Guid}" >
-                                <Label  FontFamily="{StaticResource FSolid}" Text="{Binding DisLikesLogo}" TextColor="{Binding DislikeColor}"/>         
-                                <Label Text="{Binding DisLikes}" FontFamily="{StaticResource Rob}"/>
+                                <Label  FontFamily="{StaticResource FSolid}" Text="{Binding DisLikesLogo}" TextColor="{Binding DislikeColor}"/>
+                                <Label Text="{Binding DisLikes}" FontFamily="{StaticResource Rob}" MaxLines="1"/>
 
                                 <StackLayout.GestureRecognizers>
                                     <TapGestureRecognizer NumberOfTapsRequired="1" Tapped="Dislike_Tapped"/>
@@ -73,8 +68,8 @@
                             </StackLayout>
 
                             <StackLayout  Orientation="Horizontal"  Grid.Column="2">
-                                <Label  FontFamily="{StaticResource FSolid}" Text="{Binding CommentLogo}"/>                   
-                                <Label Text="{Binding CommentCount}" FontFamily="{StaticResource Rob}"/>
+                                <Label  FontFamily="{StaticResource FSolid}" Text="{Binding CommentLogo}"/>
+                                <Label Text="{Binding CommentCount}" FontFamily="{StaticResource Rob}" MaxLines="1"/>
                                 <StackLayout.GestureRecognizers>
                                     <TapGestureRecognizer NumberOfTapsRequired="1" Tapped="Open_Comment"/>
                                 </StackLayout.GestureRecognizers>
@@ -82,7 +77,7 @@
 
                             <StackLayout  Orientation="Horizontal"  Grid.Column="3">
                                 <Label  FontFamily="{StaticResource FSolid}" Text="{Binding SeenLogo}"/>
-                                <Label Text="{Binding Seen}" FontFamily="{StaticResource Rob}"/>
+                                <Label Text="{Binding Seen}" FontFamily="{StaticResource Rob}" MaxLines="1"/>
                             </StackLayout>
                             <Label Grid.Column="4" FontFamily="{StaticResource FSolid}" ClassId="{Binding Guid}" Text="{Binding Share_Logo}" VerticalOptions="CenterAndExpand" HorizontalOptions="EndAndExpand" TextColor="{StaticResource Primarylight}" FontSize="Large">
                                 <Label.GestureRecognizers>

@@ -47,7 +47,8 @@ namespace Mobile
         }
 
         private async void DeleteButtonClicked(object sender, EventArgs e)
-        {
+        {     
+
             if (!Logic.IsInternet())
             {
                 DependencyService.Get<IMessage>().ShortAlert(Constants.No_Internet);

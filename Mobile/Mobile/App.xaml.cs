@@ -3,6 +3,8 @@ using Microsoft.AppCenter;
 using Microsoft.AppCenter.Analytics;
 using Microsoft.AppCenter.Crashes;
 using Microsoft.AppCenter.Push;
+using Mobile.Helpers;
+using Mobile.Models;
 using Xamarin.Forms;
 using Xamarin.Forms.Xaml;
 
@@ -16,6 +18,14 @@ namespace Mobile
             InitializeComponent();
 
             MainPage = new NavigationPage(new Master());
+            //MainPage = new Master();
+        }
+
+        public App(string key1, string key2, string type)
+        {
+            InitializeComponent();
+
+            MainPage = new NavigationPage(new Master(key1, key2, type));
             //MainPage = new Master();
         }
 
@@ -36,6 +46,7 @@ namespace Mobile
         protected override void OnResume()
         {
             // Handle when your app resumes
+            MessagingCenter.Send<object>(this, Constants.re_open_connection);
         }
     }
 }

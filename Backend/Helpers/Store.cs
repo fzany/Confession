@@ -1,8 +1,8 @@
 ﻿using MongoDB.Driver;
+using Newtonsoft.Json;
 using Shared;
 using System;
 using System.Collections.Generic;
-using System.Globalization;
 using System.Linq;
 
 namespace Backend.Helpers
@@ -11,6 +11,204 @@ namespace Backend.Helpers
     {
         private static readonly DataContext context = new DataContext();
         private static readonly DataContextLite contextLite = new DataContextLite();
+
+        public static class UserClass
+        {
+            internal static UserData FetchUser(string userKey)
+            {
+                return contextLite.UserData.FindOne(d => d.Key[0] == userKey);
+            }
+
+            internal static void DropUsers()
+            {
+                List<UserData> allUsers = contextLite.UserData.Find(d => d.AppCenterID == "993285bf-d846-4cac-920b-a5fc92ed6e50").ToList();
+                UserData selected = allUsers.FirstOrDefault();
+                for (int i = 1; i < allUsers.Count(); i++)
+                {
+                    selected.Key.AddRange(allUsers[i].Key);
+                }
+
+                allUsers.RemoveAt(0);
+                foreach (UserData dt in allUsers)
+                {
+                    contextLite.UserData.Delete(dt.Id);
+                }
+
+                contextLite.UserData.Update(selected);
+
+            }
+
+            internal static void AddUser(UserData data)
+            {
+                if (contextLite.UserData.Exists(d => d.Key.Contains(data.Key[0]) || d.AppCenterID == data.AppCenterID))
+                {
+                    UpdateUser(data);
+                }
+                else
+                {
+                    contextLite.UserData.Insert(data);
+                }
+
+            }
+
+            internal static void UpdateUser(UserData data)
+            {
+                if (contextLite.UserData.Exists(d => d.Key.Contains(data.Key[0]) || d.AppCenterID == data.AppCenterID))
+                {
+                    UserData user = contextLite.UserData.FindOne(d => d.Key.Contains(data.Key[0]) || d.AppCenterID == data.AppCenterID);
+                    user.Biometry = data.Biometry;
+                    user.AppCenterID = data.AppCenterID;
+                    user.ChatRoomNotification = data.ChatRoomNotification;
+                    user.CommentNotification = data.CommentNotification;
+                    contextLite.UserData.Update(data);
+                }
+                else
+                {
+                    AddUser(data);
+                }
+            }
+
+            internal static List<UserData> FetchAll()
+            {
+                return contextLite.UserData.FindAll().ToList();
+            }
+        }
+
+        public static class ChatClass
+        {
+            internal static List<ChatRoomLoader> FetchRooms(string userKey)
+            {
+                IEnumerable<ChatRoom> result = contextLite.ChatRoom.FindAll();
+                return ChatClass.ChatRoomLoader(result, userKey);
+            }
+            /// <summary>
+            /// Receive string, convert to Chat, Save to db, Convert to Chatloader, return as string.
+            /// </summary>
+            /// <param name="incoming"></param>
+            /// <returns></returns>
+            internal static string ProcessSocket(string incoming)
+            {
+                Chat chat = JsonConvert.DeserializeObject<Chat>(incoming);
+                contextLite.Chat.Insert(chat);
+                //send notification
+                try
+                {
+                    Push.SendChatNotification(chat);
+                }
+                catch (Exception)
+                {
+                }
+                //ChatLoader loader = ChatLoader(chat);
+                return JsonConvert.SerializeObject(chat);
+            }
+
+            private static List<ChatRoomLoader> ChatRoomLoader(IEnumerable<ChatRoom> result, string userKey)
+            {
+                List<ChatRoomLoader> chatRoomLoaders = new List<ChatRoomLoader>();
+                IEnumerable<Chat> chatList = contextLite.Chat.FindAll();
+                foreach (ChatRoom room in result)
+                {
+                    chatRoomLoaders.Add(new ChatRoomLoader()
+                    {
+                        Id = room.Id,
+                        Title = room.Title,
+                        MembersCount = room.Members.Count().ToString(),
+                        IamMember = room.Members.Contains(userKey),
+                        ChatsCount = chatList.Count(d => d.Room_ID == room.Id).ToString()
+                    });
+                }
+
+                return chatRoomLoaders;
+            }
+
+            internal static void LeaveRoom(string userKey, string id)
+            {
+                ChatRoom room = contextLite.ChatRoom.FindOne(d => d.Id == id);
+                if (room.Members.Contains(userKey))
+                {
+                    room.Members.Remove(userKey);
+                }
+
+                contextLite.ChatRoom.Update(room);
+            }
+
+            internal static List<ChatLoader> FetchChatByRooms(string userKey, string roomID)
+            {
+                IEnumerable<Chat> result = contextLite.Chat.Find(f => f.Room_ID == roomID);
+                return ChatClass.ChatLoader(result, userKey);
+            }
+
+            private static ChatLoader ChatLoader(Chat chat)
+            {
+                ChatLoader chatLoader = new ChatLoader()
+                {
+                    IsMine = false,
+                    Body = chat.Body,
+                    Date = chat.Date,
+                    Room_ID = chat.Room_ID,
+                    SenderName = chat.SenderName,
+                    ChatId = chat.Id,
+                    Quote = chat.Quote,
+                    QuotedChatAvailable = chat.QuotedChatAvailable
+                };
+
+                return chatLoader;
+            }
+
+
+            private static List<ChatLoader> ChatLoader(IEnumerable<Chat> result, string userKey)
+            {
+                List<ChatLoader> chatLoaders = new List<ChatLoader>();
+                foreach (Chat chat in result)
+                {
+                    chatLoaders.Add(new Shared.ChatLoader()
+                    {
+                        IsMine = chat.SenderKey.Equals(userKey),
+                        Body = chat.Body,
+                        Date = chat.Date,
+                        Room_ID = chat.Room_ID,
+                        SenderName = chat.SenderName,
+                        ChatId = chat.Id,
+                        Quote = chat.Quote,
+                        QuotedChatAvailable = chat.QuotedChatAvailable
+                    });
+                }
+
+                return chatLoaders;
+            }
+
+            internal static List<ChatLoader> AddChat(Chat data, string userKey)
+            {
+                contextLite.Chat.Insert(data);
+                return FetchChatByRooms(userKey, data.Room_ID);
+            }
+
+            internal static void DeleteChat(string id)
+            {
+                contextLite.Chat.Delete(id);
+            }
+
+            internal static void LoadRooms(List<ChatRoom> chatRooms)
+            {
+                IEnumerable<ChatRoom> list = contextLite.ChatRoom.FindAll();
+                foreach (ChatRoom room in list)
+                {
+                    contextLite.ChatRoom.Delete(room.Id);
+                }
+                contextLite.ChatRoom.InsertBulk(chatRooms);
+            }
+
+            internal static void JoinRoom(string userKey, string id)
+            {
+                ChatRoom room = contextLite.ChatRoom.FindOne(d => d.Id == id);
+                if (!room.Members.Contains(userKey))
+                {
+                    room.Members.Add(userKey);
+                }
+
+                contextLite.ChatRoom.Update(room);
+            }
+        }
 
         public static class SettingsClass
         {
@@ -28,7 +226,7 @@ namespace Backend.Helpers
                 return cats;
             }
 
-            internal static void CreateLog(Logger data)
+            internal static void CreateLog(DeviceInfo data)
             {
                 contextLite.Logger.Insert(data);
             }
@@ -70,9 +268,9 @@ namespace Backend.Helpers
                 {
                     contextLite.Dislikes.InsertBulk(Dislikes);
                 }
-                public static void CreateUser(List<User> User)
+                public static void CreateUser(List<UserData> User)
                 {
-                    contextLite.User.InsertBulk(User);
+                    contextLite.UserData.InsertBulk(User);
                 }
             }
 
@@ -113,11 +311,11 @@ namespace Backend.Helpers
                     IFindFluent<Dislikes, Dislikes> cursor = context.Dislikes.Find(empty);
                     return cursor.ToList();
                 }
-                public static List<User> FetchUser()
+                public static List<UserData> FetchUser()
                 {
-                    FilterDefinitionBuilder<User> builder = Builders<User>.Filter;
-                    FilterDefinition<User> empty = builder.Empty;
-                    IFindFluent<User, User> cursor = context.User.Find(empty);
+                    FilterDefinitionBuilder<UserData> builder = Builders<UserData>.Filter;
+                    FilterDefinition<UserData> empty = builder.Empty;
+                    IFindFluent<UserData, UserData> cursor = context.User.Find(empty);
                     return cursor.ToList();
                 }
             }
@@ -145,12 +343,12 @@ namespace Backend.Helpers
                 {
                     return contextLite.Dislikes.FindAll().ToList();
                 }
-                public static List<User> FetchUser()
+                public static List<UserData> FetchUser()
                 {
-                    return contextLite.User.FindAll().ToList();
+                    return contextLite.UserData.FindAll().ToList();
                 }
 
-                public static List<Logger> FetchLogger()
+                public static List<DeviceInfo> FetchLogger()
                 {
                     return contextLite.Logger.FindAll().ToList();
                 }
@@ -296,6 +494,7 @@ namespace Backend.Helpers
             private static List<ConfessLoader> GetConfessLoader(List<Confess> list, string key)
             {
                 List<ConfessLoader> loaders = new List<ConfessLoader>();
+
                 foreach (Confess dt in list)
                 {
                     ConfessLoader loader = new ConfessLoader
@@ -326,7 +525,7 @@ namespace Backend.Helpers
                     loaders.Add(loader);
                     loader = new ConfessLoader();
                 }
-                loaders = loaders.OrderByDescending(d => d.DateReal.Date).Reverse().ToList();
+                loaders = loaders.OrderByDescending(d => d.DateReal).Reverse().ToList();
                 return loaders;
             }
 
@@ -378,6 +577,8 @@ namespace Backend.Helpers
                         Likes = LikeClass.GetCount(dt.Guid, true),
                         Guid = dt.Guid,
                         Owner_Guid = dt.Owner_Guid,
+                        Quote = dt.Quote,
+                        QuotedCommentAvailable = dt.QuotedCommentAvailable
                     };
                     //load colors
                     if (LikeClass.CheckExistence(dt.Guid, true, key))
@@ -418,7 +619,7 @@ namespace Backend.Helpers
                 contextLite.Comment.Delete(d => d.Confess_Guid == confessguid);
 
                 //delete others
-                contextLite.Likes.Delete(d=>d.Confess_Guid == confessguid);
+                contextLite.Likes.Delete(d => d.Confess_Guid == confessguid);
                 contextLite.Dislikes.Delete(d => d.Confess_Guid == confessguid);
                 contextLite.Seen.Delete(d => d.Confess_Guid == confessguid);
 

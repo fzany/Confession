@@ -2,8 +2,6 @@
 using Mobile.Helpers;
 using Mobile.Models;
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using Xamarin.Essentials;
 using Xamarin.Forms;
 using Xamarin.Forms.Xaml;
@@ -14,16 +12,13 @@ namespace Mobile
     public partial class CommentPage : ContentPage
     {
 
-        private List<CommentLoader> loaders = new List<CommentLoader>();
-        private ConfessLoader newloader = new ConfessLoader();
-
+        private CommentViewModel current_context;
         public CommentPage()
         {
             InitializeComponent();
 
         }
 
-        private string confess_guid = string.Empty;
         public CommentPage(string _guid, string _name)
         {
             InitializeComponent();
@@ -33,112 +28,23 @@ namespace Mobile
                 HorizontalOptions = LayoutOptions.CenterAndExpand
             };
             Ads.Children.Add(admobControl);
-            confess_guid = _guid;
-            title_text.Text = _name;
-        }
-        protected override void OnAppearing()
-        {
-            base.OnAppearing();
-            LoadData();
-        }
-        private async void LoadData()
-        {
-            if (!Logic.IsInternet())
-            {
-                DependencyService.Get<IMessage>().ShortAlert(Constants.No_Internet);
-                return;
-            }
-            try
-            {
-                ChangeLoadingComments(true);
-                loaders = await Store.CommentClass.FetchComment(confess_guid);
-                int adCounter = 0;
-                foreach (CommentLoader load in loaders)
-                {
-                    if (!string.IsNullOrEmpty(load.LikeColorString))
-                    {
-                        load.LikeColor = Color.FromHex(load.LikeColorString);
-                    }
 
-                    if (!string.IsNullOrEmpty(load.DislikeColorString))
-                    {
-                        load.DislikeColor = Color.FromHex(load.DislikeColorString);
-                    }
-
-                    //set ad visibility to every 6 items
-                    adCounter++;
-                    if (adCounter >= 4)
-                    {
-                        load.IsAdVisible = true;
-                        adCounter = 0;
-                    }
-                    else if (loaders.Count < 5)
-                    {
-                        if (adCounter == 1)
-                        {
-                            load.IsAdVisible = true;
-                            Ads.IsVisible = false;
-                        }
-                    }
-                   
-                }
-                List_View.ItemsSource = null;
-                loaders.Reverse();
-                List_View.ItemsSource = loaders;
-                List_View.IsVisible = loaders.Count != 0;
-
-                ChangeLoadingComments(false);
-            }
-            catch (Exception ex)
-            {
-                Crashes.TrackError(ex);
-                ChangeLoadingComments(false);
-            }
+            current_context = new CommentViewModel() { ConfessionTitle = _name, Confess_Guid = _guid };
+            //this.BindingContext = current_context;
+            List_View.BindingContext = current_context;
         }
-        private void ChangeLoadingComments(bool value)
+
+
+        private void dragView_DragEnd(object sender, EventArgs e)
         {
-            //loadingBox_Comments.IsEnabled = value;
-            //loadingBox_Comments.IsVisible = value;
-            //loadingBox_Comments.IsRunning = value;
-        }
-        private async void Send_Tapped(object sender, EventArgs e)
-        {
-            if (!Logic.IsInternet())
-            {
-                DependencyService.Get<IMessage>().ShortAlert(Constants.No_Internet);
-                return;
-            }
-            //comment_Input
-            if (string.IsNullOrWhiteSpace(comment_Input.Text))
-            {
-                DependencyService.Get<IMessage>().ShortAlert("Enter some text");
-                return;
-            }
-            try
-            {
-                Comment newComment = new Comment() { Body = comment_Input.Text, Confess_Guid = confess_guid, Owner_Guid = await Logic.GetKey() };
-                newloader = await Store.CommentClass.CreateComment(newComment, confess_guid);
-                ConfessLoader data = Logic.ProcessConfessLoader(newloader);
-                MessagingCenter.Send<object, ConfessLoader>(this, Constants.ReloadViewPage, data);
-                // ViewPage viewPage = new ViewPage()
-                // {
-                //     BindingContext = data
-                // };
+            DraggableView view = (DraggableView)sender;
+            string Guid = view.ClassId;
 
-                DependencyService.Get<IMessage>().ShortAlert("Comment Posted.");
-                comment_Input.Text = string.Empty;
-                LoadData();
-            }
-            catch (Exception ex)
-            {
-                Crashes.TrackError(ex);
-            }
-            //reload data
-            if (AppConstants.ShowAds)
-            {
-                await DependencyService.Get<IAdmobInterstitialAds>().Display(AppConstants.InterstitialAdId);
-            }
+            //DependencyService.Get<IMessage>().ShortAlert($"Outgoing: {chatID}");
+            current_context.OnQuoteCommand.Execute(Guid);
         }
+
+
         private async void Delete_t_Comment(object sender, EventArgs e)
         {
             if (!Logic.IsInternet())
@@ -151,27 +57,9 @@ namespace Mobile
             {
                 Label label = (Label)sender;
                 string guid = label.ClassId;
-                try
-                {
-                    newloader = await Store.CommentClass.DeleteComment(guid, guid);
-                    if (newloader != null)
-                    {
-                        ConfessLoader data = Logic.ProcessConfessLoader(newloader);
-                        MessagingCenter.Send<object, ConfessLoader>(this, Constants.ReloadViewPage, data);
+                current_context.OnDeleteCommentCommand.Execute(guid);
 
-                        //ViewPage viewPage = new ViewPage()
-                        //{
-                        //    BindingContext = data
-                        //};
-                    };
-                    LoadData();
-                    VibrateNow();
-                }
-                catch (Exception ex)
-                {
-                    Crashes.TrackError(ex);
-                }
-                DependencyService.Get<IMessage>().ShortAlert("Deleted");
+
             }
         }
         private void VibrateNow()
@@ -192,109 +80,6 @@ namespace Mobile
             }
         }
 
-        private async void Like_Tapped_Comment(object sender, EventArgs e)
-        {
-            if (!Logic.IsInternet())
-            {
-                DependencyService.Get<IMessage>().ShortAlert(Constants.No_Internet);
-                return;
-            }
-            StackLayout label = (StackLayout)sender;
-            string guid = label.ClassId;
-            CommentLoader load = new CommentLoader();
-            if (loaders.Any(d => d.Guid.Equals(guid)))
-            {
-                load = loaders.FirstOrDefault(d => d.Guid.Equals(guid));
-            }
-            //check if this user owns this confession
-
-
-            if (load.Owner_Guid == await Logic.GetKey())
-            {
-                DependencyService.Get<IMessage>().ShortAlert("You can't like your Comment.");
-            }
-            else
-            {
-                //post a new like 
-                try
-                {
-                    ConfessSender result = await Store.LikeClass.Post(guid, true, confess_guid);
-
-                    ConfessLoader data = Logic.ProcessConfessLoader(result.Loader);
-                    MessagingCenter.Send<object, ConfessLoader>(this, Constants.ReloadViewPage, data);
-
-                    //ViewPage viewPage = new ViewPage()
-                    //{
-                    //    BindingContext = data
-                    //};
-                   // label.TextColor = Color.FromHex("#1976D2");
-                    LoadData();
-                    //                   label.TextColor = Color.Gray;
-
-                    if (!result.IsSuccessful)
-                    {
-                        //update the model
-                        VibrateNow();
-                    }
-
-                }
-                catch (Exception ex)
-                {
-                    Crashes.TrackError(ex);
-                }
-            }
-        }
-
-        private async void Dislike_t_Comment(object sender, EventArgs e)
-        {
-            if (!Logic.IsInternet())
-            {
-                DependencyService.Get<IMessage>().ShortAlert(Constants.No_Internet);
-                return;
-            }
-            StackLayout label = (StackLayout)sender;
-            string guid = label.ClassId;
-            CommentLoader load = new CommentLoader();
-            if (loaders.Any(d => d.Guid.Equals(guid)))
-            {
-                load = loaders.FirstOrDefault(d => d.Guid.Equals(guid));
-            }
-            //check if this user owns this confession
-
-
-            if (load.Owner_Guid == await Logic.GetKey())
-            {
-                DependencyService.Get<IMessage>().ShortAlert("You can't dislike your Comment.");
-            }
-            else
-            {
-                //post a new like 
-                try
-                {
-                    ConfessSender result = await Store.DislikeClass.Post(guid, true, confess_guid);
-                    ConfessLoader data = Logic.ProcessConfessLoader(result.Loader);
-
-                    //ViewPage viewPage = new ViewPage()
-                    //{
-                    //    BindingContext = data
-                    //};
-
-                    LoadData();
-
-                    if (!result.IsSuccessful)
-                    {
-                        VibrateNow();
-                    }
-                    MessagingCenter.Send<object, ConfessLoader>(this, Constants.ReloadViewPage, data);
-
-                }
-                catch (Exception ex)
-                {
-                    Crashes.TrackError(ex);
-                }
-            }
-        }
-
-
+      
     }
 }

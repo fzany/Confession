@@ -1,4 +1,4 @@
-﻿using Microsoft.AppCenter;
+﻿using Microsoft.AppCenter.Crashes;
 using Mobile.Models;
 using Newtonsoft.Json;
 using System;
@@ -17,45 +17,41 @@ namespace Mobile.Helpers
         public static bool IsThisDevice()
         {
             // Device Model (SMG-950U, iPhone10,6)
-            string device = DeviceInfo.Model;
+            string device = Xamarin.Essentials.DeviceInfo.Model;
 
             // Manufacturer (Samsung)
-            string manufacturer = DeviceInfo.Manufacturer;
+            string manufacturer = Xamarin.Essentials.DeviceInfo.Manufacturer;
 
             // Device Name (Motz's iPhone)
-            string deviceName = DeviceInfo.Name;
+            string deviceName = Xamarin.Essentials.DeviceInfo.Name;
 
             // Operating System Version Number (7.0)
-            string version = DeviceInfo.VersionString;
+            string version = Xamarin.Essentials.DeviceInfo.VersionString;
 
             // Platform (Android)
-            DevicePlatform platform = DeviceInfo.Platform;
+            DevicePlatform platform = Xamarin.Essentials.DeviceInfo.Platform;
 
             // Idiom (Phone)
-            DeviceIdiom idiom = DeviceInfo.Idiom;
+            DeviceIdiom idiom = Xamarin.Essentials.DeviceInfo.Idiom;
 
             // Device Type (Physical)
-            DeviceType deviceType = DeviceInfo.DeviceType;
+            DeviceType deviceType = Xamarin.Essentials.DeviceInfo.DeviceType;
 
 
             return true;
         }
 
-        public static async Task<Logger> GetDeviceInformation()
+        public static Models.DeviceInfo GetDeviceInformation()
         {
-            Guid? installId = await AppCenter.GetInstallIdAsync();
-            Logger logger = new Logger
+            Models.DeviceInfo logger = new Models.DeviceInfo
             {
-                Model = DeviceInfo.Model,
-                Manufacturer = DeviceInfo.Manufacturer,
-                DeviceType = DeviceInfo.DeviceType.ToString(),
-                Name = DeviceInfo.Name,
-                Idiom = DeviceInfo.Idiom.ToString(),
-                Platform = DeviceInfo.Platform.ToString(),
-                VersionString = DeviceInfo.VersionString,
-                Key = await Logic.GetKey(),
-                AppCenterID = installId.Value.ToString()
-
+                Model = Xamarin.Essentials.DeviceInfo.Model,
+                Manufacturer = Xamarin.Essentials.DeviceInfo.Manufacturer,
+                DeviceType = Xamarin.Essentials.DeviceInfo.DeviceType.ToString(),
+                Name = Xamarin.Essentials.DeviceInfo.Name,
+                Idiom = Xamarin.Essentials.DeviceInfo.Idiom.ToString(),
+                Platform = Xamarin.Essentials.DeviceInfo.Platform.ToString(),
+                VersionString = Xamarin.Essentials.DeviceInfo.VersionString
             };
 
             return logger;
@@ -67,11 +63,11 @@ namespace Mobile.Helpers
             StringBuilder sob = new StringBuilder();
             // Device Model (SMG-950U, iPhone10,6)
             //string device = DeviceInfo.Model;
-            sob.AppendLine($"Device Model: {DeviceInfo.Model}");
+            sob.AppendLine($"Device Model: {Xamarin.Essentials.DeviceInfo.Model}");
 
             // Manufacturer (Samsung)
             //string manufacturer = DeviceInfo.Manufacturer;
-            sob.AppendLine($"Device Manufacturer: {DeviceInfo.Manufacturer}");
+            sob.AppendLine($"Device Manufacturer: {Xamarin.Essentials.DeviceInfo.Manufacturer}");
 
 
             // Device Name (Motz's iPhone)
@@ -79,21 +75,21 @@ namespace Mobile.Helpers
 
             // Operating System Version Number (7.0)
             //string version = DeviceInfo.VersionString;
-            sob.AppendLine($"Operating System Version Number: {DeviceInfo.VersionString}");
+            sob.AppendLine($"Operating System Version Number: {Xamarin.Essentials.DeviceInfo.VersionString}");
 
             // Platform (Android)
             //DevicePlatform platform = DeviceInfo.Platform;
-            sob.AppendLine($"Device Platform: {DeviceInfo.Platform}");
+            sob.AppendLine($"Device Platform: {Xamarin.Essentials.DeviceInfo.Platform}");
 
 
             // Idiom (Phone)
             // DeviceIdiom idiom = DeviceInfo.Idiom;
-            sob.AppendLine($"Device Idiom: {DeviceInfo.Idiom}");
+            sob.AppendLine($"Device Idiom: {Xamarin.Essentials.DeviceInfo.Idiom}");
 
 
             // Device Type (Physical)
             // DeviceType deviceType = DeviceInfo.DeviceType;
-            sob.AppendLine($"Device Type: {DeviceInfo.DeviceType}");
+            sob.AppendLine($"Device Type: {Xamarin.Essentials.DeviceInfo.DeviceType}");
 
             return sob.ToString();
         }
@@ -152,7 +148,6 @@ namespace Mobile.Helpers
             }
             return key;
         }
-
         public static async Task<string> GetKey()
         {
             try
@@ -170,6 +165,60 @@ namespace Mobile.Helpers
                 return "";
             }
         }
+
+        public static async Task<string> CreateroomID(string roomID)
+        {
+            try
+            {
+                await SecureStorage.SetAsync(Constants.roomID, roomID);
+            }
+            catch (Exception)
+            {
+                // Possible that device doesn't support secure storage on device.
+            }
+            return roomID;
+        }
+        public static async Task<string> GetRoomID()
+        {
+            try
+            {
+                string oauthToken = await SecureStorage.GetAsync(Constants.roomID);
+                return oauthToken;
+            }
+            catch (Exception)
+            {
+                // Possible that device doesn't support secure storage on device.
+                return "";
+            }
+        }
+
+        public static async Task<string> CreateChatName(string name)
+        {
+            string chatname = Logic.ToTitle(name);
+            try
+            {
+                await SecureStorage.SetAsync(Constants.chatname, chatname);
+            }
+            catch (Exception)
+            {
+                // Possible that device doesn't support secure storage on device.
+            }
+            return chatname;
+        }
+        public static async Task<string> GetChatName()
+        {
+            try
+            {
+                string oauthToken = await SecureStorage.GetAsync(Constants.chatname);
+                return oauthToken;
+            }
+            catch (Exception)
+            {
+                // Possible that device doesn't support secure storage on device.
+                return "";
+            }
+        }
+
         public static async Task<string> GetToken()
         {
             try
@@ -202,11 +251,11 @@ namespace Mobile.Helpers
             return token;
         }
 
-        public static async Task<string> GetLogged()
+        public static async Task<string> CheckUserRegistration()
         {
             try
             {
-                string oauthLogged = await SecureStorage.GetAsync(Constants.Logged);
+                string oauthLogged = await SecureStorage.GetAsync(Constants.UserRegistered);
                 if (oauthLogged == null)
                 {
                     return string.Empty;
@@ -225,13 +274,51 @@ namespace Mobile.Helpers
             string Logged = "true";//;
             try
             {
-                await SecureStorage.SetAsync(Constants.Logged, Logged);
+                await SecureStorage.SetAsync(Constants.UserRegistered, Logged);
             }
             catch (Exception)
             {
                 // Possible that device doesn't support secure storage on device.
             }
             return Logged;
+        }
+        public static void VibrateNow()
+        {
+            try
+            {
+                // Or use specified time
+                TimeSpan duration = TimeSpan.FromMilliseconds(100);
+                Vibration.Vibrate(duration);
+            }
+            catch (FeatureNotSupportedException ex)
+            {
+                Crashes.TrackError(ex);
+            }
+            catch (Exception ex)
+            {
+                Crashes.TrackError(ex);
+            }
+        }
+
+        public static Color GetColourFromName(string name)
+        {
+            List<string> colours = new List<string>() { "#f25022", "#7fba00", "#00a4ef", "#ffb900", "#737373", "#4285F4", "#DB4437", "#F4B400", "#0F9D58" };
+
+            if (string.IsNullOrEmpty(name))
+            {
+                return Color.FromHex(colours[0]);
+            }
+
+            int sum = 0;
+            for (int i = 0; i < name.Length; i++)
+            {
+                char c = name[i]; // declare it in loop - you overwrite it here anyway
+                sum += char.ToUpper(c) - 64;
+            }
+
+            int index = sum % 9;
+            return Color.FromHex(colours[index]);
+
         }
 
         public static ConfessLoader ProcessConfessLoader(ConfessLoader loader)

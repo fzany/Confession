@@ -59,7 +59,7 @@ namespace Backend.Controllers
 
         [HttpPost]
         [Route("settings/log")]
-        public ActionResult Add([FromBody]Logger data)
+        public ActionResult Add([FromBody]DeviceInfo data)
         {
             try
             {

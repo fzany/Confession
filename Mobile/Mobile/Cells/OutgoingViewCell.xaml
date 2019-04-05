@@ -1,0 +1,33 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<ViewCell xmlns="http://xamarin.com/schemas/2014/forms" 
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+          xmlns:local="clr-namespace:Mobile.Helpers"
+          x:Class="Mobile.Cells.OutgoingViewCell">
+    <local:DraggableView x:Name="dragView"  VerticalOptions="CenterAndExpand" BackgroundColor="Transparent"
+                          DragMode="Touch" DragDirection="Horizontal" ClassId="{Binding ChatId}" DragEnd="dragView_DragEnd">
+        <local:DraggableView.Content>
+            <Frame BackgroundColor="LightBlue" CornerRadius="5"
+            Padding="5"
+            HasShadow="false" ClassId="{Binding ChatId}"
+            Margin="80,10,10,10">
+                <StackLayout>
+                    <Frame IsVisible="{Binding QuotedChatAvailable}" CornerRadius="5" Padding="0" HasShadow="False">
+                        <Grid BindingContext="{Binding Quote}" BackgroundColor="{StaticResource PrimaryGray}">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto" />
+                                <ColumnDefinition Width="*" />
+                            </Grid.ColumnDefinitions>
+                            <BoxView Color="{Binding SenderColor}" WidthRequest="4" VerticalOptions="FillAndExpand" Grid.Column="0"/>
+                            <StackLayout Spacing="3" Grid.Column="1">
+                                <Label FontAttributes="Bold" Text="{Binding SenderName}" TextColor="{Binding SenderColor}"/>
+                                <Label Text="{Binding Body}" TextColor="Gray"/>
+                            </StackLayout>
+                        </Grid>
+                    </Frame>
+                    <Label Text="{Binding Body}" TextColor="Black"/>
+                </StackLayout>
+            </Frame>
+        </local:DraggableView.Content>
+    </local:DraggableView>
+   
+</ViewCell>
