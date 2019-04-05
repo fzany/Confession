@@ -46,7 +46,6 @@ namespace Mobile
         protected override void OnDisappearing()
         {
             base.OnDisappearing();
-            current_context.CloseConnectionCommand.Execute(null);
         }
         public void OnListTapped(object sender, ItemTappedEventArgs e)
         {

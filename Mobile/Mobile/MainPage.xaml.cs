@@ -2,6 +2,7 @@
 using Mobile.Helpers;
 using Mobile.Models;
 using System;
+using System.Threading.Tasks;
 using Xamarin.Forms;
 
 namespace Mobile
@@ -33,8 +34,11 @@ namespace Mobile
             //{
             //    await Store.UserClass.Add();
             //}
-            await Store.UserClass.Add();
 
+            await Task.Run(async () =>
+             {
+                 await Store.UserClass.Add();
+             });
         }
 
         private void Subscriptions()

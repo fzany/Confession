@@ -237,7 +237,7 @@ namespace Mobile.Helpers
             }
         }
 
-        private static async Task<string> Createtoken()
+        public static async Task<string> Createtoken()
         {
             string token = await BaseClient.GetEntities($"setting/authorize?key={await GetKey()}", "");
             try

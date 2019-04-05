@@ -36,7 +36,8 @@ namespace Mobile.Helpers
             {
                 try
                 {
-                    string url = $"user/fetch";
+                    Guid? installId = await AppCenter.GetInstallIdAsync();
+                    string url = $"user/fetch?appcenter={installId.Value.ToString()}";
                     string content = await BaseClient.GetEntities(url);
                     UserData data = JsonConvert.DeserializeObject<UserData>(content);
                     return data;
@@ -49,26 +50,51 @@ namespace Mobile.Helpers
             }
             public static async Task Add()
             {
+                //fetch the current user. 
+                UserData user_data = await Store.UserClass.Get();
+                //A first timer would return null
                 Guid? installId = await AppCenter.GetInstallIdAsync();
-                UserData user = new UserData
+                string currentkey = await Logic.GetKey();
+                if (user_data == null || string.IsNullOrEmpty(user_data.AppCenterID) || user_data.Logger == null || user_data.Key == null)
                 {
-                    AppCenterID = installId.Value.ToString(),
-                    Key = new List<string>() { await Logic.GetKey() },
-                    Biometry = false,
-                    ChatRoomNotification = true,
-                    CommentNotification = true,
-                    Logger = Logic.GetDeviceInformation()
-                };
-
-                try
-                {
-                    string url = "user/add";
-                    await BaseClient.PostEntities(url, JsonConvert.SerializeObject(user));
-                    await Logic.CreateLogged();
+                    //means a new user; 
+                    //Add user to the db
+                    user_data = new UserData
+                    {
+                        AppCenterID = installId.Value.ToString(),
+                        Biometry = false,
+                        ChatRoomNotification = true,
+                        CommentNotification = true,
+                        Logger = Logic.GetDeviceInformation()
+                    };
+                    //specially treat keys to prevent loss. 
+                    if (user_data.Key == null || user_data.Key.Count == 0)
+                    {
+                        user_data.Key = new List<string>() { currentkey };
+                    }
+                    else
+                    {
+                        if (!user_data.Key.Contains(currentkey))
+                        {
+                            user_data.Key.Insert(0, currentkey);
+                        }
+                    }
+                    try
+                    {
+                        string url = "user/add";
+                        await BaseClient.PostEntities(url, JsonConvert.SerializeObject(user_data));
+                        // await Logic.CreateLogged();
+                    }
+                    catch (Exception ex)
+                    {
+                        Crashes.TrackError(ex);
+                    }
                 }
-                catch (Exception ex)
+                else
                 {
-                    Crashes.TrackError(ex);
+                    //An existing user would have all data complete but things might have changed
+                    //Note that anything that change like key and token would have been re-created
+                    //appcenter id too can change. 
                 }
             }
             public static async Task Update(UserData user)
@@ -92,7 +118,10 @@ namespace Mobile.Helpers
                 try
                 {
                     if (string.IsNullOrEmpty(roomID))
+                    {
                         roomID = await Logic.GetRoomID();
+                    }
+
                     string url = $"chat/join?id={roomID}";
                     await BaseClient.GetEntities(url);
                 }
@@ -107,7 +136,10 @@ namespace Mobile.Helpers
                 try
                 {
                     if (string.IsNullOrEmpty(roomID))
+                    {
                         roomID = await Logic.GetRoomID();
+                    }
+
                     string url = $"chat/leave?id={roomID}";
                     await BaseClient.GetEntities(url);
                 }
@@ -137,7 +169,10 @@ namespace Mobile.Helpers
                 try
                 {
                     if (string.IsNullOrEmpty(roomID))
+                    {
                         roomID = await Logic.GetRoomID();
+                    }
+
                     string url = $"chat/fetchchats?roomID={roomID}";
                     string content = await BaseClient.GetEntities(url);
                     ObservableCollection<ChatLoader> data = JsonConvert.DeserializeObject<ObservableCollection<ChatLoader>>(content);

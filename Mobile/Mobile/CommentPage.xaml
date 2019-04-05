@@ -2,34 +2,55 @@
 <ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:local="clr-namespace:Mobile.Helpers"
+             xmlns:cells="clr-namespace:Mobile.Cells"
              x:Class="Mobile.CommentPage" Padding="5"  BackgroundColor="Azure">
     <ContentPage.Content>
-        <StackLayout VerticalOptions="Start">
-            <StackLayout Orientation="Horizontal" BackgroundColor="{StaticResource Primary}" >
+        <Grid RowSpacing="0"
+           ColumnSpacing="0">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="*" />
+                <RowDefinition Height="Auto" />
+            </Grid.RowDefinitions>
+            <StackLayout Grid.Row="0" Orientation="Horizontal" BackgroundColor="{StaticResource Primary}" >
                 <Image Source="logophone.png" Aspect="AspectFit" HeightRequest="50" WidthRequest="50"/>
                 <Label Text="Comments" FontSize="Large" FontFamily="{StaticResource Rob}" FontAttributes="Bold" TextColor="White" VerticalOptions="CenterAndExpand"/>
             </StackLayout>
-            <Label Text="{Binding ConfessionTitle}" FontFamily="{StaticResource Rob}" FontAttributes="Bold" HorizontalOptions="CenterAndExpand" FontSize="Large" />
-            <ActivityIndicator IsEnabled="{Binding IsBusy}" IsRunning="{Binding IsBusy}" IsVisible="{Binding IsBusy}"/>
-
-            <ListView x:Name="List_View"
+            <Label Grid.Row="1" Text="{Binding ConfessionTitle}" FontFamily="{StaticResource Rob}" FontAttributes="Bold" HorizontalOptions="StartAndExpand" FontSize="Large" />
+            <StackLayout IsVisible="{Binding IsEmptyComments}" Grid.Row="2" Margin="0,50,0,0">
+                <Label Text="No Comment Yet! Why not add one right away?" FontFamily="{StaticResource Rob}" HorizontalOptions="CenterAndExpand"/>
+                <Label Text="😊" TextColor="{StaticResource Primary}" FontSize="50" FontFamily="{StaticResource Rob}" HorizontalOptions="CenterAndExpand"/>
+            </StackLayout>
+            <ListView x:Name="List_View" Grid.Row="3"
                 ItemsSource="{Binding Loaders}" 
                        IsRefreshing="{Binding IsBusy}"
-                        Header="Comments:"
-                      BindingContext="{Binding CommentViewModel}"
                         HasUnevenRows="True" SeparatorVisibility="None"
+                      ItemTapped="List_View_ItemTapped"
                           CachingStrategy="RecycleElement"
                         SelectionMode="None">
                 <ListView.ItemTemplate>
                     <DataTemplate>
                         <ViewCell>
                             <StackLayout>
-                                <local:DraggableView  VerticalOptions="CenterAndExpand" BackgroundColor="Transparent"
+                                <local:DraggableView  VerticalOptions="CenterAndExpand" BackgroundColor="Transparent" 
            DragMode="Touch" DragDirection="Horizontal" ClassId="{Binding Guid}" DragEnd="dragView_DragEnd">
                                     <local:DraggableView.Content>
                                         <Frame CornerRadius="5" Margin="3" Padding="3">
                                             <StackLayout Spacing="1" Margin="3" Padding="3">
-                                                <Label Text="{Binding Body}" HorizontalOptions="CenterAndExpand" FontFamily="{StaticResource Rob}"/>
+                                                <Frame IsVisible="{Binding QuotedCommentAvailable}" CornerRadius="5" Padding="0" HasShadow="False">
+                                                    <Grid BindingContext="{Binding Quote}" BackgroundColor="{StaticResource PrimaryGray}">
+                                                        <Grid.ColumnDefinitions>
+                                                            <ColumnDefinition Width="Auto" />
+                                                            <ColumnDefinition Width="*" />
+                                                        </Grid.ColumnDefinitions>
+                                                        <BoxView Color="{StaticResource PrimaryDark}" WidthRequest="4" VerticalOptions="FillAndExpand" Grid.Column="0"/>
+                                                        <Label Text="{Binding Body}"  Grid.Column="1" TextColor="Gray"/>
+                                                    </Grid>
+                                                </Frame>
+
+                                                <Label Text="{Binding Body}" HorizontalOptions="StartAndExpand" VerticalOptions="FillAndExpand" FontFamily="{StaticResource Rob}"/>
                                                 <StackLayout Orientation="Horizontal">
                                                     <Grid HorizontalOptions="StartAndExpand">
                                                         <Grid.Resources>
@@ -63,8 +84,8 @@
                                                             </Label.GestureRecognizers>
                                                         </Label>
                                                     </Grid>
-                                                    <Frame CornerRadius="5" Padding="4,0" BackgroundColor="{StaticResource Primarylight}" VerticalOptions="CenterAndExpand" HorizontalOptions="EndAndExpand">
-                                                        <Label Text="{Binding Date}" TextColor="White" FontFamily="{StaticResource Rob}" FontAttributes="Italic" />
+                                                    <Frame CornerRadius="5" Padding="4,0" BackgroundColor="Transparent" VerticalOptions="CenterAndExpand" HorizontalOptions="EndAndExpand">
+                                                        <Label Text="{Binding Date}" TextColor="Gray" FontFamily="{StaticResource Rob}" FontAttributes="Italic" />
                                                     </Frame>
                                                 </StackLayout>
                                             </StackLayout>
@@ -77,8 +98,8 @@
                     </DataTemplate>
                 </ListView.ItemTemplate>
             </ListView>
-            <StackLayout x:Name="Ads" VerticalOptions="EndAndExpand"/>
-            <StackLayout VerticalOptions="EndAndExpand" Margin="0,10,0,0">
+            <cells:CommentInputBarView Grid.Row="4" Margin="0" x:Name="chatInput"/>
+            <!--<StackLayout Margin="0,10,0,0" Grid.Row="4">
                 <Frame IsVisible="{Binding IsQuotedCommentAvailable}" CornerRadius="5" Padding="0" HasShadow="False">
                     <Grid BindingContext="{Binding QuotedComment}" BackgroundColor="{StaticResource PrimaryGray}">
                         <Grid.ColumnDefinitions>
@@ -87,30 +108,32 @@
                             <ColumnDefinition Width="Auto" />
                         </Grid.ColumnDefinitions>
                         <BoxView Color="{Binding SenderColor}" WidthRequest="4" VerticalOptions="FillAndExpand" Grid.Column="0"/>
-                        <StackLayout Spacing="3" Grid.Column="1">
-                            <Label Text="{Binding Body}" TextColor="Gray"/>
-                        </StackLayout>
-                        <Label Margin="0,0,5,0" Grid.Column="2" ClassId="{Binding Guid}" FontFamily="{StaticResource FSolid}" VerticalOptions="StartAndExpand" HorizontalOptions="EndAndExpand" TextColor="Gray" FontSize="Medium">
-                            <Label.GestureRecognizers>
-                                <TapGestureRecognizer NumberOfTapsRequired="1" Command="{Binding RemoveQuoteCommand}"/>
-                            </Label.GestureRecognizers>
-                        </Label>
+                        <Label Text="{Binding Body}" Grid.Column="1" VerticalOptions="FillAndExpand" TextColor="Gray"/>
+                        <Frame CornerRadius="5" Padding="4"  Margin="0,0,5,0" Grid.Column="2" BackgroundColor="Transparent" VerticalOptions="StartAndExpand" HorizontalOptions="EndAndExpand">
+                            <Label x:Name="Delete_Quote_Label" ClassId="{Binding Guid}" FontFamily="{StaticResource FSolid}" TextColor="Gray" FontSize="Medium">
+                                <Label.GestureRecognizers>
+                                    <TapGestureRecognizer NumberOfTapsRequired="1" Tapped="Delete_Quote_Tapped"/>
+                                </Label.GestureRecognizers>
+                            </Label>
+                        </Frame>
                     </Grid>
                 </Frame>
-                <Grid HeightRequest="80">
+                <Grid>
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="*"/>
                         <ColumnDefinition Width="Auto"/>
                     </Grid.ColumnDefinitions>
-
-                    <Editor Placeholder="Comment here." FontFamily="{StaticResource Rob}" x:Name="comment_Input" Text="{Binding TextToSend}" Grid.Column="0"/>
-                    <Image Source="send.png" Aspect="AspectFit" WidthRequest="50" HeightRequest="50" Grid.Column="1">
-                        <Image.GestureRecognizers>
-                            <TapGestureRecognizer NumberOfTapsRequired="1" Command="{Binding OnSendCommand}"/>
-                        </Image.GestureRecognizers>
-                    </Image>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                    </Grid.RowDefinitions>
+                    <Editor Placeholder="Comment here." FontFamily="{StaticResource Rob}" x:Name="comment_Input" Text="{Binding TextToSend}" Grid.Column="0" Grid.Row="0"/>
+                    <Label Text="Send" Grid.Row="0" Grid.Column="1" VerticalTextAlignment="Center">
+                        <Label.GestureRecognizers>
+                            <TapGestureRecognizer Command="{Binding OnSendCommand}"/>
+                        </Label.GestureRecognizers>
+                    </Label>
                 </Grid>
-            </StackLayout>
-        </StackLayout>
+            </StackLayout>-->
+        </Grid>
     </ContentPage.Content>
 </ContentPage>

@@ -14,8 +14,8 @@ namespace Mobile.Models
     public class CommentViewModel : INotifyPropertyChanged
     {
         public event PropertyChangedEventHandler PropertyChanged;
-        private ObservableCollection<CommentLoader> Loaders { get; set; } = new ObservableCollection<CommentLoader>();
-        private ConfessLoader newloader { get; set; }
+        public ObservableCollection<CommentLoader> Loaders { get; set; } = new ObservableCollection<CommentLoader>();
+        public ConfessLoader newloader { get; set; }
 
         public string TextToSend { get; set; }
 
@@ -37,6 +37,17 @@ namespace Mobile.Models
             {
                 isBusy = value;
                 OnPropertyChanged(nameof(IsBusy));
+            }
+        }
+
+        private bool isEmptyComments;
+        public bool IsEmptyComments
+        {
+            get => isEmptyComments;
+            set
+            {
+                isEmptyComments = value;
+                OnPropertyChanged(nameof(IsEmptyComments));
             }
         }
 
@@ -196,6 +207,7 @@ namespace Mobile.Models
                         //    BindingContext = data
                         //};
                     };
+                    RemoveQuoteCommand.Execute(null);
                     Task.Run(async () =>
                     {
                         await LoadData();
@@ -233,7 +245,8 @@ namespace Mobile.Models
                         Owner_Guid = await Logic.GetKey(),
                         QuotedCommentAvailable = IsQuotedCommentAvailable,
                     };
-
+                    TextToSend = string.Empty;
+                    OnPropertyChanged(nameof(TextToSend));
                     if (IsQuotedCommentAvailable & QuotedComment != null)
                     {
                         newComment.Quote = new CommentQuote()
@@ -247,8 +260,6 @@ namespace Mobile.Models
                     MessagingCenter.Send<object, ConfessLoader>(this, Constants.ReloadViewPage, data);
 
                     DependencyService.Get<IMessage>().ShortAlert("Comment Posted.");
-                    TextToSend = string.Empty;
-                    OnPropertyChanged(nameof(TextToSend));
                     RemoveQuoteCommand.Execute(null);
                 
                     Task.Run(async () =>
@@ -288,48 +299,66 @@ namespace Mobile.Models
         }
         private async Task LoadData()
         {
-            ObservableCollection<CommentLoader> temploaders = await Store.CommentClass.FetchComment(Confess_Guid);
-            int adCounter = 0;
-            foreach (CommentLoader load in temploaders)
+            try
             {
-                if (!string.IsNullOrEmpty(load.LikeColorString))
+                IsBusy = true;
+                ObservableCollection<CommentLoader> temploaders = await Store.CommentClass.FetchComment(Confess_Guid);
+                if (temploaders == null || temploaders.Count == 0)
                 {
-                    load.LikeColor = Color.FromHex(load.LikeColorString);
+                    IsEmptyComments = true;
                 }
-
-                if (!string.IsNullOrEmpty(load.DislikeColorString))
+                else
                 {
-                    load.DislikeColor = Color.FromHex(load.DislikeColorString);
-                }
-
-                //set ad visibility to every 6 items
-                adCounter++;
-                if (adCounter >= 4)
-                {
-                    load.IsAdVisible = true;
-                    adCounter = 0;
-                }
-                else if (Loaders.Count < 5)
-                {
-                    if (adCounter == 1)
+                    IsEmptyComments = false;
+                    int adCounter = 0;
+                    foreach (CommentLoader load in temploaders)
                     {
-                        load.IsAdVisible = true;
-                        IsBannerAdVisible = false;
-                    }
-                }
+                        if (!string.IsNullOrEmpty(load.LikeColorString))
+                        {
+                            load.LikeColor = Color.FromHex(load.LikeColorString);
+                        }
 
+                        if (!string.IsNullOrEmpty(load.DislikeColorString))
+                        {
+                            load.DislikeColor = Color.FromHex(load.DislikeColorString);
+                        }
+
+                        //set ad visibility to every 6 items
+                        adCounter++;
+                        if (adCounter >= 9)
+                        {
+                            load.IsAdVisible = true;
+                            adCounter = 0;
+                        }
+                        else if (Loaders.Count < 10)
+                        {
+                            if (adCounter == 1)
+                            {
+                                load.IsAdVisible = true;
+                                IsBannerAdVisible = false;
+                            }
+                        }
+
+                    }
+                    Device.BeginInvokeOnMainThread(() =>
+                    {
+                        foreach (CommentLoader data in temploaders)
+                        {
+                            Loaders.Add(data);
+                        }
+                    });
+                    OnPropertyChanged(nameof(Loaders));
+                }
             }
-            Loaders = temploaders;
-            //Device.BeginInvokeOnMainThread(() =>
-            //{
-            //    foreach (CommentLoader data in temploaders)
-            //    {
-            //        Loaders.Add(data);
-            //    }
-            //});
-            PropertyChanged?.Invoke(this,
-      new PropertyChangedEventArgs(nameof(Loaders)));
-            //OnPropertyChanged(nameof(Loaders));
+            catch (Exception ex)
+            {
+                Crashes.TrackError(ex);
+            }
+            finally
+            {
+                IsBusy = false;
+            }
+            
         }
         protected virtual void OnPropertyChanged(string propertyName)
         {

@@ -14,9 +14,9 @@ namespace Backend.Helpers
 
         public static class UserClass
         {
-            internal static UserData FetchUser(string userKey)
+            internal static UserData FetchUser(string userKey, string appcenter)
             {
-                return contextLite.UserData.FindOne(d => d.Key[0] == userKey);
+                return contextLite.UserData.FindOne(d => d.Key.Contains(userKey) || d.AppCenterID == appcenter);
             }
 
             internal static void DropUsers()

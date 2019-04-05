@@ -47,9 +47,8 @@
                                 <StackLayout>
                                     <StackLayout Orientation="Horizontal">
                                         <Label Text="{Binding Title}" FontSize="Default" Grid.Column="0" FontAttributes="Bold" FontFamily="{StaticResource Rob}" MaxLines="1" HorizontalOptions="StartAndExpand"/>
-                                        <Label Text="{Binding Category}" FontAttributes="Bold" TextColor="Gray" FontFamily="{StaticResource Rob}" HorizontalOptions="EndAndExpand"/>
+                                        <Label Text="{Binding Category}" FontAttributes="Bold" TextColor="Gray" FontFamily="{StaticResource Rob}" HorizontalOptions="EndAndExpand" Margin="0,0,5,0"/>
                                     </StackLayout>
-
                                     <Label Text="{Binding Body}" FontFamily="{StaticResource Rob}" MaxLines="2" LineBreakMode="TailTruncation" HorizontalTextAlignment="Start"/>
                                     <StackLayout Orientation="Horizontal">
                                         <Grid HorizontalOptions="StartAndExpand" VerticalOptions="CenterAndExpand">

@@ -20,7 +20,7 @@ namespace Mobile
             };
             Ads.Children.Add(admobControl);
             appname.Text = AppInfo.Name;
-            version.Text = AppInfo.VersionString;
+            //version.Text = AppInfo.VersionString;
             describe.Text = $"We've all got events and occurrences that sometimes bothers us. {Environment.NewLine}We believe sharing such situations anonymously with other users would relieve the emotional burden and help fresh thoughts flow into your minds. {Environment.NewLine}Share intriguing, funny and tense memories.";
 
         }

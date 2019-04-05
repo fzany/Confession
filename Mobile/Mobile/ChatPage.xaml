@@ -70,7 +70,6 @@
                  BackgroundColor="LightGray"
                  Grid.Row="2"/>
 
-        <cells:ChatInputBarView Grid.Row="3"
-                                   Margin="0"  x:Name="chatInput"/>
+        <cells:ChatInputBarView Grid.Row="3" Margin="0"  x:Name="chatInput"/>
     </Grid>
 </ContentPage>

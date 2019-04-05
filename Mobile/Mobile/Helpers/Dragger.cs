@@ -52,6 +52,33 @@ namespace Mobile.Helpers
             set { SetValue(IsDraggingProperty, value); }
         }
 
+        public static readonly BindableProperty IsDraggedProperty = BindableProperty.Create(
+         propertyName: "IsDragged",
+         returnType: typeof(bool),
+         declaringType: typeof(DraggableView),
+         defaultValue: false,
+         defaultBindingMode: BindingMode.TwoWay);
+
+        public bool IsDragged
+        {
+            get { return (bool)GetValue(IsDraggedProperty); }
+            set { SetValue(IsDraggedProperty, value); }
+        }
+
+        public static readonly BindableProperty DragValueProperty = BindableProperty.Create(
+        propertyName: "DragValue",
+        returnType: typeof(double),
+        declaringType: typeof(DraggableView),
+        defaultValue: (double)0,
+        defaultBindingMode: BindingMode.TwoWay);
+
+        public double DragValue
+        {
+            get { return (double)GetValue(DragValueProperty); }
+            set { SetValue(DragValueProperty, value); }
+        }
+
+
         public static readonly BindableProperty RestorePositionCommandProperty = BindableProperty.Create(nameof(RestorePositionCommand), typeof(ICommand), typeof(DraggableView), default(ICommand), BindingMode.TwoWay, null, OnRestorePositionCommandPropertyChanged);
 
         static void OnRestorePositionCommandPropertyChanged(BindableObject bindable, object oldValue, object newValue)
@@ -86,10 +113,12 @@ namespace Mobile.Helpers
             IsDragging = true;
         }
 
-        public async void DragEnded()
+        public async void DragEnded(bool dragged, double value)
         {
-            await Task.Delay(500);
+            await Task.Delay(400);
             IsDragging = false;
+            IsDragged = dragged;
+            DragValue = value;
             DragEnd(this, default(EventArgs));
             RestorePositionCommand.Execute(null);
 

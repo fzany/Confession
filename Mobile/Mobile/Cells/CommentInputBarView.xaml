@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="UTF-8"?>
 <ContentView xmlns="http://xamarin.com/schemas/2014/forms" 
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-             x:Class="Mobile.Cells.ChatInputBarView">
+             x:Class="Mobile.Cells.CommentInputBarView">
     <Grid RowSpacing="0" 
            ColumnSpacing="0">
         <Grid.RowDefinitions>
@@ -14,23 +14,22 @@
         <Frame BackgroundColor="WhiteSmoke" Grid.Row="0" Padding="5" CornerRadius="5" Margin="5"
                  Grid.Column="0" >
             <StackLayout Spacing="0" Padding="0">
-                <Frame IsVisible="{Binding IsQuotedChatAvailable}" CornerRadius="5" Padding="0" HasShadow="False">
-                    <Grid BindingContext="{Binding QuotedChat}" BackgroundColor="{StaticResource PrimaryGray}">
+                <Frame IsVisible="{Binding IsQuotedCommentAvailable}" CornerRadius="5" Padding="0" HasShadow="False">
+                    <Grid BindingContext="{Binding QuotedComment}" BackgroundColor="{StaticResource PrimaryGray}">
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="Auto" />
                             <ColumnDefinition Width="*" />
                             <ColumnDefinition Width="Auto" />
                         </Grid.ColumnDefinitions>
                         <BoxView Color="{Binding SenderColor}" WidthRequest="4" VerticalOptions="FillAndExpand" Grid.Column="0"/>
-                        <StackLayout ClassId="{Binding ChatId}" Spacing="3" Grid.Column="1">
-                            <Label FontAttributes="Bold" Text="{Binding SenderName}" TextColor="{Binding SenderColor}"/>
-                            <Label Text="{Binding Body}" TextColor="Gray"/>
-                        </StackLayout>
-                        <Label Margin="0,0,5,0" Grid.Column="2" ClassId="{Binding ChatId}" FontFamily="{StaticResource FSolid}" x:Name="Delete_Quote_Label" VerticalOptions="StartAndExpand" HorizontalOptions="EndAndExpand" TextColor="Gray" FontSize="Medium">
-                            <Label.GestureRecognizers>
-                                <TapGestureRecognizer NumberOfTapsRequired="1" Tapped="Delete_Quote_Tapped"/>
-                            </Label.GestureRecognizers>
-                        </Label>
+                        <Label Text="{Binding Body}" Grid.Column="1" VerticalOptions="FillAndExpand" TextColor="Gray"/>
+                        <Frame CornerRadius="5" Padding="4"  Margin="0,0,5,0" Grid.Column="2" BackgroundColor="Transparent" VerticalOptions="StartAndExpand" HorizontalOptions="EndAndExpand">
+                            <Label x:Name="Delete_Quote_Label" ClassId="{Binding Guid}" FontFamily="{StaticResource FSolid}" TextColor="Gray" FontSize="Medium">
+                                <Label.GestureRecognizers>
+                                    <TapGestureRecognizer NumberOfTapsRequired="1" Tapped="Delete_Quote_Tapped"/>
+                                </Label.GestureRecognizers>
+                            </Label>
+                        </Frame>
                     </Grid>
                 </Frame>
                 <Entry x:Name="chatTextInput" 
@@ -40,7 +39,7 @@
                  Keyboard="Chat"  
                  HorizontalOptions="FillAndExpand" 
                  PlaceholderColor="Black"
-                 Placeholder="Type your message here"  
+                 Placeholder="Type your comment here"  
                  Completed="Handle_Completed"
                  ReturnType="Send"
                  />
@@ -56,4 +55,5 @@
             </Label.GestureRecognizers>
         </Label>-->
     </Grid>
+
 </ContentView>

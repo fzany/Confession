@@ -9,7 +9,7 @@
             <Frame BackgroundColor="LightBlue" CornerRadius="5"
             Padding="5"
             HasShadow="false" ClassId="{Binding ChatId}"
-            Margin="80,10,10,10">
+            Margin="80,5,10,5">
                 <StackLayout>
                     <Frame IsVisible="{Binding QuotedChatAvailable}" CornerRadius="5" Padding="0" HasShadow="False">
                         <Grid BindingContext="{Binding Quote}" BackgroundColor="{StaticResource PrimaryGray}">

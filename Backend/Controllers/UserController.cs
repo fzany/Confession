@@ -18,14 +18,14 @@ namespace Backend.Controllers
     {
         [HttpGet]
         [Route("user/fetch")]
-        public ActionResult<UserData> FetchUser()
+        public ActionResult<UserData> FetchUser(string appcenter)
         {
             ClaimsIdentity claimsIdentity = this.User.Identity as ClaimsIdentity;
             string userKey = claimsIdentity.FindFirst(ClaimTypes.Name)?.Value;
             try
             {
                 //prepare response
-                var response = Store.UserClass.FetchUser(userKey);
+                var response = Store.UserClass.FetchUser(userKey, appcenter);
                 //return data
                 return Ok(response);
             }

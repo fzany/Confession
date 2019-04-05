@@ -9,7 +9,7 @@
             <Frame BackgroundColor="White" CornerRadius="5"
               Padding="5" ClassId="{Binding ChatId}"
               HasShadow="false"
-              Margin="10,10,80,10">
+              Margin="10,5,80,5">
                 <StackLayout Spacing="5" Padding="0">
                     <Label Text="{Binding SenderName}" FontSize="Small" TextColor="{Binding SenderColor}" FontAttributes="Bold" />
                     <Frame IsVisible="{Binding QuotedChatAvailable}" CornerRadius="5" Padding="0" HasShadow="False">

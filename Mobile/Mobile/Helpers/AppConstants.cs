@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using Xamarin.Forms;
+﻿using Xamarin.Forms;
 
 namespace Mobile.Helpers
 {
@@ -54,11 +51,11 @@ namespace Mobile.Helpers
                 switch (Device.RuntimePlatform)
                 {
                     case Device.Android:
-                        return "ca-app-pub-4507736790505069/8783931635"; 
+                        return "ca-app-pub-4507736790505069/8783931635";
                     default:
                         return "ca-app-pub-4507736790505069/8783931635";
                 }
-              
+
             }
         }
         public static string ViewPageBannerId
@@ -75,7 +72,7 @@ namespace Mobile.Helpers
 
             }
         }
-        
+
         /// <summary>
         /// These Ids are test Ids from https://developers.google.com/admob/android/test-ads
         /// </summary>
@@ -101,6 +98,7 @@ namespace Mobile.Helpers
             }
         }
 
+        private static int _adCounter;
         public static bool ShowAds
         {
             get
@@ -114,7 +112,6 @@ namespace Mobile.Helpers
             }
         }
 
-        private static int _adCounter;
 
         private static int _postCounter;
         public static bool ShowPostConfession
@@ -122,11 +119,48 @@ namespace Mobile.Helpers
             get
             {
                 _postCounter++;
-                if(_postCounter % 5 == 0)
+                if (_postCounter % 5 == 0)
                 {
                     return true;
                 }
                 return false;
+            }
+        }
+
+        private static string _activityID;
+
+        public static double SwipeValue { get; set; }
+
+        public static bool GetSwipe(string id, double value)
+        {
+            if (id != _activityID)
+            {
+                if (value >= 300)
+                {
+                    SwipeValue = 0;
+                    _activityID = id;
+                    return true;
+                }
+                else
+                {
+                    SwipeValue = value;
+                    _activityID = id;
+                    return false;
+                }
+
+            }
+            else
+            {
+                if (SwipeValue >= 300)
+                {
+                    SwipeValue = 0;
+                    return true;
+                }
+                else
+                {
+                    SwipeValue = SwipeValue + value;
+                    return false;
+                }
             }
         }
     }

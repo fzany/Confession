@@ -85,7 +85,7 @@
                                 </Label.GestureRecognizers>
                             </Label>
                         </Grid>
-                        <Label Text="{Binding Body}" FontSize="Large" FontFamily="{StaticResource Rob}" HorizontalTextAlignment="Center"/>
+                        <Label Text="{Binding Body}" FontSize="Large" FontFamily="{StaticResource Rob}" HorizontalTextAlignment="Start"/>
                     </StackLayout>
 
 

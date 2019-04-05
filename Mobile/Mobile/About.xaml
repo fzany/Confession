@@ -11,10 +11,6 @@
                     <Label x:Name="describe"  TextColor="White"/>
 
                     <Label Text=""/>
-                    <Label Text="App Version" FontSize="Small" FontAttributes="Bold" TextColor="White"/>
-                    <Label x:Name="version" TextColor="White"/>
-
-                    <Label Text=""/>
                     <Label Text="Give Direct Feedback" FontSize="Small" FontAttributes="Bold" TextColor="White"/>
                     <Label Text="Click to send an email with feedback." TextColor="White">
                         <Label.GestureRecognizers>

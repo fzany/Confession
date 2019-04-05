@@ -45,14 +45,14 @@ namespace Mobile
 
             try
             {
-                await Task.Delay(600);
                 ChangeLoading(true);
+                await Task.Delay(10);
                 UserData = await Store.UserClass.Get();
 
                 chatCheck.IsToggled = UserData.ChatRoomNotification;
                 commentCheck.IsToggled = UserData.CommentNotification;
 
-                if (string.IsNullOrEmpty((string)UserData.AppCenterID) || UserData.Logger == null || UserData.Key == null)
+                if (string.IsNullOrEmpty(UserData.AppCenterID) || UserData.Logger == null || UserData.Key == null)
                 {
                     Guid? installId = await AppCenter.GetInstallIdAsync();
                     UserData.AppCenterID = installId.Value.ToString();
@@ -73,6 +73,7 @@ namespace Mobile
             catch (Exception ex)
             {
                 Crashes.TrackError(ex);
+                ChangeLoading(false);
             }
             finally
             {
@@ -86,8 +87,7 @@ namespace Mobile
             bool answer = await DisplayAlert("Confirmation", $"You won't be able to edit nor delete your previous posts/comments as they would detached from your session state! {Environment.NewLine}Do you want to proceed?", "Yes", "No");
             if (answer)
             {
-                //call the key creation. That's all.
-                await Helpers.Logic.Createkey();
+
 
                 //update user in the dp.
                 if (!Logic.IsInternet())
@@ -95,6 +95,7 @@ namespace Mobile
                     DependencyService.Get<IMessage>().ShortAlert(Constants.No_Internet);
                     return;
                 }
+
                 await UpdateUser();
                 await DisplayAlert("Success", $"Identity Cleared!{Environment.NewLine}{Environment.NewLine} Enjoy the power of anonymity!", "Ok");
             }
@@ -104,6 +105,10 @@ namespace Mobile
         {
             ChangeLoading(true);
             await Task.Delay(10);
+            //call the key creation. That's all.
+            await Helpers.Logic.Createkey();
+            //Clear the token saved
+            await Logic.Createtoken();
             UserData.Key.Insert(0, await Logic.GetKey());
             await Store.UserClass.Update(UserData);
             ChangeLoading(false);

@@ -2,6 +2,8 @@
 using Mobile.Helpers;
 using Mobile.Models;
 using System;
+using System.Linq;
+using System.Windows.Input;
 using Xamarin.Essentials;
 using Xamarin.Forms;
 using Xamarin.Forms.Xaml;
@@ -13,6 +15,7 @@ namespace Mobile
     {
 
         private CommentViewModel current_context;
+        public ICommand ScrollListCommand { get; set; }
         public CommentPage()
         {
             InitializeComponent();
@@ -22,16 +25,16 @@ namespace Mobile
         public CommentPage(string _guid, string _name)
         {
             InitializeComponent();
-            AdmobControl admobControl = new AdmobControl()
-            {
-                AdUnitId = AppConstants.CommentBannerId,
-                HorizontalOptions = LayoutOptions.CenterAndExpand
-            };
-            Ads.Children.Add(admobControl);
 
             current_context = new CommentViewModel() { ConfessionTitle = _name, Confess_Guid = _guid };
-            //this.BindingContext = current_context;
-            List_View.BindingContext = current_context;
+            this.BindingContext = current_context;
+
+            ScrollListCommand = new Command(() =>
+            {
+                Device.BeginInvokeOnMainThread(() =>
+                  List_View.ScrollTo((this.BindingContext as CommentViewModel).Loaders.Last(), ScrollToPosition.End, false)
+              );
+            });
         }
 
 
@@ -39,11 +42,19 @@ namespace Mobile
         {
             DraggableView view = (DraggableView)sender;
             string Guid = view.ClassId;
-
-            //DependencyService.Get<IMessage>().ShortAlert($"Outgoing: {chatID}");
-            current_context.OnQuoteCommand.Execute(Guid);
+            if (view.DragDirection == DragDirectionType.Horizontal & view.DragMode == DragMode.Touch)
+            {
+                if (AppConstants.GetSwipe(Guid, view.DragValue))
+                {
+                    current_context.OnQuoteCommand.Execute(Guid);
+                }
+            }
+            
         }
-
+        private void Delete_Quote_Tapped(object sender, EventArgs e)
+        {
+            current_context.RemoveQuoteCommand.Execute(null);
+        }
 
         private async void Delete_t_Comment(object sender, EventArgs e)
         {
@@ -80,6 +91,9 @@ namespace Mobile
             }
         }
 
-      
+        private void List_View_ItemTapped(object sender, ItemTappedEventArgs e)
+        {
+            chatInput.UnFocusEntry();
+        }
     }
 }

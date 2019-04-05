@@ -3,7 +3,6 @@ using Android.Views;
 using Mobile.Droid.Helpers;
 using Mobile.Helpers;
 using System.ComponentModel;
-using System.Threading.Tasks;
 using Xamarin.Forms;
 using Xamarin.Forms.Platform.Android;
 using AView = Android.Views;
@@ -105,11 +104,26 @@ namespace Mobile.Droid.Helpers
                     dY = y - this.GetY();
                     break;
                 case MotionEventActions.Move:
+                    bool dragged = false;
+                    double dragvalue = 0;
                     if (touchedDown)
                     {
                         if (dragView.DragDirection == DragDirectionType.All || dragView.DragDirection == DragDirectionType.Horizontal)
                         {
-                            SetX(x - dX);
+                            float diff = x - dX;
+                            if (diff <= 0)
+                            {
+                                SetX(originalX);
+                            }
+                            else
+                            {
+                                SetX(diff);
+                                if (diff > 50)
+                                {
+                                    dragged = true;
+                                }
+                            }
+                            dragvalue = diff;
                         }
 
                         if (dragView.DragDirection == DragDirectionType.All || dragView.DragDirection == DragDirectionType.Vertical)
@@ -117,11 +131,11 @@ namespace Mobile.Droid.Helpers
                             SetY(y - dY);
                         }
                     }
-                    dragView.DragEnded();
+                    dragView.DragEnded(dragged, dragvalue);
                     break;
                 case MotionEventActions.Up:
                     touchedDown = false;
-                    dragView.DragEnded();
+                    dragView.DragEnded(false, 0);
                     break;
                 case MotionEventActions.Cancel:
                     touchedDown = false;
@@ -132,7 +146,6 @@ namespace Mobile.Droid.Helpers
 
         public override bool OnInterceptTouchEvent(MotionEvent e)
         {
-
             BringToFront();
             return true;
         }
