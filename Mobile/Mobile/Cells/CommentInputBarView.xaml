@@ -22,7 +22,7 @@
                             <ColumnDefinition Width="Auto" />
                         </Grid.ColumnDefinitions>
                         <BoxView Color="{Binding SenderColor}" WidthRequest="4" VerticalOptions="FillAndExpand" Grid.Column="0"/>
-                        <Label Text="{Binding Body}" Grid.Column="1" VerticalOptions="FillAndExpand" TextColor="Gray"/>
+                        <Label Text="{Binding Body}" Grid.Column="1" VerticalOptions="CenterAndExpand" TextColor="Gray"/>
                         <Frame CornerRadius="5" Padding="4"  Margin="0,0,5,0" Grid.Column="2" BackgroundColor="Transparent" VerticalOptions="StartAndExpand" HorizontalOptions="EndAndExpand">
                             <Label x:Name="Delete_Quote_Label" ClassId="{Binding Guid}" FontFamily="{StaticResource FSolid}" TextColor="Gray" FontSize="Medium">
                                 <Label.GestureRecognizers>
@@ -35,10 +35,8 @@
                 <Entry x:Name="chatTextInput" 
                  Text="{Binding TextToSend}" 
                  Margin="1"  
-                 TextColor="Black" 
                  Keyboard="Chat"  
                  HorizontalOptions="FillAndExpand" 
-                 PlaceholderColor="Black"
                  Placeholder="Type your comment here"  
                  Completed="Handle_Completed"
                  ReturnType="Send"

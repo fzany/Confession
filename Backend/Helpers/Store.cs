@@ -208,6 +208,11 @@ namespace Backend.Helpers
 
                 contextLite.ChatRoom.Update(room);
             }
+
+            internal static ChatRoom FetchRoomByID(string id)
+            {
+                return contextLite.ChatRoom.FindOne(f=>f.Id == id);
+            }
         }
 
         public static class SettingsClass

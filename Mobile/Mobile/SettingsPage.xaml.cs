@@ -153,7 +153,10 @@ namespace Mobile
                 DependencyService.Get<IMessage>().ShortAlert("Type a name");
                 return;
             }
+            ChangeLoading(true);
+            await Task.Delay(10);
             await Logic.CreateChatName(ChatName.Text);
+            ChangeLoading(false);
             DependencyService.Get<IMessage>().ShortAlert("Name Updated. ");
         }
 

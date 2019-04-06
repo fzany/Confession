@@ -22,10 +22,16 @@ namespace Backend.Helpers
         }
         public async Task Invoke(HttpContext httpContext)
         {
+            if (httpContext.Response.StatusCode == 101)
+            {
+                // this forces ClientWebSocket to believe their is content
+                // to process thus it keeps the socket alive for processing??
+                httpContext.Response.Headers.ContentLength = 1;
+            }
             if (httpContext.WebSockets.IsWebSocketRequest)
             {
                 WebSocket socket = await httpContext.WebSockets.AcceptWebSocketAsync();
-
+                System.Net.ServicePointManager.MaxServicePointIdleTime = int.MaxValue;
                 WebSockets.Add(socket);
                 while (socket.State == WebSocketState.Open)
                 {

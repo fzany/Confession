@@ -173,6 +173,17 @@ namespace Mobile.Models
                 await LoadData();
             });
             //LoadData().Wait();
+
+            System.Net.ServicePointManager.ServerCertificateValidationCallback =
+               (sender, certificate, chain, errors) => true;
+            // this seems to just delay the inevitable by setting a very large
+            // max idle. Not a scalable workaround as this would affect all
+            // ServicePoint's created after this call
+            System.Net.ServicePointManager.MaxServicePointIdleTime = int.MaxValue;
+            
+
+
+
             client = new ClientWebSocket();
             cts = new CancellationTokenSource();
             ConnectToServerAsync();
@@ -217,7 +228,7 @@ namespace Mobile.Models
                     {
                         Room_ID = await Logic.GetRoomID();
                     }
-                    await client.CloseAsync( WebSocketCloseStatus.NormalClosure, "User Navigation", new CancellationToken());
+                    await client.CloseAsync(WebSocketCloseStatus.NormalClosure, "User Navigation", new CancellationToken());
 
                     ConnectToServerAsync();
                 }
@@ -270,7 +281,7 @@ namespace Mobile.Models
                         if (result.MessageType == WebSocketMessageType.Close || result.CloseStatus.HasValue)
                         {
                             await Task.Delay(100);
-                           // ReconnectConnectToServerAsync();
+                            // ReconnectConnectToServerAsync();
                         }
                         else
                         {
@@ -289,19 +300,22 @@ namespace Mobile.Models
                                         Date = incomingChat.Date,
                                         IsAd = false,
                                         SenderName = incomingChat.SenderName,
-                                        IsMine = false
+                                        IsMine = false,
+                                        Quote = incomingChat.Quote,
+                                        QuotedChatAvailable = incomingChat.QuotedChatAvailable,
+                                        ChatId = incomingChat.Id
                                     };
-                                    if (LastMessageVisible)
-                                    {
-                                        Messages.Add(insert_loader);
-                                    }
-                                    else
-                                    {
-                                        DelayedMessages.Enqueue(insert_loader);
-                                        PendingMessageCount++;
-                                    }
+                                    //if (LastMessageVisible)
+                                    //{
+                                    //    Messages.Add(insert_loader);
+                                    //}
+                                    //else
+                                    //{
+                                    //    DelayedMessages.Enqueue(insert_loader);
+                                    //    PendingMessageCount++;
+                                    //}
 
-                                    //Messages.Add(insert_loader);
+                                    Messages.Add(insert_loader);
                                     Logic.VibrateNow();
                                 }
                             }

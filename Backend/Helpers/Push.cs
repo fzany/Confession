@@ -30,10 +30,11 @@ namespace Backend.Helpers
                     title = "New Confession 📢!",
                     body = confess.Body,
                     name = Guid.NewGuid().ToString().Replace("-", ""),
-                    custom_data = new CustomData() {
+                    custom_data = new CustomData()
+                    {
                         key1 = confess.Guid,
                         key2 = confess.Owner_Guid,
-                         type ="Confession"
+                        type = "Confession"
                     }
                 }
             };
@@ -44,12 +45,16 @@ namespace Backend.Helpers
         {
             //get a list of users.
             List<UserData> allUsers = Store.UserClass.FetchAll();
+            List<string> currentRoom = (Store.ChatClass.FetchRoomByID(chat.Room_ID)).Members;
             List<string> to_receivePush = new List<string>();
             foreach (UserData user in allUsers)
             {
                 if (!string.IsNullOrEmpty(user.AppCenterID) & user.ChatRoomNotification & !(user.Key.Contains(chat.SenderKey)))
                 {
-                    to_receivePush.Add(user.AppCenterID);
+                    if (currentRoom.Contains(user.Key[0]))
+                    {
+                        to_receivePush.Add(user.AppCenterID);
+                    }
                 }
             }
 

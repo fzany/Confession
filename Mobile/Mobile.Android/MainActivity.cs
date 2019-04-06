@@ -6,6 +6,7 @@ using Android.Gms.Ads;
 using Android.OS;
 using Android.Runtime;
 using Microsoft.AppCenter.Push;
+using Mobile.Helpers;
 using Plugin.LocalNotifications;
 using Xamarin.Forms;
 
@@ -28,9 +29,9 @@ namespace Mobile.Droid
             MobileAds.Initialize(ApplicationContext, Mobile.Helpers.AppConstants.AppId);
             Push.PushNotificationReceived += Push_PushNotificationReceived;
 
-            string RoomId = Intent.GetStringExtra("key1");
-            string ChatId = Intent.GetStringExtra("key2");
-            string Type = Intent.GetStringExtra("type");
+           // string RoomId = Intent.GetStringExtra("key1");
+           // string ChatId = Intent.GetStringExtra("key2");
+           // string Type = Intent.GetStringExtra("type");
             LoadApplication(new App());
         }
 
@@ -47,7 +48,7 @@ namespace Mobile.Droid
             alert.SetIcon(Resource.Drawable.Icon);
             alert.SetMessage(e.Message);
             alert.Show();
-
+            //string roomid = Logic.GetRoomID();
             //Notification Builder
 
         }

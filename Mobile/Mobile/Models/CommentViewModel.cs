@@ -330,15 +330,6 @@ namespace Mobile.Models
                             load.IsAdVisible = true;
                             adCounter = 0;
                         }
-                        else if (Loaders.Count < 10)
-                        {
-                            if (adCounter == 1)
-                            {
-                                load.IsAdVisible = true;
-                                IsBannerAdVisible = false;
-                            }
-                        }
-
                     }
                     Device.BeginInvokeOnMainThread(() =>
                     {

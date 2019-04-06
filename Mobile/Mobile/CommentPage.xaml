@@ -3,7 +3,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:local="clr-namespace:Mobile.Helpers"
              xmlns:cells="clr-namespace:Mobile.Cells"
-             x:Class="Mobile.CommentPage" Padding="5"  BackgroundColor="Azure">
+             x:Class="Mobile.CommentPage" Padding="5" BackgroundImage="drop.png"  BackgroundColor="Azure">
     <ContentPage.Content>
         <Grid RowSpacing="0"
            ColumnSpacing="0">
@@ -98,7 +98,7 @@
                     </DataTemplate>
                 </ListView.ItemTemplate>
             </ListView>
-            <cells:CommentInputBarView Grid.Row="4" Margin="0" x:Name="chatInput"/>
+            <cells:CommentInputBarView Grid.Row="4" Margin="0,10,0,0" x:Name="chatInput"/>
             <!--<StackLayout Margin="0,10,0,0" Grid.Row="4">
                 <Frame IsVisible="{Binding IsQuotedCommentAvailable}" CornerRadius="5" Padding="0" HasShadow="False">
                     <Grid BindingContext="{Binding QuotedComment}" BackgroundColor="{StaticResource PrimaryGray}">

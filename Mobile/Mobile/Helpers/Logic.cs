@@ -287,7 +287,7 @@ namespace Mobile.Helpers
             try
             {
                 // Or use specified time
-                TimeSpan duration = TimeSpan.FromMilliseconds(100);
+                TimeSpan duration = TimeSpan.FromMilliseconds(10);
                 Vibration.Vibrate(duration);
             }
             catch (FeatureNotSupportedException ex)
