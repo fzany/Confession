@@ -23,7 +23,7 @@ namespace Mobile.Cells
             {
                 if (this.Parent.Parent.Parent.BindingContext is ChatPageViewModel parent_page_model)
                 {
-                    DependencyService.Get<IMessage>().ShortAlert($"Outgoing: {chatID}");
+                    //DependencyService.Get<IMessage>().ShortAlert($"Outgoing: {chatID}");
                     if (AppConstants.GetSwipe(chatID, view.DragValue))
                     {
                         parent_page_model.OnQuoteCommand.Execute(chatID);
