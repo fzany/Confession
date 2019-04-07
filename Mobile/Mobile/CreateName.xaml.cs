@@ -25,9 +25,11 @@ namespace Mobile
 
         private async void LoadData()
         {
-            var chatname = await Logic.GetChatName();
+            string chatname = await Logic.GetChatName();
             if (string.IsNullOrEmpty(chatname))
+            {
                 ChatName.Focus();
+            }
             else
             {
                 ChatName.Text = chatname;
@@ -35,6 +37,18 @@ namespace Mobile
             }
             joinButton.Text = item.IamMember ? "Leave Room" : "Join Room";
             titleLabel.Text = $"{item.Title} Room";
+
+            if (!item.IamMember)
+            {
+                string entryinfo = string.Empty;
+                entryinfo = $"Hey {chatname}, {Environment.NewLine}This is a new group and I feel you might just want to change your display name. {Environment.NewLine}Do this by typing something below or get a random name.{Environment.NewLine} Join the room afterwards to proceed.";
+                introText.IsVisible = true;
+                save_name_button.IsVisible = false;
+            }
+            else
+            {
+                introText.IsVisible = false;
+            }
 
         }
 
@@ -67,12 +81,12 @@ namespace Mobile
 
         private async void Join_Clicked(object sender, EventArgs e)
         {
-            if(string.IsNullOrWhiteSpace(ChatName.Text) || await Logic.GetChatName() == null)
+            if (string.IsNullOrWhiteSpace(ChatName.Text))
             {
                 DependencyService.Get<IMessage>().LongAlert("Set a name");
                 return;
             }
-         
+
             ChangeLoading(true);
             await Task.Delay(60);
             if (item.IamMember)
@@ -87,6 +101,7 @@ namespace Mobile
             }
             else
             {
+                await Logic.CreateChatName(ChatName.Text);
                 await Store.ChatClass.JoinRoom(item.Id);
                 DependencyService.Get<IMessage>().LongAlert("Joined Successfully.");
                 //notify viewmodel
@@ -95,8 +110,8 @@ namespace Mobile
                 MessagingCenter.Send<object, ChatRoomLoader>(this, Constants.update_chatroom_membership_list, item);
                 MessagingCenter.Send<object, ChatRoomLoader>(this, Constants.send_room, item);
             }
-           
-                ChangeLoading(false);
+
+            ChangeLoading(false);
         }
     }
 }

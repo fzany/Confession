@@ -60,6 +60,8 @@ namespace Mobile.Models
         //quotedChat
         public bool QuotedChatAvailable { get; set; }
         public Quote Quote { get; set; }
+
+        public bool IsSent { get; set; }
     }
   
     public class Quote

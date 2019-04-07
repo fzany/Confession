@@ -1,5 +1,6 @@
 ﻿using Microsoft.AppCenter;
 using Microsoft.AppCenter.Crashes;
+using Mobile.Helpers.Local;
 using Mobile.Models;
 using Newtonsoft.Json;
 using System;
@@ -234,6 +235,7 @@ namespace Mobile.Helpers
                 {
                     string url = $"confess/delete?guid={guid}";
                     string content = await BaseClient.DeleteEntities(url);
+                    LocalStore.Confession.DeleteLoader(guid);
                 }
                 catch (Exception ex)
                 {

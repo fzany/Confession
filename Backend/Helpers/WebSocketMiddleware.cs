@@ -49,7 +49,7 @@ namespace Backend.Helpers
                             // get rid of trailing crap from buffer
                             incoming = incoming.Replace("\0", "");
                             Console.WriteLine($"Incoming: {incoming}");
-                            string chatreturn = Store.ChatClass.ProcessSocket(incoming);
+                            string chatreturn = Store.ChatClass.ProcessMessage(incoming);
                             byte[] data = Encoding.UTF8.GetBytes(chatreturn);
                             buffer = new ArraySegment<byte>(data);
 

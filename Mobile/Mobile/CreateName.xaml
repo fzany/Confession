@@ -9,17 +9,19 @@
                 <Label x:Name="titleLabel" FontSize="Large" FontFamily="{StaticResource Rob}" FontAttributes="Bold" TextColor="White" VerticalOptions="CenterAndExpand"/>
             </StackLayout>
             <Label Text="Quick Settings" FontSize="Large" FontAttributes="Bold"/>
-            <StackLayout VerticalOptions="CenterAndExpand">
+            <Label x:Name="introText" VerticalOptions="CenterAndExpand" />
+            <StackLayout VerticalOptions="EndAndExpand">
                 <Label Text="Chat Name" FontSize="Medium" VerticalOptions="Center"/>
                 <Grid>
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="*"/>
                         <ColumnDefinition Width="Auto"/>
                     </Grid.ColumnDefinitions>
-                    <Entry Grid.Column="0" x:Name="ChatName" Placeholder="Not set" FontSize="Medium" VerticalOptions="Center"/>
+                    <Entry Grid.Column="0" MaxLength="20" x:Name="ChatName" Placeholder="Not set" FontSize="Medium" VerticalOptions="Center"/>
                     <Button Grid.Column="1" Text="Random" Clicked="Random_Clicked" VerticalOptions="Center"/>
                 </Grid>
-                <Button HorizontalOptions="FillAndExpand" Text="Save" Clicked="Update_Name" VerticalOptions="Center"/>
+                <Button x:Name="save_name_button"  HorizontalOptions="FillAndExpand" Text="Update" Clicked="Update_Name" VerticalOptions="Center"/>
+                <Label FontFamily="{StaticResource Rob}" Text="What you set would be visible in all rooms!" HorizontalOptions="CenterAndExpand" FontSize="Micro"/>
             </StackLayout>
             <ActivityIndicator IsEnabled="False" IsRunning="False" IsVisible="False" x:Name="loadingBox"/>
             <Button Text="Join Room" FontSize="25" Margin="0,0,5,0" BackgroundColor="{StaticResource PrimaryDark}" TextColor="White" x:Name="joinButton" Clicked="Join_Clicked" VerticalOptions="EndAndExpand" HorizontalOptions="FillAndExpand"/>

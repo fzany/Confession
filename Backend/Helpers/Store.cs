@@ -86,10 +86,10 @@ namespace Backend.Helpers
             /// </summary>
             /// <param name="incoming"></param>
             /// <returns></returns>
-            internal static string ProcessSocket(string incoming)
+            internal static string ProcessMessage(string incoming)
             {
                 Chat chat = JsonConvert.DeserializeObject<Chat>(incoming);
-                contextLite.Chat.Insert(chat);
+                var newID = contextLite.Chat.Insert(chat);
                 //send notification
                 try
                 {
@@ -99,7 +99,8 @@ namespace Backend.Helpers
                 {
                 }
                 //ChatLoader loader = ChatLoader(chat);
-                return JsonConvert.SerializeObject(chat);
+                var returnChat = contextLite.Chat.FindById(newID);
+                return JsonConvert.SerializeObject(returnChat);
             }
 
             private static List<ChatRoomLoader> ChatRoomLoader(IEnumerable<ChatRoom> result, string userKey)
@@ -583,7 +584,8 @@ namespace Backend.Helpers
                         Guid = dt.Guid,
                         Owner_Guid = dt.Owner_Guid,
                         Quote = dt.Quote,
-                        QuotedCommentAvailable = dt.QuotedCommentAvailable
+                        QuotedCommentAvailable = dt.QuotedCommentAvailable,
+                         Confess_Guid = dt.Confess_Guid
                     };
                     //load colors
                     if (LikeClass.CheckExistence(dt.Guid, true, key))

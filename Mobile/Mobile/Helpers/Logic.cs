@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Xamarin.Essentials;
 using Xamarin.Forms;
@@ -210,12 +211,17 @@ namespace Mobile.Helpers
             try
             {
                 string oauthToken = await SecureStorage.GetAsync(Constants.chatname);
+                if (string.IsNullOrWhiteSpace(oauthToken))
+                {
+                    return Constants.DefaultName;
+                }
+
                 return oauthToken;
             }
             catch (Exception)
             {
                 // Possible that device doesn't support secure storage on device.
-                return "";
+                return Constants.DefaultName;
             }
         }
 
@@ -287,7 +293,7 @@ namespace Mobile.Helpers
             try
             {
                 // Or use specified time
-                TimeSpan duration = TimeSpan.FromMilliseconds(10);
+                TimeSpan duration = TimeSpan.FromMilliseconds(100);
                 Vibration.Vibrate(duration);
             }
             catch (FeatureNotSupportedException ex)
@@ -299,25 +305,40 @@ namespace Mobile.Helpers
                 Crashes.TrackError(ex);
             }
         }
-
+        public static string FilterCharacters(string input)
+        {
+            Regex regex = new Regex("[^a-zA-Z0-9]");
+            return regex.Replace(input, "");
+        }
         public static Color GetColourFromName(string name)
         {
             List<string> colours = new List<string>() { "#f25022", "#7fba00", "#00a4ef", "#ffb900", "#737373", "#4285F4", "#DB4437", "#F4B400", "#0F9D58" };
+            Random ran = new Random();
+            int ind = ran.Next(0, colours.Count);
+            name = FilterCharacters(name);
 
-            if (string.IsNullOrEmpty(name))
+            if (string.IsNullOrWhiteSpace(name))
             {
-                return Color.FromHex(colours[0]);
+                return Color.FromHex(colours[ind]);
             }
 
-            int sum = 0;
-            for (int i = 0; i < name.Length; i++)
+            try
             {
-                char c = name[i]; // declare it in loop - you overwrite it here anyway
-                sum += char.ToUpper(c) - 64;
-            }
+                int sum = 0;
+                for (int i = 0; i < name.Length; i++)
+                {
+                    char c = name[i]; // declare it in loop - you overwrite it here anyway
+                    sum += char.ToUpper(c) - 64;
+                }
 
-            int index = sum % 9;
-            return Color.FromHex(colours[index]);
+                int index = sum % 9;
+                return Color.FromHex(colours[index]);
+            }
+            catch (Exception ex)
+            {
+                Crashes.TrackError(ex);
+                return Color.FromHex(colours[ind]);
+            }
 
         }
 

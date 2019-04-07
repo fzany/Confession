@@ -1,10 +1,10 @@
 ﻿using Microsoft.AppCenter.Crashes;
 using Mobile.Helpers;
+using Mobile.Helpers.Local;
 using System;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Input;
 using Xamarin.Forms;
@@ -261,7 +261,7 @@ namespace Mobile.Models
 
                     DependencyService.Get<IMessage>().ShortAlert("Comment Posted.");
                     RemoveQuoteCommand.Execute(null);
-                
+
                     Task.Run(async () =>
                     {
                         await LoadData();
@@ -299,47 +299,60 @@ namespace Mobile.Models
         }
         private async Task LoadData()
         {
+            ObservableCollection<CommentLoader> temploaders = new ObservableCollection<CommentLoader>();
             try
             {
                 IsBusy = true;
-                ObservableCollection<CommentLoader> temploaders = await Store.CommentClass.FetchComment(Confess_Guid);
-                if (temploaders == null || temploaders.Count == 0)
+                if (!Logic.IsInternet())
                 {
-                    IsEmptyComments = true;
+                    temploaders = LocalStore.Comment.FetchByConfessGuid(Confess_Guid);
                 }
                 else
                 {
-                    IsEmptyComments = false;
-                    int adCounter = 0;
-                    foreach (CommentLoader load in temploaders)
+                    temploaders = await Store.CommentClass.FetchComment(Confess_Guid);
+                    if (temploaders == null || temploaders.Count == 0)
                     {
-                        if (!string.IsNullOrEmpty(load.LikeColorString))
+                        temploaders = LocalStore.Comment.FetchByConfessGuid(Confess_Guid);
+                        if (temploaders == null || temploaders.Count == 0)
                         {
-                            load.LikeColor = Color.FromHex(load.LikeColorString);
-                        }
-
-                        if (!string.IsNullOrEmpty(load.DislikeColorString))
-                        {
-                            load.DislikeColor = Color.FromHex(load.DislikeColorString);
-                        }
-
-                        //set ad visibility to every 6 items
-                        adCounter++;
-                        if (adCounter >= 9)
-                        {
-                            load.IsAdVisible = true;
-                            adCounter = 0;
+                            IsEmptyComments = true;
                         }
                     }
-                    Device.BeginInvokeOnMainThread(() =>
+                    else
                     {
-                        foreach (CommentLoader data in temploaders)
-                        {
-                            Loaders.Add(data);
-                        }
-                    });
-                    OnPropertyChanged(nameof(Loaders));
+                        LocalStore.Comment.SaveLoaders(temploaders);
+                        IsEmptyComments = false;
+                    }
                 }
+                int adCounter = 0;
+                foreach (CommentLoader load in temploaders)
+                {
+                    if (!string.IsNullOrEmpty(load.LikeColorString))
+                    {
+                        load.LikeColor = Color.FromHex(load.LikeColorString);
+                    }
+
+                    if (!string.IsNullOrEmpty(load.DislikeColorString))
+                    {
+                        load.DislikeColor = Color.FromHex(load.DislikeColorString);
+                    }
+
+                    //set ad visibility to every 6 items
+                    adCounter++;
+                    if (adCounter >= 9)
+                    {
+                        load.IsAdVisible = true;
+                        adCounter = 0;
+                    }
+                }
+                Device.BeginInvokeOnMainThread(() =>
+                {
+                    foreach (CommentLoader data in temploaders)
+                    {
+                        Loaders.Add(data);
+                    }
+                });
+                OnPropertyChanged(nameof(Loaders));
             }
             catch (Exception ex)
             {
@@ -349,7 +362,7 @@ namespace Mobile.Models
             {
                 IsBusy = false;
             }
-            
+
         }
         protected virtual void OnPropertyChanged(string propertyName)
         {

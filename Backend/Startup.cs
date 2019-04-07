@@ -24,7 +24,7 @@ namespace Backend
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
-
+        
             // configure strongly typed settings objects
             IConfigurationSection appSettingsSection = Configuration.GetSection("AppSettings");
             services.Configure<AppSettings>(appSettingsSection);
@@ -49,6 +49,7 @@ namespace Backend
                     ValidateAudience = false
                 };
             });
+            services.AddSignalR();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -62,11 +63,15 @@ namespace Backend
             {
                 app.UseHsts();
             }
-            app.UseWebSockets();
-            app.UseWebSocketHandler();
+           // app.UseWebSockets();
+           // app.UseWebSocketHandler();
 
             app.UseHttpsRedirection();
             app.UseAuthentication();
+            app.UseSignalR(routes =>
+            {
+                routes.MapHub<ChatHub>("/chatHub");
+            });
             app.UseMvc();
         }
     }

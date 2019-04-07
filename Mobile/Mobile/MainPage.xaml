@@ -26,7 +26,7 @@
             <ColumnDefinition Width="Auto"/>
         </Grid.ColumnDefinitions>
         <StackLayout x:Name="head" Grid.Row="0" Grid.Column="0"  IsVisible="{Binding IsNoInternet}">
-            <Label Text="No Internet" FontFamily="{StaticResource Rob}" HorizontalOptions="CenterAndExpand"/>
+            <Label Text="{Binding ErrorMessage}" FontFamily="{StaticResource Rob}" HorizontalOptions="CenterAndExpand"/>
             <Label Text="😥" TextColor="{StaticResource Primary}" FontSize="50" FontFamily="{StaticResource Rob}" HorizontalOptions="CenterAndExpand"/>
         </StackLayout>
         <ListView x:Name="List_View" HasUnevenRows="True" ItemsSource="{Binding Loaders}"

@@ -23,6 +23,9 @@ namespace Mobile.Models
 
     public class ConfessLoader
     {
+        [BsonId]
+        [BsonRepresentation(MongoDB.Bson.BsonType.ObjectId)]
+        public string Id { get; set; } = MongoDB.Bson.ObjectId.GenerateNewId().ToString();
         public string Guid { get; set; } = string.Empty;
         public string Title { get; set; } = string.Empty;
         public string Body { get; set; } = string.Empty;
@@ -37,6 +40,7 @@ namespace Mobile.Models
         public string CommentLogo { get; set; } = Constants.FontAwe.Comments;
         public string Share_Logo { get; set; } = Constants.FontAwe.Share;
 
+       
         public Color LikeColor { get; set; }
         public Color DislikeColor { get; set; }
 

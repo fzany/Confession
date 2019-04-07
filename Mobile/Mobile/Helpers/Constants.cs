@@ -24,11 +24,16 @@ namespace Mobile.Helpers
         public const string Logged = "Logged";
         public const string UserRegistered = "UserRegistered";
         public const string No_Internet = "No Internet";
+        public const string No_Data = "Empty List";
         public const string chatname = "chatname";
+        public const string DefaultName = "Lagbaja";
 
         public const string ReloadViewPage = "rvp";
 
-       // public const string BaseURL = "https://femi.azurewebsites.net/";
+        public const string OFFLINE_DATABASE_NAME = "conDb";
+
+
+        // public const string BaseURL = "https://femi.azurewebsites.net/";
         public const string BaseURL = "https://confessbackend.azurewebsites.net/";
         public const string ContentTypeHeaderJson = "application/json";
         public const string AuthorizationHeaderType = "Bearer";

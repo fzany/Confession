@@ -1,5 +1,6 @@
 ﻿using Microsoft.AppCenter.Crashes;
 using Mobile.Helpers;
+using Mobile.Helpers.Local;
 using System;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
@@ -14,16 +15,7 @@ namespace Mobile.Models
         public ObservableCollection<ConfessLoader> Loaders { get; set; }
         public LoadMode Mode = LoadMode.None;
         public string CurrentCategory = string.Empty;
-        private bool isNoInternet;
-        public bool IsNoInternet
-        {
-            get => isNoInternet;
-            set
-            {
-                isNoInternet = value;
-                OnPropertyChanged(nameof(IsNoInternet));
-            }
-        }
+
         public event PropertyChangedEventHandler PropertyChanged;
 
         private bool isBusy;
@@ -37,10 +29,32 @@ namespace Mobile.Models
             }
         }
 
+        private string _ErrorMessage;
+        public string ErrorMessage
+        {
+            get => _ErrorMessage;
+            set
+            {
+                _ErrorMessage = value;
+                OnPropertyChanged(nameof(ErrorMessage));
+            }
+        }
+
+        private bool isErrorAvailable;
+        public bool IsErrorAvailable
+        {
+            get => isErrorAvailable;
+            set
+            {
+                isErrorAvailable = value;
+                OnPropertyChanged(nameof(IsErrorAvailable));
+            }
+        }
+
         public ConfessionViewModel()
         {
             Loaders = new ObservableCollection<ConfessLoader>();
-            IsNoInternet = false;
+            IsErrorAvailable = false;
             Task.Run(async () =>
             {
                 await LoadData();
@@ -56,37 +70,83 @@ namespace Mobile.Models
 
         public async Task LoadData()
         {
-            if (!Logic.IsInternet())
-            {
-                DependencyService.Get<IMessage>().ShortAlert(Constants.No_Internet);
-                IsNoInternet = true;
-                return;
-            }
-
+            ObservableCollection<ConfessLoader> TempLoaders = new ObservableCollection<ConfessLoader>();
+            //if (!Logic.IsInternet())
+            //{
+            //    DependencyService.Get<IMessage>().ShortAlert(Constants.No_Internet);
+            //    IsErrorAvailable = true;
+            //    ErrorMessage = Constants.No_Internet;
+            //    return;
+            //    TempLoaders = LocalStore.Confession.
+            //}
             try
             {
                 IsBusy = true;
-                ObservableCollection<ConfessLoader> TempLoaders = new ObservableCollection<ConfessLoader>();
                 switch (Mode)
                 {
                     case LoadMode.None:
                         {
-                            TempLoaders = await Store.ConfessClass.FetchAllConfess();
-                            SetLoaders(TempLoaders);
+                            if (!Logic.IsInternet())
+                            {
+                                TempLoaders = LocalStore.Confession.FetchAllLoaders();
+                            }
+                            else
+                            {
+                                TempLoaders = await Store.ConfessClass.FetchAllConfess();
+                                if (TempLoaders == null || TempLoaders.Count == 0)
+                                {
+                                    TempLoaders = LocalStore.Confession.FetchAllLoaders();
+                                }
+                                else
+                                {
+                                    LocalStore.Confession.SaveLoaders(TempLoaders);
+                                }
+                            }
                             break;
                         }
                     case LoadMode.Category:
                         {
-                            TempLoaders = await Store.ConfessClass.FetchConfessByCategory(CurrentCategory);
-                            SetLoaders(TempLoaders);
+                            if (!Logic.IsInternet())
+                            {
+                                TempLoaders = LocalStore.Confession.FetchByCategory(CurrentCategory);
+                            }
+                            else
+                            {
+                                TempLoaders = await Store.ConfessClass.FetchConfessByCategory(CurrentCategory);
+                                if (TempLoaders == null || TempLoaders.Count == 0)
+                                {
+                                    TempLoaders = LocalStore.Confession.FetchByCategory(CurrentCategory);
+                                }
+                                else { LocalStore.Confession.SaveLoaders(TempLoaders); }
+                            }
                             break;
                         }
                     case LoadMode.Mine:
                         {
-                            TempLoaders = await Store.ConfessClass.FetchMyConfessions();
-                            SetLoaders(TempLoaders);
+                            if (!Logic.IsInternet())
+                            {
+                                TempLoaders = await LocalStore.Confession.FetchMine();
+                            }
+                            else
+                            {
+                                TempLoaders = await Store.ConfessClass.FetchMyConfessions();
+                                if (TempLoaders == null || TempLoaders.Count == 0)
+                                {
+                                    TempLoaders = await LocalStore.Confession.FetchMine();
+                                }
+                                else { LocalStore.Confession.SaveLoaders(TempLoaders); }
+                            }
                             break;
                         }
+                }
+                if (TempLoaders == null || TempLoaders.Count == 0)
+                {
+                    IsErrorAvailable = true;
+                    ErrorMessage = Constants.No_Data;
+                }
+                else
+                {
+                    SetLoaders(TempLoaders);
                 }
 
             }
@@ -97,7 +157,7 @@ namespace Mobile.Models
             finally
             {
                 IsBusy = false;
-                IsNoInternet = false;
+                //  ErrorMessage = false;
             }
         }
 

@@ -17,7 +17,7 @@ namespace Mobile
             _confessionViewModel = new ConfessionViewModel() { Mode = LoadMode.None };
             List_View.BindingContext = _confessionViewModel;
             head.IsVisible = false;
-            head.BindingContext = _confessionViewModel.IsNoInternet;
+            head.BindingContext = _confessionViewModel.IsErrorAvailable;
             Subscriptions();
 
         }

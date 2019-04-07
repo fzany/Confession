@@ -33,6 +33,7 @@ namespace Shared
         public string Date { get; set; } = string.Empty;
         public string Owner_Guid { get; set; } = string.Empty;
         public DateTime DateReal { get; set; } = DateTime.UtcNow;
+        public string Confess_Guid { get; set; } = string.Empty;
 
         public string LikeColorString { get; set; } = string.Empty;
         public string DislikeColorString { get; set; } = string.Empty;

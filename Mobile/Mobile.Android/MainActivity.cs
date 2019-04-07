@@ -27,7 +27,7 @@ namespace Mobile.Droid
             // Android.Gms.Ads.MobileAds.Initialize(ApplicationContext, Mobile.Helpers.AppConstants.AppId);
             global::Xamarin.Forms.Forms.Init(this, savedInstanceState);
             MobileAds.Initialize(ApplicationContext, Mobile.Helpers.AppConstants.AppId);
-            Push.PushNotificationReceived += Push_PushNotificationReceived;
+           // Push.PushNotificationReceived += Push_PushNotificationReceived;
 
            // string RoomId = Intent.GetStringExtra("key1");
            // string ChatId = Intent.GetStringExtra("key2");
