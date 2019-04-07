@@ -1,11 +1,10 @@
 ﻿using Microsoft.AppCenter.Crashes;
 using Mobile.Helpers;
+using Mobile.Helpers.Local;
 using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using Xamarin.Forms;
 
@@ -53,7 +52,7 @@ namespace Mobile.Models
             {
                 if (arg != null)
                 {
-                    ChatRooms.FirstOrDefault(g=>g.Id == arg.Id).IamMember = arg.IamMember;
+                    ChatRooms.FirstOrDefault(g => g.Id == arg.Id).IamMember = arg.IamMember;
                     PropertyChanged?.Invoke(this,
        new PropertyChangedEventArgs(nameof(ChatRooms)));
                 }
@@ -78,28 +77,47 @@ namespace Mobile.Models
 
         public async Task LoadData()
         {
+            ObservableCollection<ChatRoomLoader> ChatRoomsTemp = new ObservableCollection<ChatRoomLoader>();
             if (!Logic.IsInternet())
             {
-                DependencyService.Get<IMessage>().ShortAlert(Constants.No_Internet);
-                IsNoInternet = true;
-                return;
+                ChatRoomsTemp = LocalStore.ChatRoom.GetAllRooms();
+                if (ChatRoomsTemp == null || ChatRoomsTemp.Count == 0)
+                {
+                    DependencyService.Get<IMessage>().ShortAlert(Constants.No_Internet);
+                    IsNoInternet = true;
+                }
             }
-
-            try
+            else
             {
-                IsBusy = true;
-                ChatRooms = await Store.ChatClass.Rooms();
-                PropertyChanged?.Invoke(this,
-      new PropertyChangedEventArgs(nameof(ChatRooms)));
-            }
-            catch (Exception ex)
-            {
-                Crashes.TrackError(ex);
-            }
-            finally
-            {
-                IsBusy = false;
-                IsNoInternet = false;
+                try
+                {
+                    IsBusy = true;
+                    ChatRoomsTemp = await Store.ChatClass.Rooms();
+                    if (ChatRoomsTemp == null || ChatRoomsTemp.Count == 0)
+                    {
+                        ChatRoomsTemp = LocalStore.ChatRoom.GetAllRooms();
+                        if (ChatRoomsTemp == null || ChatRoomsTemp.Count == 0)
+                        {
+                            DependencyService.Get<IMessage>().ShortAlert(Constants.No_Internet);
+                            IsNoInternet = true;
+                        }
+                    }
+                    else
+                    {
+                        LocalStore.ChatRoom.SaveLoaders(ChatRoomsTemp);
+                    }
+                    ChatRooms = ChatRoomsTemp;
+                    PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(ChatRooms)));
+                }
+                catch (Exception ex)
+                {
+                    Crashes.TrackError(ex);
+                }
+                finally
+                {
+                    IsBusy = false;
+                    IsNoInternet = false;
+                }
             }
         }
     }

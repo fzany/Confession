@@ -9,7 +9,9 @@ namespace Mobile.Models
 {
     public class ChatRoomLoader
     {
-        public string Id { get; set; }
+        [BsonId]
+        [BsonRepresentation(MongoDB.Bson.BsonType.ObjectId)]
+        public string Id { get; set; } 
         public string Title { get; set; }
         public string MembersCountLogo { get; set; }= Constants.FontAwe.Users;
         public string MembersCount { get; set; } = 0.ToString();
@@ -47,6 +49,9 @@ namespace Mobile.Models
 
     public class ChatLoader
     {
+        [BsonId]
+        [BsonRepresentation(MongoDB.Bson.BsonType.ObjectId)]
+        public string Id { get; set; } = MongoDB.Bson.ObjectId.GenerateNewId().ToString();
         public string ChatId { get; set; }
         public string Body { get; set; }
         public string SenderName { get; set; }

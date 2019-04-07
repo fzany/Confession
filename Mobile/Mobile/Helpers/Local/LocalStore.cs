@@ -134,5 +134,34 @@ namespace Mobile.Helpers.Local
                 Local.ChatLoader.Delete(g => g.ChatId == guid);
             }
         }
+
+        public static class ChatRoom
+        {
+            public static ObservableCollection<ChatRoomLoader> GetAllRooms()
+            {
+                return new ObservableCollection<ChatRoomLoader>(Local.ChatRoomLoader.FindAll());
+            }
+            public static void SaveLoaders(ObservableCollection<ChatRoomLoader> loaders)
+            {
+                ObservableCollection<ChatRoomLoader> insert_loaders = new ObservableCollection<ChatRoomLoader>();
+                foreach (ChatRoomLoader load in loaders)
+                {
+                    if (Local.ChatRoomLoader.Exists(d => d.Id == load.Id))
+                    {
+                        //update such confession
+                        Local.ChatRoomLoader.Update(load);
+                    }
+                    else
+                    {
+                        insert_loaders.Add(load);
+                    }
+                }
+                if (insert_loaders.Count > 0)
+                {
+                    Local.ChatRoomLoader.InsertBulk(insert_loaders);
+                }
+            }
+
+        }
     }
 }

@@ -138,7 +138,7 @@ namespace Mobile.Models
                     Quote = incomingChat.Quote,
                     QuotedChatAvailable = incomingChat.QuotedChatAvailable,
                     ChatId = incomingChat.Id,
-                    IsSent = true
+                    IsSent = true,
                 };
 
                 try
@@ -147,7 +147,7 @@ namespace Mobile.Models
                     if (incomingChat.SenderKey != await Logic.GetKey() & incomingChat.Room_ID == Room_ID)
                     {
                         insert_loader.IsMine = false;
-                      
+
                         #region MyRegion
                         //if (LastMessageVisible)
                         //{
@@ -170,6 +170,7 @@ namespace Mobile.Models
                         insert_loader.IsMine = true;
                         Messages.FirstOrDefault(d => d.ChatId == incomingChat.Id).IsSent = true;
                     }
+                    LocalStore.Chat.SaveLoader(insert_loader);
 
                 }
                 catch (Exception ex)
@@ -179,8 +180,6 @@ namespace Mobile.Models
                 finally
                 {
                     OnPropertyChanged(nameof(Messages));
-                    LocalStore.Chat.SaveLoader(insert_loader);
-
                 }
 
             });
