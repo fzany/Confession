@@ -182,11 +182,14 @@ namespace Mobile.Models
                 }
 
                 //set ad visibility to every 6 items
-                adCounter++;
-                if (adCounter >= 10)
+                if (Logic.IsInternet())
                 {
-                    load.IsAdVisible = true;
-                    adCounter = 0;
+                    adCounter++;
+                    if (adCounter >= 10)
+                    {
+                        load.IsAdVisible = true;
+                        adCounter = 0;
+                    }
                 }
 
             }

@@ -3,7 +3,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
           xmlns:local="clr-namespace:Mobile.Helpers"
           x:Class="Mobile.Cells.IncomingViewCell">
-    <local:DraggableView x:Name="dragView"  VerticalOptions="CenterAndExpand" BackgroundColor="Transparent"
+    <local:DraggableView x:Name="dragView"  VerticalOptions="CenterAndExpand" BackgroundColor="Transparent" HorizontalOptions="StartAndExpand"
                           DragMode="Touch" DragDirection="Horizontal" ClassId="{Binding ChatId}" DragEnd="dragView_DragEnd" >
         <local:DraggableView.Content>
             <Frame BackgroundColor="White" CornerRadius="5"
@@ -12,11 +12,11 @@
               Margin="10,5,80,5">
                 <StackLayout Spacing="5" Padding="0">
                     <Label Text="{Binding SenderName}" FontSize="Small" TextColor="{Binding SenderColor}" FontAttributes="Bold" />
-                    <Frame IsVisible="{Binding QuotedChatAvailable}" CornerRadius="5" Padding="0" HasShadow="False">
+                    <Frame IsVisible="{Binding QuotedChatAvailable}" HorizontalOptions="FillAndExpand" CornerRadius="5" Padding="0" HasShadow="False">
                         <Grid BindingContext="{Binding Quote}" BackgroundColor="{StaticResource PrimaryGray}">
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="Auto" />
-                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="Auto" />
                             </Grid.ColumnDefinitions>
                             <BoxView Color="{Binding SenderColor}" WidthRequest="4" VerticalOptions="FillAndExpand" Grid.Column="0"/>
                             <StackLayout Spacing="3" Grid.Column="1">

@@ -40,8 +40,7 @@ namespace Mobile
 
             if (!item.IamMember)
             {
-                string entryinfo = string.Empty;
-                entryinfo = $"Hey {chatname}, {Environment.NewLine}This is a new group and I feel you might just want to change your display name. {Environment.NewLine}Do this by typing something below or get a random name.{Environment.NewLine} Join the room afterwards to proceed.";
+                introText.Text = $"Hey {chatname}, {Environment.NewLine}This is a new group and I feel you might just want to change your display name. {Environment.NewLine}Do this by typing something below or tap 'Random' to get a random name.{Environment.NewLine}Join the room afterwards to proceed.";
                 introText.IsVisible = true;
                 save_name_button.IsVisible = false;
             }
@@ -92,7 +91,7 @@ namespace Mobile
             if (item.IamMember)
             {
                 await Store.ChatClass.LeaveRoom(item.Id);
-                DependencyService.Get<IMessage>().LongAlert("Left Successfully.");
+                DependencyService.Get<IMessage>().ShortAlert("Left Successfully.");
                 //notify viewmodel
                 item.IamMember = false;
                 Navigation.PopModalAsync();
@@ -103,7 +102,7 @@ namespace Mobile
             {
                 await Logic.CreateChatName(ChatName.Text);
                 await Store.ChatClass.JoinRoom(item.Id);
-                DependencyService.Get<IMessage>().LongAlert("Joined Successfully.");
+                DependencyService.Get<IMessage>().ShortAlert("Joined Successfully.");
                 //notify viewmodel
                 item.IamMember = true;
                 Navigation.PopModalAsync();

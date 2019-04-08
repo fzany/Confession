@@ -8,8 +8,6 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
-using System.Net.WebSockets;
-using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Input;
 using Xamarin.Forms;
@@ -143,33 +141,36 @@ namespace Mobile.Models
 
                 try
                 {
-
-                    if (incomingChat.SenderKey != await Logic.GetKey() & incomingChat.Room_ID == Room_ID)
+                    if (incomingChat.Room_ID == Room_ID)
                     {
-                        insert_loader.IsMine = false;
+                        if (incomingChat.SenderKey != await Logic.GetKey())
+                        {
+                            insert_loader.IsMine = false;
 
-                        #region MyRegion
-                        //if (LastMessageVisible)
-                        //{
-                        //    Messages.Add(insert_loader);
-                        //}
-                        //else
-                        //{
-                        //    DelayedMessages.Enqueue(insert_loader);
-                        //    PendingMessageCount++;
-                        //} 
-                        #endregion
+                            #region MyRegion
+                            //if (LastMessageVisible)
+                            //{
+                            //    Messages.Add(insert_loader);
+                            //}
+                            //else
+                            //{
+                            //    DelayedMessages.Enqueue(insert_loader);
+                            //    PendingMessageCount++;
+                            //} 
+                            #endregion
 
-                        Messages.Add(insert_loader);
-                        Logic.VibrateNow();
+                            Messages.Add(insert_loader);
+                            Logic.VibrateNow();
 
+                        }
+                        else
+                        {
+                            //the message is mine. so update delivered.
+                            insert_loader.IsMine = true;
+                            Messages.FirstOrDefault(d => d.ChatId == incomingChat.Id).IsSent = true; 
+                        }
                     }
-                    else
-                    {
-                        //the message is mine. so update delivered.
-                        insert_loader.IsMine = true;
-                        Messages.FirstOrDefault(d => d.ChatId == incomingChat.Id).IsSent = true;
-                    }
+
                     LocalStore.Chat.SaveLoader(insert_loader);
 
                 }
@@ -200,6 +201,9 @@ namespace Mobile.Models
                         QuotedChatAvailable = IsQuotedChatAvailable
 
                     };
+                    TextToSend = string.Empty;
+                    OnPropertyChanged(nameof(TextToSend));
+
                     ChatLoader newMsg = new ChatLoader()
                     {
                         Body = new_send.Body,
@@ -209,7 +213,7 @@ namespace Mobile.Models
                         QuotedChatAvailable = new_send.QuotedChatAvailable,
                         ChatId = new_send.Id,
                         IsSent = false,
-                        IsAd = false
+                        IsAd = false,
                     };
                     if (IsQuotedChatAvailable & QuotedChat != null)
                     {
@@ -245,9 +249,8 @@ namespace Mobile.Models
                     //await Store.ChatClass.Add(new Chat() { Body = TextToSend, Room_ID = Room_ID, SenderKey = await Logic.GetKey(), SenderName = await Logic.GetChatName() });
                     // await Task.Delay(60);
                     MessagingCenter.Send<object, ChatRoomLoader>(this, Constants.update_chatroom_chat_list, new ChatRoomLoader() { Id = Room_ID, ChatsCount = (Messages.Count + 1).ToString() });
-                    TextToSend = string.Empty;
+
                     OnPropertyChanged(nameof(Messages));
-                    OnPropertyChanged(nameof(TextToSend));
                     RemoveQuoteCommand.Execute(null);
                 }
 
@@ -327,7 +330,7 @@ namespace Mobile.Models
         {
             MessagingCenter.Subscribe<object>(this, Constants.re_open_connection, async (sender) =>
             {
-                if (!IsConnected)
+                if (!IsHubConnected())
                 {
                     if (string.IsNullOrEmpty(Room_ID))
                     {
@@ -339,14 +342,9 @@ namespace Mobile.Models
             });
         }
 
-        private bool CanSendMessage(string message)
-        {
-            return IsConnected && !string.IsNullOrEmpty(message);
-        }
-
-        private readonly ClientWebSocket client;
-        private readonly CancellationTokenSource cts;
-        public bool IsConnected => client.State == WebSocketState.Open;
+        #region WebSocket
+        // private readonly ClientWebSocket client;
+        // private readonly CancellationTokenSource cts;
 
         //private async void ConnectToServerAsync()
         //{
@@ -433,9 +431,11 @@ namespace Mobile.Models
         //    }
         //}
 
+        #endregion
         private async Task LoadData()
         {
             //Connect to the hub
+            IsBusy = true;
             await ConnectToHub();
             ObservableCollection<ChatLoader> result = new ObservableCollection<ChatLoader>();
             try
@@ -468,6 +468,7 @@ namespace Mobile.Models
                                  OnPropertyChanged(nameof(Messages));
                              }
                          });
+                IsBusy = false;
             }
         }
 

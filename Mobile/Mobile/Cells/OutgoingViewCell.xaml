@@ -3,7 +3,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
           xmlns:local="clr-namespace:Mobile.Helpers"
           x:Class="Mobile.Cells.OutgoingViewCell">
-    <local:DraggableView x:Name="dragView"  VerticalOptions="CenterAndExpand" BackgroundColor="Transparent"
+    <local:DraggableView x:Name="dragView"  VerticalOptions="CenterAndExpand" HorizontalOptions="EndAndExpand" BackgroundColor="Transparent"
                           DragMode="Touch" DragDirection="Horizontal" ClassId="{Binding ChatId}" DragEnd="dragView_DragEnd">
         <local:DraggableView.Content>
             <Frame BackgroundColor="LightBlue" CornerRadius="5"
@@ -11,11 +11,11 @@
             HasShadow="false" ClassId="{Binding ChatId}"
             Margin="80,5,10,5">
                 <StackLayout>
-                    <Frame IsVisible="{Binding QuotedChatAvailable}" CornerRadius="5" Padding="0" HasShadow="False">
+                    <Frame IsVisible="{Binding QuotedChatAvailable}" HorizontalOptions="FillAndExpand" CornerRadius="5" Padding="0" HasShadow="False">
                         <Grid BindingContext="{Binding Quote}" BackgroundColor="{StaticResource PrimaryGray}">
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="Auto" />
-                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="Auto" />
                             </Grid.ColumnDefinitions>
                             <BoxView Color="{Binding SenderColor}" WidthRequest="4" VerticalOptions="FillAndExpand" Grid.Column="0"/>
                             <StackLayout Spacing="3" Grid.Column="1">
@@ -24,7 +24,10 @@
                             </StackLayout>
                         </Grid>
                     </Frame>
-                    <Label Text="{Binding Body}" TextColor="Black"/>
+                    <StackLayout Orientation="Horizontal">
+                        <Label VerticalOptions="CenterAndExpand" Text="{Binding Body}" TextColor="Black"/>
+                        <Label VerticalOptions="EndAndExpand" HorizontalOptions="EndAndExpand" Text="✔" IsVisible="{Binding IsSent}" TextColor="{StaticResource PrimaryDark}"/>
+                    </StackLayout>
                 </StackLayout>
             </Frame>
         </local:DraggableView.Content>

@@ -9,7 +9,7 @@
                 <Label x:Name="titleLabel" FontSize="Large" FontFamily="{StaticResource Rob}" FontAttributes="Bold" TextColor="White" VerticalOptions="CenterAndExpand"/>
             </StackLayout>
             <Label Text="Quick Settings" FontSize="Large" FontAttributes="Bold"/>
-            <Label x:Name="introText" VerticalOptions="CenterAndExpand" />
+            <Label x:Name="introText" VerticalOptions="CenterAndExpand" FontSize="Medium" />
             <StackLayout VerticalOptions="EndAndExpand">
                 <Label Text="Chat Name" FontSize="Medium" VerticalOptions="Center"/>
                 <Grid>
