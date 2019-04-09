@@ -30,16 +30,15 @@ namespace Backend.Helpers
                     title = "New Confession 📢!",
                     body = confess.Body,
                     name = Guid.NewGuid().ToString().Replace("-", ""),
-                    custom_data = new CustomData()
-                    {
-                        key1 = confess.Guid,
-                        key2 = confess.Owner_Guid,
-                        type = "Confession"
-                    }
+                    custom_data = new Dictionary<string, string> { { "key1", confess.Guid },
+                     { "key2", confess.Owner_Guid },
+                     { "type", "Confession" },
+                     { "sender", confess.Owner_Guid }}
                 }
             };
             await PushToServer(dataToPush);
         }
+
 
         internal static async void SendChatNotification(Chat chat)
         {
@@ -65,7 +64,13 @@ namespace Backend.Helpers
                     title = $"Chat from {chat.SenderName} 📩!",
                     body = chat.Body,
                     name = Guid.NewGuid().ToString().Replace("-", ""),
-                    custom_data = new CustomData() { key1 = chat.Room_ID, key2 = chat.Id, type = "Chat" }
+                    custom_data = new Dictionary<string, string> { { "key1", chat.Room_ID },
+                     { "key2", chat.Id },
+                     { "type", "Chat" },
+                     { "sender", chat.SenderKey }}
+
+
+
                 },
                 notification_target = new NotificationTarget()
                 {
@@ -73,6 +78,40 @@ namespace Backend.Helpers
                 }
             };
             await PushToServer(dataToPush);
+        }
+
+        internal static async void SendCommentNotification(CommentPoster data)
+        {
+            //get the owner of the comment
+            UserData owner = Store.UserClass.FetchByConfessGuid(data.ConfessGuid);
+            if (owner != null)
+            {
+                if (!string.IsNullOrEmpty(owner.AppCenterID))
+                {
+                    //send notification to this user.
+                    PushToDevices dataToPush = new PushToDevices()
+                    {
+                        notification_content = new NotificationContent()
+                        {
+                            title = $"New Comment 📨!",
+                            body = data.Comment.Body,
+                            name = Guid.NewGuid().ToString().Replace("-", ""),
+                            custom_data = new Dictionary<string, string> { { "key1", data.ConfessGuid },
+                     { "key2", data.Comment.Id },
+                     { "type", "Comment" },
+                     { "sender", data.Comment.Owner_Guid }}
+
+
+
+                        },
+                        notification_target = new NotificationTarget()
+                        {
+                            devices = new List<string>() { owner.AppCenterID }
+                        }
+                    };
+                    await PushToServer(dataToPush);
+                }
+            }
         }
 
         private static async Task PushToServer(PushToDevices push)
@@ -95,19 +134,13 @@ namespace Backend.Helpers
         }
 
     }
-    public class CustomData
-    {
-        public string key1 { get; set; } = string.Empty;
-        public string key2 { get; set; } = string.Empty;
-        public string type { get; set; } = string.Empty;
-    }
 
     public class NotificationContent
     {
         public string name { get; set; }
         public string title { get; set; }
         public string body { get; set; }
-        public CustomData custom_data { get; set; }
+        public Dictionary<string, string> custom_data { get; set; }
     }
 
     public class NotificationTarget

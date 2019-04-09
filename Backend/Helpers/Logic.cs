@@ -29,7 +29,10 @@ namespace Backend.Helpers
             }
             return items;
         }
-
+        internal static string GetGuid()
+        {
+            return MongoDB.Bson.ObjectId.GenerateNewId().ToString();
+        }
         public static string[] Categories = { "Love", "Sex", "Family",
             "Food", "Religion","Travel",
             "General","Money", "Health",

@@ -2,7 +2,9 @@
 using MongoDB.Bson.Serialization.Attributes;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Text;
+using System.Threading.Tasks;
 using Xamarin.Forms;
 
 namespace Mobile.Models
@@ -45,6 +47,10 @@ namespace Mobile.Models
         //quotedChat
         public bool QuotedChatAvailable { get; set; }
         public Quote Quote { get; set; }
+
+        //image
+        public string ImageUrl { get; set; }
+        public bool IsImageAvailable { get; set; }
     }
 
     public class ChatLoader
@@ -55,8 +61,10 @@ namespace Mobile.Models
         public string ChatId { get; set; }
         public string Body { get; set; }
         public string SenderName { get; set; }
+        public string SenderKey { get; set; }
         [BsonDateTimeOptions(Kind = DateTimeKind.Utc)]
         public DateTime Date { get; set; } = DateTime.UtcNow;
+        public string Time => Logic.GetTimeFromDate(Date);
         public bool IsMine { get; set; }
         public string Room_ID { get; set; } = string.Empty;
         public bool IsAd { get; set; }
@@ -67,13 +75,36 @@ namespace Mobile.Models
         public Quote Quote { get; set; }
 
         public bool IsSent { get; set; }
+
+        //image
+        public string ImageUrl { get; set; }
+        public bool IsImageAvailable { get; set; }
+
+        //internalImage
+        public ImageSource ImageSource { get; set; }
+
     }
-  
+
     public class Quote
     {
         public string Body { get; set; }
-        public string SenderName { get; set; }
-        public Color SenderColor => Logic.GetColourFromName(SenderName);
-        public string SenderKey { get; set; }
+        public string OwnerName { get; set; }
+        public string OwnerKey { get; set; }
+        public Color SenderColor => Logic.GetColourFromName(OwnerName);
+        public string SenderNameShow { get; set; }
+
+        //image
+        public string ImageUrl { get; set; }
+        public bool IsImageAvailable { get; set; }
+
+        //internalImage
+        public ImageSource ImageSource { get; set; }
+
+    }
+
+    public class ImageSender
+    {
+        public Stream stream { get; set; }
+        public string body { get; set; }
     }
 }

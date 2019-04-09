@@ -1,13 +1,12 @@
-﻿using System;
+﻿using Backend.Helpers;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using Shared;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
-using Backend.Helpers;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-using Shared;
 
 namespace Backend.Controllers
 {
@@ -26,7 +25,7 @@ namespace Backend.Controllers
             {
                 //prepare responses
                 List<ChatRoomLoader> response = Store.ChatClass.FetchRooms(userKey);
-                response = response.OrderBy(d=>d.Title).ToList();
+                response = response.OrderBy(d => d.Title).ToList();
                 //return data
                 return Ok(response);
             }
@@ -45,7 +44,7 @@ namespace Backend.Controllers
             try
             {
                 //prepare responses
-                 Store.ChatClass.JoinRoom(userKey, id);
+                Store.ChatClass.JoinRoom(userKey, id);
                 //return data
                 return Ok();
             }
@@ -104,6 +103,30 @@ namespace Backend.Controllers
             {
                 List<ChatLoader> loader = Store.ChatClass.AddChat(data, userKey);
                 return Ok(loader);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, ex.ToString());
+            }
+        }
+
+        [HttpPost]
+        [Route("chat/postimage")]
+        public async Task<ActionResult<string>> PostImageAsync()
+        {
+            ClaimsIdentity claimsIdentity = this.User.Identity as ClaimsIdentity;
+            string userKey = claimsIdentity.FindFirst(ClaimTypes.Name)?.Value;
+            try
+            {
+                System.IO.Stream stream = Request.Body;
+                if (stream == null)
+                {
+                    return BadRequest();
+                }
+
+                string ImageUrl = await Cloud.SaveChatImageAsync(stream);
+
+                return Ok(ImageUrl);
             }
             catch (Exception ex)
             {

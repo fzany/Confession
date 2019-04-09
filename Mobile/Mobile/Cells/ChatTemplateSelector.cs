@@ -1,17 +1,14 @@
-﻿using Mobile.Helpers;
-using Mobile.Models;
-using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using Mobile.Models;
 using Xamarin.Forms;
 
 namespace Mobile.Cells
 {
-    class ChatTemplateSelector : DataTemplateSelector
+    internal class ChatTemplateSelector : DataTemplateSelector
     {
-        DataTemplate incomingDataTemplate;
-        DataTemplate outgoingDataTemplate;
-        DataTemplate AdDataTemplate;
+        private readonly DataTemplate incomingDataTemplate;
+        private readonly DataTemplate outgoingDataTemplate;
+        private readonly DataTemplate AdDataTemplate;
+
 
         public ChatTemplateSelector()
         {
@@ -23,10 +20,22 @@ namespace Mobile.Cells
         protected override DataTemplate OnSelectTemplate(object item, BindableObject container)
         {
             if (!(item is ChatLoader messageVm))
+            {
                 return null;
+            }
+
             if (messageVm.IsAd)
+            {
                 return AdDataTemplate;
-            return (messageVm.IsMine) ? outgoingDataTemplate : incomingDataTemplate;
+            }
+            if (messageVm.IsMine)
+            {
+                return outgoingDataTemplate;
+            }
+            else
+            {
+                return incomingDataTemplate;
+            }
         }
 
     }

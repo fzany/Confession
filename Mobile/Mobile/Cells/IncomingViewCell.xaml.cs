@@ -27,6 +27,7 @@ namespace Mobile.Cells
                     if (AppConstants.GetSwipe(chatID, view.DragValue))
                     {
                         parent_page_model.OnQuoteCommand.Execute(chatID);
+                        (this.Parent.Parent.Parent as ChatPage).FocusCommand.Execute(null);
                     }
                 }
             }

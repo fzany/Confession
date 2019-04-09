@@ -22,6 +22,8 @@ namespace Mobile.Droid
            // Xamarin.Essentials.Platform.Init(this, savedInstanceState); // add this line to your code
             // Create your application here
             Intent intent = new Intent(this, typeof(MainActivity));
+            if (Intent.Extras != null)
+                intent.PutExtras(Intent.Extras);
             StartActivity(intent);
             Finish();
         }

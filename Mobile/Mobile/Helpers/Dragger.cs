@@ -39,6 +39,19 @@ namespace Mobile.Helpers
             set { SetValue(DragModeProperty, value); }
         }
 
+        public static readonly BindableProperty DragToProperty = BindableProperty.Create(
+           propertyName: "DragTo",
+           returnType: typeof(DragTo),
+           declaringType: typeof(DraggableView),
+           defaultValue: DragTo.LeftToRight,
+           defaultBindingMode: BindingMode.TwoWay);
+
+        public DragTo DragTo
+        {
+            get { return (DragTo)GetValue(DragToProperty); }
+            set { SetValue(DragToProperty, value); }
+        }
+
         public static readonly BindableProperty IsDraggingProperty = BindableProperty.Create(
           propertyName: "IsDragging",
           returnType: typeof(bool),
@@ -131,6 +144,12 @@ namespace Mobile.Helpers
         Vertical,
         Horizontal
     }
+    public enum DragTo
+    {
+        RightToLeft,
+        LeftToRight
+    }
+
     public enum DragMode
     {
         Touch,

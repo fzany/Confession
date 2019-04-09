@@ -1,8 +1,11 @@
 ﻿<?xml version="1.0" encoding="UTF-8"?>
 <ContentView xmlns="http://xamarin.com/schemas/2014/forms" 
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:controls="clr-namespace:Mobile.Cells"
+             xmlns:views="clr-namespace:SuaveControls.Views;assembly=SuaveControls.FloatingActionButton"
+             xmlns:ffimageloading="clr-namespace:FFImageLoading.Forms;assembly=FFImageLoading.Forms"
              x:Class="Mobile.Cells.ChatInputBarView">
-    <Grid RowSpacing="0" 
+    <Grid RowSpacing="0" Margin="0,0,5,0"
            ColumnSpacing="0">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
@@ -11,10 +14,10 @@
             <ColumnDefinition Width="*" />
             <ColumnDefinition Width="Auto" />
         </Grid.ColumnDefinitions>
-        <Frame BackgroundColor="WhiteSmoke" Grid.Row="0" Padding="5" CornerRadius="5" Margin="5"
+        <Frame BackgroundColor="WhiteSmoke" Grid.Row="0" Padding="15,3" CornerRadius="30" Margin="5"
                  Grid.Column="0" >
-            <StackLayout Spacing="0" Padding="0">
-                <Frame IsVisible="{Binding IsQuotedChatAvailable}" CornerRadius="5" Padding="0" HasShadow="False">
+            <StackLayout Spacing="0" Padding="0" VerticalOptions="EndAndExpand">
+                <Frame Margin="0,5,0,0" IsVisible="{Binding IsQuotedChatAvailable}" CornerRadius="5" Padding="0" HasShadow="False">
                     <Grid BindingContext="{Binding QuotedChat}" BackgroundColor="{StaticResource PrimaryGray}">
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="Auto" />
@@ -23,9 +26,10 @@
                         </Grid.ColumnDefinitions>
                         <BoxView Color="{Binding SenderColor}" WidthRequest="4" VerticalOptions="FillAndExpand" Grid.Column="0"/>
                         <StackLayout ClassId="{Binding ChatId}" Spacing="3" Grid.Column="1">
-                            <Label FontAttributes="Bold" Text="{Binding SenderName}" TextColor="{Binding SenderColor}"/>
+                            <Label FontAttributes="Bold" Text="{Binding SenderNameShow}" TextColor="{Binding SenderColor}"/>
                             <Label Text="{Binding Body}" TextColor="Gray"/>
                         </StackLayout>
+                        <ffimageloading:CachedImage Grid.Column="2" WidthRequest="30" HeightRequest="30" IsVisible="{Binding IsImageAvailable}" Source="{Binding ImageSource}" DownsampleToViewSize="True"/>
                         <Label Margin="0,0,5,0" Grid.Column="2" ClassId="{Binding ChatId}" FontFamily="{StaticResource FSolid}" x:Name="Delete_Quote_Label" VerticalOptions="StartAndExpand" HorizontalOptions="EndAndExpand" TextColor="Gray" FontSize="Medium">
                             <Label.GestureRecognizers>
                                 <TapGestureRecognizer NumberOfTapsRequired="1" Tapped="Delete_Quote_Tapped"/>
@@ -33,25 +37,34 @@
                         </Label>
                     </Grid>
                 </Frame>
-                <Entry x:Name="chatTextInput" 
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="Auto" />
+                    </Grid.ColumnDefinitions>
+                    <controls:ExtendedEditorControl x:Name="chatTextInput" 
                  Text="{Binding TextToSend}" 
-                 Margin="1"  
+                 Margin="1"
                  Keyboard="Chat"  
+                 IsExpandable="true"
                  HorizontalOptions="FillAndExpand" 
-                 Placeholder="Type your message here"  
-                 Completed="Handle_Completed"
-                 ReturnType="Send"
-                 />
+                 PlaceholderColor="LightGray"
+                 Placeholder="Type your message here"
+                 Grid.Column="0" />
+                    <Label Grid.Column="1" FontFamily="{StaticResource FSolid}" x:Name="image_Label" VerticalOptions="CenterAndExpand" TextColor="Gray" FontSize="30">
+                        <Label.GestureRecognizers>
+                            <TapGestureRecognizer NumberOfTapsRequired="1" Tapped="PickImage_Tapped"/>
+                        </Label.GestureRecognizers>
+                    </Label>
+                </Grid>
             </StackLayout>
         </Frame>
-        <!--<Label Text="Send"
-               Grid.Row="0"
-               Grid.Column="1"
-               VerticalTextAlignment="Center">
-            <Label.GestureRecognizers>
-                <TapGestureRecognizer
-                      Tapped="Handle_Completed"/>
-            </Label.GestureRecognizers>
-        </Label>-->
+        <!--<views:FloatingActionButton Margin="0" Padding="0" Grid.Column="1" Grid.Row="0" VerticalOptions="EndAndExpand" HorizontalOptions="EndAndExpand" Image="sendchat.png" HeightRequest="90" WidthRequest="78" ButtonColor="{StaticResource PrimaryDark}" Clicked="Handle_Completed" />-->
+        <Frame BackgroundColor="{StaticResource PrimaryDark}" Padding="10" Grid.Column="1" Grid.Row="0" CornerRadius="50" VerticalOptions="CenterAndExpand" HorizontalOptions="FillAndExpand">
+            <Frame.GestureRecognizers>
+                <TapGestureRecognizer NumberOfTapsRequired="1" Tapped="Handle_Completed"/>
+            </Frame.GestureRecognizers>
+            <Image Source="sendchat.png" HeightRequest="20" WidthRequest="20" VerticalOptions="CenterAndExpand" HorizontalOptions="CenterAndExpand"/>
+        </Frame>
     </Grid>
 </ContentView>

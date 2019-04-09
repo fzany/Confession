@@ -55,6 +55,7 @@ namespace Backend.Controllers
             try
             {
                 ConfessLoader loader =Store.CommentClass.CreateComment(data);
+                Push.SendCommentNotification(data);
                 return Ok(loader);
             }
             catch (Exception ex)

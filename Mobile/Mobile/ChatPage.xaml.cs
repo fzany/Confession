@@ -1,7 +1,9 @@
-﻿using Mobile.Helpers;
+﻿using Mobile.Cells;
+using Mobile.Helpers;
 using Mobile.Models;
-using Newtonsoft.Json;
+using Plugin.Media;
 using System;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Input;
@@ -14,6 +16,8 @@ namespace Mobile
     public partial class ChatPage : ContentPage
     {
         public ICommand ScrollListCommand { get; set; }
+        public ICommand FocusCommand { get; set; }
+        public ICommand GetPhotoCommand { get; set; }
 
         private ChatRoomLoader chatRoomLoader;
         private ChatPageViewModel current_context;
@@ -37,12 +41,30 @@ namespace Mobile
                   ChatList.ScrollTo((this.BindingContext as ChatPageViewModel).Messages.Last(), ScrollToPosition.End, false)
               );
             });
+
+            FocusCommand = new Command(() =>
+            {
+                chatInput.FocusEntry();
+            });
+
+            GetPhotoCommand = new Command(async () =>
+            {
+                await Navigation.PushModalAsync(new CameraPage(chatRoomLoader));
+                chatInput.UnFocusEntry();
+            });
             MessagingCenter.Subscribe<object>(this, Constants.go_back, (sender) =>
             {
                 Navigation.PopModalAsync();
             });
-        }
 
+            MessagingCenter.Subscribe<object>(this, Constants.go_back, (sender) =>
+            {
+                Navigation.PopModalAsync();
+            });
+
+
+        }
+       
         protected override void OnDisappearing()
         {
             base.OnDisappearing();

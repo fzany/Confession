@@ -4,6 +4,7 @@ using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -42,6 +43,11 @@ namespace Mobile.Helpers
             return true;
         }
 
+        internal static string GetGuid()
+        {
+           return  MongoDB.Bson.ObjectId.GenerateNewId().ToString();
+        }
+
         public static Models.DeviceInfo GetDeviceInformation()
         {
             Models.DeviceInfo logger = new Models.DeviceInfo
@@ -57,7 +63,25 @@ namespace Mobile.Helpers
 
             return logger;
         }
+        public static string Ago(DateTime dateTime)
+        {
+            string result = string.Empty;
 
+            if (dateTime.Date == DateTime.Today.Date)
+                result = "Today".ToUpper();
+            else if (dateTime.Date == DateTime.Today.AddDays(-1).Date)
+                result = "Yesterday".ToUpper();
+            else
+            {
+                result = $"{dateTime.Day} {CultureInfo.CurrentCulture.DateTimeFormat.GetMonthName(dateTime.Month)} {dateTime.Year}";
+            }
+            return result;
+        }
+
+        internal static string GetTimeFromDate(DateTime date)
+        {
+            return date.ToString("hh:mm tt", CultureInfo.InvariantCulture);
+        }
 
         public static string DeviceInformation()
         {
@@ -93,6 +117,20 @@ namespace Mobile.Helpers
             sob.AppendLine($"Device Type: {Xamarin.Essentials.DeviceInfo.DeviceType}");
 
             return sob.ToString();
+        }
+
+        internal static async Task<string> GetTrueSenderName(string senderKey, string senderName)
+        {
+           if(senderKey == await GetKey())
+                return "You";
+            return senderName;
+        }
+
+        internal static string GetTrueSenderName(bool isMine, string senderName)
+        {
+            if (isMine)
+                return "You";
+            return senderName;
         }
 
         internal static async Task<ObservableCollection<MasterItem>> SetCategories()
@@ -307,6 +345,8 @@ namespace Mobile.Helpers
         }
         public static string FilterCharacters(string input)
         {
+            if (string.IsNullOrWhiteSpace(input))
+                return string.Empty;
             Regex regex = new Regex("[^a-zA-Z0-9]");
             return regex.Replace(input, "");
         }

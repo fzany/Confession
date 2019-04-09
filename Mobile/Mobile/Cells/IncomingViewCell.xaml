@@ -2,6 +2,7 @@
 <ViewCell xmlns="http://xamarin.com/schemas/2014/forms" 
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
           xmlns:local="clr-namespace:Mobile.Helpers"
+          xmlns:ffimageloading="clr-namespace:FFImageLoading.Forms;assembly=FFImageLoading.Forms"
           x:Class="Mobile.Cells.IncomingViewCell">
     <local:DraggableView x:Name="dragView"  VerticalOptions="CenterAndExpand" BackgroundColor="Transparent" HorizontalOptions="StartAndExpand"
                           DragMode="Touch" DragDirection="Horizontal" ClassId="{Binding ChatId}" DragEnd="dragView_DragEnd" >
@@ -17,15 +18,22 @@
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="Auto" />
                                 <ColumnDefinition Width="Auto" />
+                                <ColumnDefinition Width="Auto" />
                             </Grid.ColumnDefinitions>
                             <BoxView Color="{Binding SenderColor}" WidthRequest="4" VerticalOptions="FillAndExpand" Grid.Column="0"/>
                             <StackLayout Spacing="3" Grid.Column="1">
-                                <Label FontAttributes="Bold" Text="{Binding SenderName}" TextColor="{Binding SenderColor}"/>
+                                <Label FontAttributes="Bold" Text="{Binding SenderNameShow}" TextColor="{Binding SenderColor}"/>
                                 <Label Text="{Binding Body}" TextColor="Gray"/>
                             </StackLayout>
+                            <ffimageloading:CachedImage Grid.Column="2" WidthRequest="30" HeightRequest="30" IsVisible="{Binding IsImageAvailable}" Source="{Binding ImageSource}" DownsampleToViewSize="True"/>
+
                         </Grid>
                     </Frame>
-                    <Label Text="{Binding Body}" TextColor="Black"/>
+                    <ffimageloading:CachedImage WidthRequest="200" HeightRequest="200" CacheDuration="5" LoadingPlaceholder="load.gif" IsVisible="{Binding IsImageAvailable}" Source="{Binding ImageSource}" DownsampleToViewSize="True"/>
+                    <StackLayout Orientation="Horizontal">
+                        <Label Text="{Binding Body}" TextColor="Black" VerticalOptions="CenterAndExpand"/>
+                        <Label Text="{Binding Time}" TextColor="Gray" VerticalOptions="EndAndExpand"  FontSize="Micro"/>
+                    </StackLayout>
                 </StackLayout>
             </Frame>
         </local:DraggableView.Content>

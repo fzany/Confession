@@ -37,12 +37,17 @@ namespace Shared
         //quotedChat
         public bool QuotedChatAvailable { get; set; }
         public Quote Quote { get; set; }
+
+        //image
+        public string ImageUrl { get; set; }
+        public bool IsImageAvailable { get; set; }
     }
 
     public class ChatLoader
     {
         public string Body { get; set; }
         public string SenderName { get; set; }
+        public string SenderKey { get; set; }
         [BsonDateTimeOptions(Kind = DateTimeKind.Utc)]
         public DateTime Date { get; set; } = DateTime.UtcNow;
         public bool IsMine { get; set; }
@@ -52,11 +57,19 @@ namespace Shared
         //quotedChat
         public bool QuotedChatAvailable { get; set; }
         public Quote Quote { get; set; }
+
+        //image
+        public string ImageUrl { get; set; }
+        public bool IsImageAvailable { get; set; }
     }
     public class Quote
     {
         public string Body { get; set; }
-        public string SenderName { get; set; }
-        public string SenderKey { get; set; }
+        public string OwnerName { get; set; }
+        public string OwnerKey { get; set; }
+
+        //image
+        public string ImageUrl { get; set; }
+        public bool IsImageAvailable { get; set; }
     }
 }

@@ -6,11 +6,16 @@ namespace Mobile.Helpers
 {
     public class Constants
     {
+        public const string ChannelID = "a5aaa6c2-2a8d-4a7c-9d05-1806aeb63b45";
+        public const string ChannelName = "Confessor Chat Notification";
+        public const string ChannelDescription = "Configure Chat Notifications";
+
         public const string roomID = "roomID";
         public const string key = "user_key";
         public const string Token = "user_token";
         public const string edit_nav = "edit_nav";
         public const string cat_nav = "cat_nav";
+        public const string image_sender = "image_sender";
         public const string modify_nav = "modify_nav";
         public const string send_room = "send_room";
         public const string go_back = "go_back";

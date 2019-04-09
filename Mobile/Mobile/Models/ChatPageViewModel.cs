@@ -8,6 +8,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Input;
 using Xamarin.Forms;
@@ -44,6 +45,28 @@ namespace Mobile.Models
             {
                 isBusy = value;
                 OnPropertyChanged(nameof(IsBusy));
+            }
+        }
+
+        private bool isHeaderDateVisible;
+        public bool IsHeaderDateVisible
+        {
+            get => isHeaderDateVisible;
+            set
+            {
+                isHeaderDateVisible = value;
+                OnPropertyChanged(nameof(IsHeaderDateVisible));
+            }
+        }
+
+        private string _headerDateText;
+        public string HeaderDateText
+        {
+            get => _headerDateText;
+            set
+            {
+                _headerDateText = value;
+                OnPropertyChanged(nameof(HeaderDateText));
             }
         }
 
@@ -167,7 +190,8 @@ namespace Mobile.Models
                         {
                             //the message is mine. so update delivered.
                             insert_loader.IsMine = true;
-                            Messages.FirstOrDefault(d => d.ChatId == incomingChat.Id).IsSent = true; 
+                            Messages.FirstOrDefault(d => d.ChatId == incomingChat.Id).IsSent = true;
+                            OnPropertyChanged("IsSent");
                         }
                     }
 
@@ -214,20 +238,23 @@ namespace Mobile.Models
                         ChatId = new_send.Id,
                         IsSent = false,
                         IsAd = false,
+                        SenderKey = await Logic.GetKey()
                     };
                     if (IsQuotedChatAvailable & QuotedChat != null)
                     {
                         Quote newQuote = new Quote()
                         {
-                            Body = this.QuotedChat.Body,
-                            SenderName = QuotedChat.SenderName,
-                            SenderKey = await Logic.GetKey()
+                            Body = QuotedChat.Body,
+                            OwnerName = QuotedChat.SenderName,
+                            OwnerKey = QuotedChat.SenderKey
                         };
                         newMsg.Quote = newQuote;
                         new_send.Quote = newQuote;
                     }
+                    newMsg.Quote.SenderNameShow = Logic.GetTrueSenderName(quotedChat.IsMine, newMsg.Quote.OwnerName);
                     Messages.Add(newMsg);
-
+                    OnPropertyChanged(nameof(Messages));
+                    RemoveQuoteCommand.Execute(null);
                     string serialisedMessage = JsonConvert.SerializeObject(new_send);
 
                     try
@@ -250,8 +277,7 @@ namespace Mobile.Models
                     // await Task.Delay(60);
                     MessagingCenter.Send<object, ChatRoomLoader>(this, Constants.update_chatroom_chat_list, new ChatRoomLoader() { Id = Room_ID, ChatsCount = (Messages.Count + 1).ToString() });
 
-                    OnPropertyChanged(nameof(Messages));
-                    RemoveQuoteCommand.Execute(null);
+                   
                 }
 
             });
@@ -260,7 +286,6 @@ namespace Mobile.Models
             {
                 this.IsQuotedChatAvailable = true;
                 this.QuotedChat = Messages.First(d => d.ChatId == (string)arg);
-
             });
 
             RemoveQuoteCommand = new Command(() =>
@@ -338,6 +363,81 @@ namespace Mobile.Models
                     }
                     //await client.CloseAsync(WebSocketCloseStatus.NormalClosure, "User Navigation", new CancellationToken());
                     await ConnectToHub();
+                }
+            });
+
+            MessagingCenter.Subscribe<object, ImageSender>(this, Constants.image_sender, async (sender, arg) =>
+            {
+                if (arg != null)
+                {
+                    //quickly send the data to the Viewmodel
+                    //start uploading,
+                    //upload once sent. 
+                    Chat new_send = new Chat()
+                    {
+                        Body = arg.body,
+                        Room_ID = this.Room_ID,
+                        SenderKey = await Logic.GetKey(),
+                        SenderName = await Logic.GetChatName(),
+                        QuotedChatAvailable = IsQuotedChatAvailable,
+                        IsImageAvailable = true
+
+                    };
+
+                    ChatLoader newMsg = new ChatLoader()
+                    {
+                        Body = new_send.Body,
+                        SenderName = new_send.SenderName,
+                        Room_ID = new_send.Room_ID,
+                        IsMine = true,
+                        QuotedChatAvailable = new_send.QuotedChatAvailable,
+                        ChatId = new_send.Id,
+                        IsSent = false,
+                        IsAd = false,
+                        IsImageAvailable = true,
+                        ImageSource = ImageSource.FromStream(() => arg.stream),
+                        SenderKey = await Logic.GetKey()
+                    };
+                    if (IsQuotedChatAvailable & QuotedChat != null)
+                    {
+                        Quote newQuote = new Quote()
+                        {
+                            Body = QuotedChat.Body,
+                            OwnerName = QuotedChat.SenderName,
+                            OwnerKey = QuotedChat.SenderKey,
+                            IsImageAvailable = quotedChat.IsImageAvailable,
+                            ImageUrl = quotedChat.ImageUrl,
+                        };
+                        newMsg.Quote = newQuote;
+                        new_send.Quote = newQuote;
+                    }
+                    newMsg.Quote.SenderNameShow = Logic.GetTrueSenderName(quotedChat.IsMine, newMsg.Quote.OwnerName);
+                    Messages.Add(newMsg);
+                    OnPropertyChanged(nameof(Messages));
+                    RemoveQuoteCommand.Execute(null);
+                    //get the string for the image from Cloudinary
+                    string ImageUrl = await BaseClient.PostImageStream(arg.stream);
+                    new_send.ImageUrl = ImageUrl;
+
+                    //update the local msg with the url
+                    string serialisedMessage = JsonConvert.SerializeObject(new_send);
+
+                    try
+                    {
+                        await hubConnection.InvokeAsync("SendMessage", serialisedMessage);
+                    }
+                    catch (Exception ex)
+                    {
+                        Crashes.TrackError(ex);
+                    }
+
+
+                    await Task.Delay(10);
+
+                    MessagingCenter.Send<object, ChatRoomLoader>(this, Constants.update_chatroom_chat_list, new ChatRoomLoader() { Id = Room_ID, ChatsCount = (Messages.Count + 1).ToString() });
+
+                  
+                    
                 }
             });
         }
@@ -460,10 +560,12 @@ namespace Mobile.Models
             }
             finally
             {
-                Device.BeginInvokeOnMainThread(() =>
+                Device.BeginInvokeOnMainThread(async () =>
                          {
+                             string UserKey = await Logic.GetKey();
                              foreach (ChatLoader data in result)
                              {
+                                 data.Quote.SenderNameShow = await Logic.GetTrueSenderName(data.Quote.OwnerKey, data.Quote.OwnerName);
                                  Messages.Add(data);
                                  OnPropertyChanged(nameof(Messages));
                              }
@@ -493,6 +595,35 @@ namespace Mobile.Models
                     LastMessageVisible = true;
                     PendingMessageCount = 0;
                 });
+            }
+            ShowHeaderData(message.Date);
+        }
+
+        private CancellationTokenSource _cts;
+
+        private async void ShowHeaderData(DateTime date)
+        {
+            try
+            {
+                _cts?.Cancel();     // cancel previous stop
+            }
+            catch (ObjectDisposedException)     // in case previous search completed
+            {
+            }
+            HeaderDateText = Logic.Ago(date);
+            IsHeaderDateVisible = true;
+
+            using (_cts = new CancellationTokenSource())
+            {
+                try
+                {
+                    await Task.Delay(TimeSpan.FromSeconds(6), _cts.Token);  // buffer
+                    IsHeaderDateVisible = false;
+                }
+                catch (TaskCanceledException)       // if the operation is cancelled, do nothing
+                {
+
+                }
             }
         }
 

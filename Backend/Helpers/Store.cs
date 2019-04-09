@@ -72,6 +72,19 @@ namespace Backend.Helpers
             {
                 return contextLite.UserData.FindAll().ToList();
             }
+
+            internal static UserData FetchByConfessGuid(string confessGuid)
+            {
+                //fetch confess by guid first
+                string confessOwnerID = ConfessClass.FetchOneConfessByGuid(confessGuid).Owner_Guid;
+                return UserClass.FetchUserByID(confessOwnerID);
+
+            }
+
+            private static UserData FetchUserByID(string confessOwnerID)
+            {
+                return contextLite.UserData.FindOne(d => d.Key[0] == confessOwnerID);
+            }
         }
 
         public static class ChatClass
@@ -89,7 +102,7 @@ namespace Backend.Helpers
             internal static string ProcessMessage(string incoming)
             {
                 Chat chat = JsonConvert.DeserializeObject<Chat>(incoming);
-                var newID = contextLite.Chat.Insert(chat);
+                LiteDB.BsonValue newID = contextLite.Chat.Insert(chat);
                 //send notification
                 try
                 {
@@ -99,7 +112,7 @@ namespace Backend.Helpers
                 {
                 }
                 //ChatLoader loader = ChatLoader(chat);
-                var returnChat = contextLite.Chat.FindById(newID);
+                Chat returnChat = contextLite.Chat.FindById(newID);
                 return JsonConvert.SerializeObject(returnChat);
             }
 
@@ -150,7 +163,10 @@ namespace Backend.Helpers
                     SenderName = chat.SenderName,
                     ChatId = chat.Id,
                     Quote = chat.Quote,
-                    QuotedChatAvailable = chat.QuotedChatAvailable
+                    QuotedChatAvailable = chat.QuotedChatAvailable,
+                    ImageUrl = chat.ImageUrl,
+                    IsImageAvailable = chat.IsImageAvailable,
+                    SenderKey = chat.SenderKey
                 };
 
                 return chatLoader;
@@ -171,7 +187,10 @@ namespace Backend.Helpers
                         SenderName = chat.SenderName,
                         ChatId = chat.Id,
                         Quote = chat.Quote,
-                        QuotedChatAvailable = chat.QuotedChatAvailable
+                        QuotedChatAvailable = chat.QuotedChatAvailable,
+                        ImageUrl = chat.ImageUrl,
+                        IsImageAvailable = chat.IsImageAvailable,
+                         SenderKey = chat.SenderKey
                     });
                 }
 
@@ -212,7 +231,7 @@ namespace Backend.Helpers
 
             internal static ChatRoom FetchRoomByID(string id)
             {
-                return contextLite.ChatRoom.FindOne(f=>f.Id == id);
+                return contextLite.ChatRoom.FindOne(f => f.Id == id);
             }
         }
 
@@ -585,7 +604,7 @@ namespace Backend.Helpers
                         Owner_Guid = dt.Owner_Guid,
                         Quote = dt.Quote,
                         QuotedCommentAvailable = dt.QuotedCommentAvailable,
-                         Confess_Guid = dt.Confess_Guid
+                        Confess_Guid = dt.Confess_Guid
                     };
                     //load colors
                     if (LikeClass.CheckExistence(dt.Guid, true, key))

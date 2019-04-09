@@ -1,4 +1,8 @@
-﻿using System.Net.Http;
+﻿using Microsoft.AppCenter.Crashes;
+using System;
+using System.IO;
+using System.Net.Http;
+using System.Net.Http.Headers;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -35,6 +39,26 @@ namespace Mobile.Helpers
             HttpClient client = HttpConnection.CreateClient(await Logic.GetToken());
             HttpResponseMessage response = await client.PutAsync(urlLink, new StringContent(content, Encoding.UTF8, Constants.ContentTypeHeaderJson)).ConfigureAwait(false);
             return await response.Content.ReadAsStringAsync();
+        }
+        internal static async Task<string> PostImageStream(Stream stream)
+        {
+            try
+            {
+                using (HttpClient client = new HttpClient())
+                {
+                    client.BaseAddress = new Uri(Constants.BaseURL);
+                    client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue(Constants.AuthorizationHeaderType, await Logic.GetToken());
+                    StreamContent inputData = new StreamContent(stream);
+                    string urlLink = "chat/postimage";
+                    HttpResponseMessage response = await client.PostAsync(urlLink, inputData);
+                    return await response.Content.ReadAsStringAsync();
+                }
+            }
+            catch (Exception ex)
+            {
+                Crashes.TrackError(ex);
+                return string.Empty;
+            }
         }
     }
 }

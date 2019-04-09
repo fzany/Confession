@@ -25,6 +25,7 @@
                 </Label.GestureRecognizers>
             </Label>
         </StackLayout>
+        
         <!--   OUR CHAT VIEWS HERE   -->
         <cells:ExtendedListView Grid.Row="1" 
                  ItemTemplate="{StaticResource MessageTemplateSelector}" 
@@ -38,7 +39,11 @@
                  SeparatorColor="Transparent"
                  ItemAppearingCommand="{Binding MessageAppearingCommand}"
                  ItemDisappearingCommand="{Binding MessageDisappearingCommand}">
+           
         </cells:ExtendedListView>
+        <Frame x:Name="headerDate" Padding="5" Margin="0,10,0,0" IsVisible="{Binding IsHeaderDateVisible}" CornerRadius="10" BackgroundColor="#BED2F5" Grid.Row="1" HorizontalOptions="CenterAndExpand" VerticalOptions="StartAndExpand">
+            <Label HorizontalOptions="CenterAndExpand" Text="{Binding HeaderDateText}" VerticalOptions="StartAndExpand" />
+        </Frame>
         <Frame HorizontalOptions="EndAndExpand" 
                                  Margin="0,0,2,15"
                                  VerticalOptions="End"
