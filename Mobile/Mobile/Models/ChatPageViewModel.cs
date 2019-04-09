@@ -251,7 +251,11 @@ namespace Mobile.Models
                         newMsg.Quote = newQuote;
                         new_send.Quote = newQuote;
                     }
-                    newMsg.Quote.SenderNameShow = Logic.GetTrueSenderName(quotedChat.IsMine, newMsg.Quote.OwnerName);
+                    if (IsQuotedChatAvailable & QuotedChat != null)
+                    {
+                        newMsg.Quote.SenderNameShow = Logic.GetTrueSenderName(quotedChat.IsMine, newMsg.Quote.OwnerName);
+                    }
+
                     Messages.Add(newMsg);
                     OnPropertyChanged(nameof(Messages));
                     RemoveQuoteCommand.Execute(null);
@@ -277,7 +281,7 @@ namespace Mobile.Models
                     // await Task.Delay(60);
                     MessagingCenter.Send<object, ChatRoomLoader>(this, Constants.update_chatroom_chat_list, new ChatRoomLoader() { Id = Room_ID, ChatsCount = (Messages.Count + 1).ToString() });
 
-                   
+
                 }
 
             });
@@ -436,8 +440,8 @@ namespace Mobile.Models
 
                     MessagingCenter.Send<object, ChatRoomLoader>(this, Constants.update_chatroom_chat_list, new ChatRoomLoader() { Id = Room_ID, ChatsCount = (Messages.Count + 1).ToString() });
 
-                  
-                    
+
+
                 }
             });
         }
@@ -565,7 +569,11 @@ namespace Mobile.Models
                              string UserKey = await Logic.GetKey();
                              foreach (ChatLoader data in result)
                              {
-                                 data.Quote.SenderNameShow = await Logic.GetTrueSenderName(data.Quote.OwnerKey, data.Quote.OwnerName);
+                                 if (data.QuotedChatAvailable & data.Quote != null)
+                                 {
+                                     data.Quote.SenderNameShow = await Logic.GetTrueSenderName(data.Quote.OwnerKey, data.Quote.OwnerName);
+                                 }
+
                                  Messages.Add(data);
                                  OnPropertyChanged(nameof(Messages));
                              }
