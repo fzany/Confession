@@ -78,18 +78,18 @@ namespace Mobile.Models
         public async Task LoadData()
         {
             ObservableCollection<ChatRoomLoader> ChatRoomsTemp = new ObservableCollection<ChatRoomLoader>();
-            if (!Logic.IsInternet())
+            try
             {
-                ChatRoomsTemp = LocalStore.ChatRoom.GetAllRooms();
-                if (ChatRoomsTemp == null || ChatRoomsTemp.Count == 0)
+                if (!Logic.IsInternet())
                 {
-                    DependencyService.Get<IMessage>().ShortAlert(Constants.No_Internet);
-                    IsNoInternet = true;
+                    ChatRoomsTemp = LocalStore.ChatRoom.GetAllRooms();
+                    if (ChatRoomsTemp == null || ChatRoomsTemp.Count == 0)
+                    {
+                        DependencyService.Get<IMessage>().ShortAlert(Constants.No_Internet);
+                        IsNoInternet = true;
+                    }
                 }
-            }
-            else
-            {
-                try
+                else
                 {
                     IsBusy = true;
                     ChatRoomsTemp = await Store.ChatClass.Rooms();
@@ -107,17 +107,18 @@ namespace Mobile.Models
                         LocalStore.ChatRoom.SaveLoaders(ChatRoomsTemp);
                     }
                     ChatRooms = ChatRoomsTemp;
-                    PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(ChatRooms)));
                 }
-                catch (Exception ex)
-                {
-                    Crashes.TrackError(ex);
-                }
-                finally
-                {
-                    IsBusy = false;
-                    IsNoInternet = false;
-                }
+                OnPropertyChanged(nameof(ChatRooms));
+            }
+            catch (Exception ex)
+            {
+                IsBusy = false;
+                Crashes.TrackError(ex);
+            }
+            finally
+            {
+                IsBusy = false;
+                IsNoInternet = false;
             }
         }
     }

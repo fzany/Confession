@@ -1,16 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
-using Shared;
+﻿using Backend.Helpers;
 using Microsoft.AspNetCore.Mvc;
-using Backend.Helpers;
-using Microsoft.AspNetCore.Authorization;
+using Shared;
+using System;
+using System.Collections.Generic;
 
 namespace Backend.Controllers
 {
-   // [Authorize]
+    // [Authorize]
     [Produces("application/json")]
     [ApiController]
     public class CommentController : ControllerBase
@@ -21,8 +17,8 @@ namespace Backend.Controllers
         {
             try
             {
-                var count = Store.CommentClass.GetCommentCount(guid);
-              //return data
+                string count = Store.CommentClass.GetCommentCount(guid);
+                //return data
                 return Ok(count);
             }
             catch (Exception ex)
@@ -54,8 +50,19 @@ namespace Backend.Controllers
         {
             try
             {
-                ConfessLoader loader =Store.CommentClass.CreateComment(data);
-                Push.SendCommentNotification(data);
+                bool isSafe = Logic.CheckSpamFree(data.Comment.Body.ToLower());
+                if (isSafe)
+                {
+                    Store.CommentClass.CreateComment(data);
+                    Push.SendCommentNotification(data);
+                }
+                else
+                {
+                    Push.NotifyOwnerOFSpam(data.Comment.Owner_Guid);
+                }
+
+                //send back the confession
+                ConfessLoader loader = Store.ConfessClass.FetchOneConfessLoader(data.Comment.Confess_Guid, data.Comment.Owner_Guid);
                 return Ok(loader);
             }
             catch (Exception ex)

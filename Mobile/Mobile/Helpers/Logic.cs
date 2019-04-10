@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Globalization;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -119,6 +120,20 @@ namespace Mobile.Helpers
             return sob.ToString();
         }
 
+        internal static byte[] GetByteArrayFromString(Stream stream)
+        {
+            byte[] buffer = new byte[16 * 1024];
+            using (MemoryStream ms = new MemoryStream())
+            {
+                int read;
+                while ((read = stream.Read(buffer, 0, buffer.Length)) > 0)
+                {
+                    ms.Write(buffer, 0, read);
+                }
+                return ms.ToArray();
+            }
+        }
+
         internal static async Task<string> GetTrueSenderName(string senderKey, string senderName)
         {
            if(senderKey == await GetKey())
@@ -150,6 +165,11 @@ namespace Mobile.Helpers
             "Food", "Religion","Travel",
             "General","Money", "Health",
             "Crime" ,"Hilarious"};
+
+        internal static async  Task<bool> CheckIfMine(string ownerKey)
+        {
+            return ownerKey == await GetKey();
+        }
 
         public static List<MasterItem> Masterlogos()
         {
@@ -415,5 +435,9 @@ namespace Mobile.Helpers
             return current == NetworkAccess.Internet;
         }
 
+        internal static Stream GetStreamFromByteArray(byte[] stream)
+        {
+            return new MemoryStream(stream);
+        }
     }
 }

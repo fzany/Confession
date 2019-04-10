@@ -3,8 +3,6 @@ using MongoDB.Bson.Serialization.Attributes;
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Text;
-using System.Threading.Tasks;
 using Xamarin.Forms;
 
 namespace Mobile.Models
@@ -13,9 +11,9 @@ namespace Mobile.Models
     {
         [BsonId]
         [BsonRepresentation(MongoDB.Bson.BsonType.ObjectId)]
-        public string Id { get; set; } 
+        public string Id { get; set; }
         public string Title { get; set; }
-        public string MembersCountLogo { get; set; }= Constants.FontAwe.Users;
+        public string MembersCountLogo { get; set; } = Constants.FontAwe.Users;
         public string MembersCount { get; set; } = 0.ToString();
         public string ChatsCountLogo { get; set; } = Constants.FontAwe.Comments;
         public string ChatsCount { get; set; } = 0.ToString();
@@ -61,6 +59,7 @@ namespace Mobile.Models
         public string ChatId { get; set; }
         public string Body { get; set; }
         public string SenderName { get; set; }
+        public string SenderNameShow => Logic.GetTrueSenderName(IsMine, SenderName);
         public string SenderKey { get; set; }
         [BsonDateTimeOptions(Kind = DateTimeKind.Utc)]
         public DateTime Date { get; set; } = DateTime.UtcNow;
@@ -72,7 +71,7 @@ namespace Mobile.Models
 
         //quotedChat
         public bool QuotedChatAvailable { get; set; }
-        public Quote Quote { get; set; }
+        public QuoteLoader Quote { get; set; }
 
         public bool IsSent { get; set; }
 
@@ -90,9 +89,19 @@ namespace Mobile.Models
         public string Body { get; set; }
         public string OwnerName { get; set; }
         public string OwnerKey { get; set; }
-        public Color SenderColor => Logic.GetColourFromName(OwnerName);
-        public string SenderNameShow { get; set; }
+        //image
+        public string ImageUrl { get; set; }
+        public bool IsImageAvailable { get; set; }
+    }
 
+    public class QuoteLoader
+    {
+        public string Body { get; set; }
+        public string OwnerName { get; set; }
+        public string OwnerKey { get; set; }
+        public Color SenderColor => Logic.GetColourFromName(OwnerName);
+        public string SenderNameShow => Logic.GetTrueSenderName(IsMine, OwnerName);
+        public bool IsMine { get; set; }
         //image
         public string ImageUrl { get; set; }
         public bool IsImageAvailable { get; set; }
@@ -104,7 +113,7 @@ namespace Mobile.Models
 
     public class ImageSender
     {
-        public Stream stream { get; set; }
+        public byte[] stream { get; set; }
         public string body { get; set; }
     }
 }

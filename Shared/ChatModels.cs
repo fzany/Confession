@@ -56,12 +56,23 @@ namespace Shared
 
         //quotedChat
         public bool QuotedChatAvailable { get; set; }
-        public Quote Quote { get; set; }
+        public QuoteLoader Quote { get; set; }
 
         //image
         public string ImageUrl { get; set; }
         public bool IsImageAvailable { get; set; }
     }
+    public class QuoteLoader
+    {
+        public string Body { get; set; }
+        public string OwnerName { get; set; }
+        public string OwnerKey { get; set; }
+        //image
+        public string ImageUrl { get; set; }
+        public bool IsImageAvailable { get; set; }
+        public bool IsMine { get; set; }
+    }
+
     public class Quote
     {
         public string Body { get; set; }

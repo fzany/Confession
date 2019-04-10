@@ -115,8 +115,16 @@ namespace Backend.Controllers
         {
             try
             {
-                Store.ConfessClass.CreateConfess(data);
-                Push.PushToEveryone(data);
+                bool isSafe = Logic.CheckSpamFree(data.Body.ToLower());
+                if (isSafe)
+                {
+                    Store.ConfessClass.CreateConfess(data);
+                    Push.PushToEveryone(data);
+                }
+                else
+                {
+                    Push.NotifyOwnerOFSpam(data.Owner_Guid);
+                }
                 return Ok();
             }
             catch (Exception ex)
@@ -146,7 +154,15 @@ namespace Backend.Controllers
         {
             try
             {
-                Store.ConfessClass.UpdateConfess(data);
+                bool isSafe = Logic.CheckSpamFree(data.Body.ToLower());
+                if (isSafe)
+                {
+                    Store.ConfessClass.UpdateConfess(data);
+                }
+                else
+                {
+                    Push.NotifyOwnerOFSpam(data.Owner_Guid);
+                }
                 return Ok();
             }
             catch (Exception ex)

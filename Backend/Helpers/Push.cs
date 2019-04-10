@@ -80,6 +80,40 @@ namespace Backend.Helpers
             await PushToServer(dataToPush);
         }
 
+        internal static async void NotifyOwnerOFSpam(string owner_Guid)
+        {
+            //get the owner of the spam content
+            UserData owner = Store.UserClass.FetchUserByID(owner_Guid);
+            if (owner != null)
+            {
+                if (!string.IsNullOrEmpty(owner.AppCenterID))
+                {
+                    //send notification to this user.
+                    PushToDevices dataToPush = new PushToDevices()
+                    {
+                        notification_content = new NotificationContent()
+                        {
+                            title = $"Spam Blocked 😔!",
+                            body = "We're not able to post your last content because our system detected it as SPAM.",
+                            name = Guid.NewGuid().ToString().Replace("-", ""),
+                            custom_data = new Dictionary<string, string> { { "key1", owner_Guid },
+                     { "type", "Spam" },
+                     { "sender", owner_Guid }
+                            }
+
+
+
+                        },
+                        notification_target = new NotificationTarget()
+                        {
+                            devices = new List<string>() { owner.AppCenterID }
+                        }
+                    };
+                    await PushToServer(dataToPush);
+                }
+            }
+        }
+
         internal static async void SendCommentNotification(CommentPoster data)
         {
             //get the owner of the comment

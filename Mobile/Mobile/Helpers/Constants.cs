@@ -17,8 +17,10 @@ namespace Mobile.Helpers
         public const string cat_nav = "cat_nav";
         public const string image_sender = "image_sender";
         public const string modify_nav = "modify_nav";
+        public const string send_confession = "send_confession";
         public const string send_room = "send_room";
         public const string go_back = "go_back";
+        public const string scroll_chat = "scroll_chat";
         public const string update_chatroom_membership_list = "update_chatroom_membership_list";
         public const string update_chatroom_chat_list = "update_chatroom_chat_list";
         public const string me_nav = "me_nav";

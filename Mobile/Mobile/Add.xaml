@@ -11,8 +11,8 @@
             </StackLayout>
             <ScrollView Orientation="Vertical">
                 <StackLayout VerticalOptions="FillAndExpand">
-                    <Label Text="Title" FontFamily="{StaticResource Rob}" FontSize="Small" />
-                    <Entry x:Name="title" Placeholder="Type here" FontFamily="{StaticResource Rob}" IsSpellCheckEnabled="True" IsTextPredictionEnabled="True" TextChanged="Title_TextChanged"/>
+                    <Label Text="Title" x:Name="counterTitle" FontFamily="{StaticResource Rob}" FontSize="Small" />
+                    <Entry x:Name="title" MaxLength="50" Placeholder="Type here" FontFamily="{StaticResource Rob}" IsSpellCheckEnabled="True" IsTextPredictionEnabled="True" TextChanged="Title_TextChanged"/>
 
                     <Label Text="Category" FontFamily="{StaticResource Rob}" FontSize="Small"/>
                     <Picker  FontFamily="{StaticResource Rob}"  VerticalOptions="Center" HorizontalOptions="FillAndExpand" x:Name="cat" Title="Choose Category"/>

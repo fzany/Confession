@@ -262,10 +262,8 @@ namespace Mobile.Models
                     DependencyService.Get<IMessage>().ShortAlert("Comment Posted.");
                     RemoveQuoteCommand.Execute(null);
 
-                    Task.Run(async () =>
-                    {
-                        await LoadData();
-                    });
+
+                    await LoadData();
                 }
                 catch (Exception ex)
                 {
@@ -347,10 +345,7 @@ namespace Mobile.Models
                 }
                 Device.BeginInvokeOnMainThread(() =>
                 {
-                    foreach (CommentLoader data in temploaders)
-                    {
-                        Loaders.Add(data);
-                    }
+                    Loaders = temploaders;
                 });
                 OnPropertyChanged(nameof(Loaders));
             }

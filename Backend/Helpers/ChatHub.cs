@@ -1,15 +1,12 @@
 ﻿
 using Microsoft.AspNetCore.SignalR;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using Newtonsoft.Json;
 using Shared;
+using System.Threading.Tasks;
 
 namespace Backend.Helpers
 {
-    public class ChatHub :Hub
+    public class ChatHub : Hub
     {
         #region Extra
         //public void SendMessage(string message, string group, string name)
@@ -31,12 +28,43 @@ namespace Backend.Helpers
         public async Task SendMessage(string message)
         {
             //check for emptiness
-            if(string.IsNullOrEmpty(message))
+            if (!string.IsNullOrEmpty(message))
             {
-                //do something
+                Chat chat = JsonConvert.DeserializeObject<Chat>(message);
+                bool isSafe = Logic.CheckSpamFree(chat.Body.ToLower());
+                if (isSafe)
+                {
+                    string chatreturn = Store.ChatClass.ProcessMessage(chat);
+                    await Clients.All.SendAsync("ReceiveMessage", chatreturn);
+                }
+                else
+                {
+                    Push.NotifyOwnerOFSpam(chat.SenderKey);
+                }
             }
-            string chatreturn = Store.ChatClass.ProcessMessage(message);
-            await Clients.All.SendAsync("ReceiveMessage", chatreturn);
+
+        }
+
+        public async Task SendConfession(string message)
+        {
+            //check for emptiness
+            if (!string.IsNullOrEmpty(message))
+            {
+                Confess data = JsonConvert.DeserializeObject<Confess>(message);
+                bool isSafe = Logic.CheckSpamFree(data.Body.ToLower());
+                if (isSafe)
+                {
+                    Store.ConfessClass.CreateConfess(data);
+                    Push.PushToEveryone(data);
+                    ConfessLoader confess = Store.ConfessClass.FetchOneConfessLoader(data.Guid, data.Owner_Guid);
+                    await Clients.All.SendAsync("ReceiveConfession", JsonConvert.SerializeObject(confess));
+                }
+                else
+                {
+                    Push.NotifyOwnerOFSpam(data.Owner_Guid);
+                }
+            }
+
         }
     }
 }

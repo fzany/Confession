@@ -53,6 +53,18 @@ namespace Mobile.Helpers.Local
             {
                 Local.ConfessLoader.Delete(g => g.Guid == guid);
             }
+
+            internal static void SaveLoader(ConfessLoader incomingConfession)
+            {
+                if (Local.ConfessLoader.Exists(d => d.Guid == incomingConfession.Guid))
+                {
+                    Local.ConfessLoader.Update(incomingConfession);
+                }
+                else
+                {
+                    Local.ConfessLoader.Insert(incomingConfession);
+                }
+            }
         }
 
         public static class Comment

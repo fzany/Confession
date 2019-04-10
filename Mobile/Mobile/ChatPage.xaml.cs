@@ -57,9 +57,9 @@ namespace Mobile
                 Navigation.PopModalAsync();
             });
 
-            MessagingCenter.Subscribe<object>(this, Constants.go_back, (sender) =>
+            MessagingCenter.Subscribe<object>(this, Constants.scroll_chat, (sender) =>
             {
-                Navigation.PopModalAsync();
+                ScrollListCommand.Execute(null);
             });
 
 

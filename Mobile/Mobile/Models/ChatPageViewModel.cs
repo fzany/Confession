@@ -11,6 +11,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Input;
+using Xamarin.Essentials;
 using Xamarin.Forms;
 
 namespace Mobile.Models
@@ -36,6 +37,7 @@ namespace Mobile.Models
                 OnPropertyChanged(nameof(IsNoInternet));
             }
         }
+
 
         private bool isBusy;
         public bool IsBusy
@@ -106,9 +108,12 @@ namespace Mobile.Models
         {
             try
             {
-                if (!IsHubConnected())
+                if (Logic.IsInternet())
                 {
-                    await hubConnection.StartAsync();
+                    if (!IsHubConnected())
+                    {
+                        await hubConnection.StartAsync();
+                    }
                 }
             }
             catch (Exception ex)
@@ -142,28 +147,45 @@ namespace Mobile.Models
         }
         public ChatPageViewModel()
         {
+            Connectivity.ConnectivityChanged += Connectivity_ConnectivityChangedAsync;
+
             hubConnection = new HubConnectionBuilder()
-        .WithUrl("https://confessbackend.azurewebsites.net/chatHub")
-        .Build();
+                .WithUrl("https://confessbackend.azurewebsites.net/chatHub")
+                .Build();
 
             hubConnection.On<string>("ReceiveMessage", async (message) =>
             {
-                Chat incomingChat = JsonConvert.DeserializeObject<Chat>(message);
-                ChatLoader insert_loader = new ChatLoader
-                {
-                    Room_ID = incomingChat.Room_ID,
-                    Body = incomingChat.Body,
-                    Date = incomingChat.Date,
-                    IsAd = false,
-                    SenderName = incomingChat.SenderName,
-                    Quote = incomingChat.Quote,
-                    QuotedChatAvailable = incomingChat.QuotedChatAvailable,
-                    ChatId = incomingChat.Id,
-                    IsSent = true,
-                };
-
                 try
                 {
+                    Chat incomingChat = JsonConvert.DeserializeObject<Chat>(message);
+                    ChatLoader insert_loader = new ChatLoader
+                    {
+                        Room_ID = incomingChat.Room_ID,
+                        Body = incomingChat.Body,
+                        Date = incomingChat.Date,
+                        IsAd = false,
+                        SenderName = incomingChat.SenderName,
+                        QuotedChatAvailable = incomingChat.QuotedChatAvailable,
+                        ChatId = incomingChat.Id,
+                        IsSent = true,
+                    };
+                    if (incomingChat.Quote != null)
+                    {
+                        insert_loader.Quote = new QuoteLoader
+                        {
+                            Body = incomingChat.Quote.Body,
+                            ImageUrl = incomingChat.Quote.ImageUrl,
+                            IsImageAvailable = incomingChat.Quote.IsImageAvailable,
+                            OwnerName = incomingChat.Quote.OwnerName,
+                            OwnerKey = incomingChat.Quote.OwnerKey,
+                            IsMine = await Logic.CheckIfMine(incomingChat.Quote.OwnerKey)
+                        };
+                        if (incomingChat.Quote.IsImageAvailable)
+                        {
+                            insert_loader.Quote.ImageSource = new UriImageSource { CachingEnabled = true, CacheValidity = TimeSpan.FromDays(7), Uri = new Uri(incomingChat.Quote.ImageUrl) };
+                        }
+                    }
+
                     if (incomingChat.Room_ID == Room_ID)
                     {
                         if (incomingChat.SenderKey != await Logic.GetKey())
@@ -196,8 +218,8 @@ namespace Mobile.Models
                     }
 
                     LocalStore.Chat.SaveLoader(insert_loader);
-
                 }
+
                 catch (Exception ex)
                 {
                     Crashes.TrackError(ex);
@@ -205,6 +227,7 @@ namespace Mobile.Models
                 finally
                 {
                     OnPropertyChanged(nameof(Messages));
+                    MessagingCenter.Send<object>(this, Constants.scroll_chat);
                 }
 
             });
@@ -216,71 +239,82 @@ namespace Mobile.Models
             {
                 if (!string.IsNullOrEmpty(TextToSend))
                 {
-                    Chat new_send = new Chat()
-                    {
-                        Body = TextToSend,
-                        Room_ID = this.Room_ID,
-                        SenderKey = await Logic.GetKey(),
-                        SenderName = await Logic.GetChatName(),
-                        QuotedChatAvailable = IsQuotedChatAvailable
-
-                    };
-                    TextToSend = string.Empty;
-                    OnPropertyChanged(nameof(TextToSend));
-
-                    ChatLoader newMsg = new ChatLoader()
-                    {
-                        Body = new_send.Body,
-                        SenderName = new_send.SenderName,
-                        Room_ID = new_send.Room_ID,
-                        IsMine = true,
-                        QuotedChatAvailable = new_send.QuotedChatAvailable,
-                        ChatId = new_send.Id,
-                        IsSent = false,
-                        IsAd = false,
-                        SenderKey = await Logic.GetKey()
-                    };
-                    if (IsQuotedChatAvailable & QuotedChat != null)
-                    {
-                        Quote newQuote = new Quote()
-                        {
-                            Body = QuotedChat.Body,
-                            OwnerName = QuotedChat.SenderName,
-                            OwnerKey = QuotedChat.SenderKey
-                        };
-                        newMsg.Quote = newQuote;
-                        new_send.Quote = newQuote;
-                    }
-                    if (IsQuotedChatAvailable & QuotedChat != null)
-                    {
-                        newMsg.Quote.SenderNameShow = Logic.GetTrueSenderName(quotedChat.IsMine, newMsg.Quote.OwnerName);
-                    }
-
-                    Messages.Add(newMsg);
-                    OnPropertyChanged(nameof(Messages));
-                    RemoveQuoteCommand.Execute(null);
-                    string serialisedMessage = JsonConvert.SerializeObject(new_send);
-
                     try
                     {
+                        Chat new_send = new Chat()
+                        {
+                            Body = TextToSend,
+                            Room_ID = this.Room_ID,
+                            SenderKey = await Logic.GetKey(),
+                            SenderName = await Logic.GetChatName(),
+                            QuotedChatAvailable = IsQuotedChatAvailable
+
+                        };
+                        TextToSend = string.Empty;
+                        OnPropertyChanged(nameof(TextToSend));
+
+                        ChatLoader newMsg = new ChatLoader()
+                        {
+                            Body = new_send.Body,
+                            SenderName = new_send.SenderName,
+                            Room_ID = new_send.Room_ID,
+                            IsMine = true,
+                            QuotedChatAvailable = new_send.QuotedChatAvailable,
+                            ChatId = new_send.Id,
+                            IsSent = false,
+                            IsAd = false,
+                            SenderKey = await Logic.GetKey()
+                        };
+                        if (IsQuotedChatAvailable & QuotedChat != null)
+                        {
+                            Quote newQuote = new Quote()
+                            {
+                                Body = QuotedChat.Body,
+                                OwnerName = QuotedChat.SenderName,
+                                OwnerKey = QuotedChat.SenderKey,
+                                IsImageAvailable = QuotedChat.IsImageAvailable,
+                                ImageUrl = QuotedChat.ImageUrl
+                            };
+
+                            QuoteLoader newQuoteLoader = new QuoteLoader()
+                            {
+                                Body = QuotedChat.Body,
+                                OwnerName = QuotedChat.SenderName,
+                                OwnerKey = QuotedChat.SenderKey,
+                                IsImageAvailable = QuotedChat.IsImageAvailable,
+                                ImageUrl = QuotedChat.ImageUrl,
+                                IsMine = await Logic.CheckIfMine(QuotedChat.SenderKey)
+                            };
+                            if (quotedChat.IsImageAvailable)
+                            {
+                                newQuoteLoader.ImageSource = new UriImageSource { CachingEnabled = true, CacheValidity = TimeSpan.FromDays(7), Uri = new Uri(QuotedChat.ImageUrl) };
+                            }
+                            newMsg.Quote = newQuoteLoader;
+                            new_send.Quote = newQuote;
+                        }
+                        if (IsQuotedChatAvailable & QuotedChat != null)
+                        {
+                            newMsg.Quote.ImageSource = QuotedChat.ImageSource;
+                        }
+
+                        Messages.Add(newMsg);
+                        OnPropertyChanged(nameof(Messages));
+                        MessagingCenter.Send<object>(this, Constants.scroll_chat);
+                        RemoveQuoteCommand.Execute(null);
+                        string serialisedMessage = JsonConvert.SerializeObject(new_send);
+
+
                         await hubConnection.InvokeAsync("SendMessage", serialisedMessage);
+
+                        await Task.Delay(10);
+
+                        MessagingCenter.Send<object, ChatRoomLoader>(this, Constants.update_chatroom_chat_list, new ChatRoomLoader() { Id = Room_ID, ChatsCount = (Messages.Count + 1).ToString() });
+
                     }
                     catch (Exception ex)
                     {
                         Crashes.TrackError(ex);
                     }
-
-                    //websocket codes
-                    //byte[] byteMessage = Encoding.UTF8.GetBytes(serialisedMessage);
-                    //ArraySegment<byte> segmnet = new ArraySegment<byte>(byteMessage);
-                    //await client.SendAsync(segmnet, WebSocketMessageType.Text, true, cts.Token);
-
-                    await Task.Delay(10);
-
-                    //await Store.ChatClass.Add(new Chat() { Body = TextToSend, Room_ID = Room_ID, SenderKey = await Logic.GetKey(), SenderName = await Logic.GetChatName() });
-                    // await Task.Delay(60);
-                    MessagingCenter.Send<object, ChatRoomLoader>(this, Constants.update_chatroom_chat_list, new ChatRoomLoader() { Id = Room_ID, ChatsCount = (Messages.Count + 1).ToString() });
-
 
                 }
 
@@ -355,6 +389,11 @@ namespace Mobile.Models
             LoadSubscription();
         }
 
+        private async void Connectivity_ConnectivityChangedAsync(object sender, ConnectivityChangedEventArgs e)
+        {
+            await ConnectToHub();
+        }
+
         private void LoadSubscription()
         {
             MessagingCenter.Subscribe<object>(this, Constants.re_open_connection, async (sender) =>
@@ -372,172 +411,107 @@ namespace Mobile.Models
 
             MessagingCenter.Subscribe<object, ImageSender>(this, Constants.image_sender, async (sender, arg) =>
             {
-                if (arg != null)
+                try
                 {
-                    //quickly send the data to the Viewmodel
-                    //start uploading,
-                    //upload once sent. 
-                    Chat new_send = new Chat()
+                    if (arg != null)
                     {
-                        Body = arg.body,
-                        Room_ID = this.Room_ID,
-                        SenderKey = await Logic.GetKey(),
-                        SenderName = await Logic.GetChatName(),
-                        QuotedChatAvailable = IsQuotedChatAvailable,
-                        IsImageAvailable = true
-
-                    };
-
-                    ChatLoader newMsg = new ChatLoader()
-                    {
-                        Body = new_send.Body,
-                        SenderName = new_send.SenderName,
-                        Room_ID = new_send.Room_ID,
-                        IsMine = true,
-                        QuotedChatAvailable = new_send.QuotedChatAvailable,
-                        ChatId = new_send.Id,
-                        IsSent = false,
-                        IsAd = false,
-                        IsImageAvailable = true,
-                        ImageSource = ImageSource.FromStream(() => arg.stream),
-                        SenderKey = await Logic.GetKey()
-                    };
-                    if (IsQuotedChatAvailable & QuotedChat != null)
-                    {
-                        Quote newQuote = new Quote()
+                        //quickly send the data to the Viewmodel
+                        //start uploading,
+                        //upload once sent. 
+                        Chat new_send = new Chat()
                         {
-                            Body = QuotedChat.Body,
-                            OwnerName = QuotedChat.SenderName,
-                            OwnerKey = QuotedChat.SenderKey,
-                            IsImageAvailable = quotedChat.IsImageAvailable,
-                            ImageUrl = quotedChat.ImageUrl,
+                            Body = arg.body,
+                            Room_ID = this.Room_ID,
+                            SenderKey = await Logic.GetKey(),
+                            SenderName = await Logic.GetChatName(),
+                            QuotedChatAvailable = IsQuotedChatAvailable,
+                            IsImageAvailable = true
+
                         };
-                        newMsg.Quote = newQuote;
-                        new_send.Quote = newQuote;
+
+                        ChatLoader newMsg = new ChatLoader()
+                        {
+                            Body = new_send.Body,
+                            SenderName = new_send.SenderName,
+                            Room_ID = new_send.Room_ID,
+                            IsMine = true,
+                            QuotedChatAvailable = new_send.QuotedChatAvailable,
+                            ChatId = new_send.Id,
+                            IsSent = false,
+                            IsAd = false,
+                            IsImageAvailable = true,
+                            ImageSource = ImageSource.FromStream(() => Logic.GetStreamFromByteArray(arg.stream)),
+                            SenderKey = await Logic.GetKey()
+                        };
+                        if (IsQuotedChatAvailable & QuotedChat != null)
+                        {
+                            Quote newQuote = new Quote()
+                            {
+                                Body = QuotedChat.Body,
+                                OwnerName = QuotedChat.SenderName,
+                                OwnerKey = QuotedChat.SenderKey,
+                                IsImageAvailable = quotedChat.IsImageAvailable,
+                                ImageUrl = quotedChat.ImageUrl
+                            };
+                            QuoteLoader newQuoteLoader = new QuoteLoader()
+                            {
+                                Body = QuotedChat.Body,
+                                OwnerName = QuotedChat.SenderName,
+                                OwnerKey = QuotedChat.SenderKey,
+                                IsImageAvailable = QuotedChat.IsImageAvailable,
+                                ImageUrl = QuotedChat.ImageUrl,
+                                IsMine = await Logic.CheckIfMine(QuotedChat.SenderKey)
+                            };
+                            if (quotedChat.IsImageAvailable)
+                            {
+                                newQuoteLoader.ImageSource = new UriImageSource { CachingEnabled = true, CacheValidity = TimeSpan.FromDays(7), Uri = new Uri(QuotedChat.ImageUrl) };
+                            }
+                            newMsg.Quote = newQuoteLoader;
+                            new_send.Quote = newQuote;
+                        }
+                        //if (IsQuotedChatAvailable & QuotedChat != null)
+                        //{
+                        //    newMsg.Quote.SenderNameShow = Logic.GetTrueSenderName(quotedChat.IsMine, newMsg.Quote.OwnerName);
+                        //}
+
+                        Messages.Add(newMsg);
+                        OnPropertyChanged(nameof(Messages));
+                        MessagingCenter.Send<object>(this, Constants.scroll_chat);
+                        RemoveQuoteCommand.Execute(null);
+                        //get the string for the image from Cloudinary
+
+                        string ImageUrl = Cloud.SaveByteArray(arg.stream);// await BaseClient.PostImageStream(arg.stream);
+                        //DependencyService.Get<IMessage>().ShortAlert($"Url: {ImageUrl}");
+
+                        if (!string.IsNullOrEmpty(ImageUrl))
+                        {
+                            new_send.ImageUrl = ImageUrl;
+                            string serialisedMessage = JsonConvert.SerializeObject(new_send);
+
+                            await hubConnection.InvokeAsync("SendMessage", serialisedMessage);
+
+                            //update the local msg with the url
+                            Messages.FirstOrDefault(d => d.ChatId == new_send.Id).ImageSource = new UriImageSource { CachingEnabled = true, CacheValidity = TimeSpan.FromDays(7), Uri = new Uri(ImageUrl) };// ImageSource.FromUri(new Uri(ImageUrl));
+                            Messages.FirstOrDefault(d => d.ChatId == new_send.Id).ImageUrl = ImageUrl;
+                            OnPropertyChanged(nameof(Messages));
+
+                            await Task.Delay(10);
+
+                            MessagingCenter.Send<object, ChatRoomLoader>(this, Constants.update_chatroom_chat_list, new ChatRoomLoader() { Id = Room_ID, ChatsCount = (Messages.Count + 1).ToString() });
+                        }
                     }
-                    newMsg.Quote.SenderNameShow = Logic.GetTrueSenderName(quotedChat.IsMine, newMsg.Quote.OwnerName);
-                    Messages.Add(newMsg);
-                    OnPropertyChanged(nameof(Messages));
-                    RemoveQuoteCommand.Execute(null);
-                    //get the string for the image from Cloudinary
-                    string ImageUrl = await BaseClient.PostImageStream(arg.stream);
-                    new_send.ImageUrl = ImageUrl;
 
-                    //update the local msg with the url
-                    string serialisedMessage = JsonConvert.SerializeObject(new_send);
-
-                    try
-                    {
-                        await hubConnection.InvokeAsync("SendMessage", serialisedMessage);
-                    }
-                    catch (Exception ex)
-                    {
-                        Crashes.TrackError(ex);
-                    }
-
-
-                    await Task.Delay(10);
-
-                    MessagingCenter.Send<object, ChatRoomLoader>(this, Constants.update_chatroom_chat_list, new ChatRoomLoader() { Id = Room_ID, ChatsCount = (Messages.Count + 1).ToString() });
-
-
-
+                }
+                catch (Exception ex)
+                {
+                    Crashes.TrackError(ex);
                 }
             });
         }
 
-        #region WebSocket
-        // private readonly ClientWebSocket client;
-        // private readonly CancellationTokenSource cts;
-
-        //private async void ConnectToServerAsync()
-        //{
-        //    await client.ConnectAsync(new Uri("wss://confessbackend.azurewebsites.net/"), cts.Token);
-
-        //    UpdateClientState();
-
-        //    await Task.Factory.StartNew(async () =>
-        //    {
-        //        while (true)
-        //        {
-        //            WebSocketReceiveResult result;
-        //            ArraySegment<byte> message = new ArraySegment<byte>(new byte[4096]);
-        //            do
-        //            {
-        //                result = await client.ReceiveAsync(message, cts.Token);
-        //                if (result.MessageType == WebSocketMessageType.Close || result.CloseStatus.HasValue)
-        //                {
-        //                    await Task.Delay(100);
-        //                    await client.CloseAsync(WebSocketCloseStatus.NormalClosure, string.Empty, CancellationToken.None);
-
-        //                    // ReconnectConnectToServerAsync();
-        //                }
-        //                else
-        //                {
-        //                    byte[] messageBytes = message.Skip(message.Offset).Take(result.Count).ToArray();
-        //                    string serialisedMessage = Encoding.UTF8.GetString(messageBytes);
-
-        //                    try
-        //                    {
-        //                        Chat incomingChat = JsonConvert.DeserializeObject<Chat>(serialisedMessage);
-        //                        if (incomingChat.SenderKey != await Logic.GetKey() & incomingChat.Room_ID == Room_ID)
-        //                        {
-        //                            ChatLoader insert_loader = new ChatLoader()
-        //                            {
-        //                                Room_ID = incomingChat.Room_ID,
-        //                                Body = incomingChat.Body,
-        //                                Date = incomingChat.Date,
-        //                                IsAd = false,
-        //                                SenderName = incomingChat.SenderName,
-        //                                IsMine = false,
-        //                                Quote = incomingChat.Quote,
-        //                                QuotedChatAvailable = incomingChat.QuotedChatAvailable,
-        //                                ChatId = incomingChat.Id
-        //                            };
-        //                            //if (LastMessageVisible)
-        //                            //{
-        //                            //    Messages.Add(insert_loader);
-        //                            //}
-        //                            //else
-        //                            //{
-        //                            //    DelayedMessages.Enqueue(insert_loader);
-        //                            //    PendingMessageCount++;
-        //                            //}
-
-        //                            Messages.Add(insert_loader);
-        //                            Logic.VibrateNow();
-        //                        }
-        //                        else
-        //                        {
-        //                            //the message is mine. so update delivered.
-        //                            Messages.FirstOrDefault(d => d.ChatId == incomingChat.Id).IsSent = true;
-
-        //                        }
-        //                    }
-        //                    catch (Exception ex)
-        //                    {
-        //                        Crashes.TrackError(ex);
-        //                    }
-        //                    finally
-        //                    {
-        //                        OnPropertyChanged(nameof(Messages));
-        //                    }
-        //                }
-
-        //            } while (!result.EndOfMessage);
-        //        }
-        //    }, cts.Token, TaskCreationOptions.LongRunning, TaskScheduler.Default);
-
-        //    void UpdateClientState()
-        //    {
-        //        OnPropertyChanged(nameof(IsConnected));
-        //        Console.WriteLine($"Websocket state {client.State}");
-        //    }
-        //}
-
-        #endregion
         private async Task LoadData()
         {
+
             //Connect to the hub
             IsBusy = true;
             await ConnectToHub();
@@ -556,6 +530,27 @@ namespace Mobile.Models
                         result = LocalStore.Chat.FetchByRoomID(this.Room_ID);
                     }
                 }
+                //process result 
+                string UserKey = await Logic.GetKey();
+                foreach (ChatLoader data in result)
+                {
+                    //preload data
+                    if (data.IsImageAvailable & !string.IsNullOrEmpty(data.ImageUrl))
+                    {
+                        data.ImageSource = new UriImageSource { CachingEnabled = true, CacheValidity = TimeSpan.FromDays(7), Uri = new Uri(data.ImageUrl) };// ImageSource.FromUri(new Uri(data.ImageUrl));
+                    }
+                    if (data.Quote != null)
+                    {
+                        if (data.Quote.IsImageAvailable & !string.IsNullOrEmpty(data.Quote.ImageUrl))
+                        {
+                            data.Quote.ImageSource = new UriImageSource { CachingEnabled = true, CacheValidity = TimeSpan.FromDays(7), Uri = new Uri(data.ImageUrl) };// ImageSource.FromUri(new Uri(data.Quote.ImageUrl));
+                        }
+                    }
+                    data.IsSent = true;
+                    Messages.Add(data);
+                    OnPropertyChanged(nameof(Messages));
+                }
+                MessagingCenter.Send<object>(this, Constants.scroll_chat);
             }
             catch (Exception ex)
             {
@@ -564,20 +559,6 @@ namespace Mobile.Models
             }
             finally
             {
-                Device.BeginInvokeOnMainThread(async () =>
-                         {
-                             string UserKey = await Logic.GetKey();
-                             foreach (ChatLoader data in result)
-                             {
-                                 if (data.QuotedChatAvailable & data.Quote != null)
-                                 {
-                                     data.Quote.SenderNameShow = await Logic.GetTrueSenderName(data.Quote.OwnerKey, data.Quote.OwnerName);
-                                 }
-
-                                 Messages.Add(data);
-                                 OnPropertyChanged(nameof(Messages));
-                             }
-                         });
                 IsBusy = false;
             }
         }

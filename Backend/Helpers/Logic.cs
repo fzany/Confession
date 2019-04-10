@@ -22,8 +22,8 @@ namespace Backend.Helpers
         public static IEnumerable<SelectListItem> GetIEnumarablelist()
         {
             List<SelectListItem> items = new List<SelectListItem>();
-            var cats = Categories.ToList();
-            foreach(string dat in cats)
+            List<string> cats = Categories.ToList();
+            foreach (string dat in cats)
             {
                 items.Add(new SelectListItem() { Text = dat, Value = dat });
             }
@@ -56,7 +56,7 @@ namespace Backend.Helpers
             };
         }
 
-       
+
 
         internal static string GetToken(string userkey)
         {
@@ -76,6 +76,16 @@ namespace Backend.Helpers
 
             //fill data
             return tokenHandler.WriteToken(token);
+        }
+
+        internal static bool CheckSpamFree(string v)
+        {
+            foreach (string spam in Constants.SpamWords)
+            {
+                if (v.Contains(spam))
+                    return false;
+            }
+            return true;
         }
 
         public static string ToTitle(string input)

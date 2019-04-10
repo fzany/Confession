@@ -81,10 +81,12 @@ namespace Backend.Helpers
 
             }
 
-            private static UserData FetchUserByID(string confessOwnerID)
+            public static UserData FetchUserByID(string confessOwnerID)
             {
                 return contextLite.UserData.FindOne(d => d.Key[0] == confessOwnerID);
             }
+
+         
         }
 
         public static class ChatClass
@@ -99,9 +101,8 @@ namespace Backend.Helpers
             /// </summary>
             /// <param name="incoming"></param>
             /// <returns></returns>
-            internal static string ProcessMessage(string incoming)
+            internal static string ProcessMessage(Chat chat)
             {
-                Chat chat = JsonConvert.DeserializeObject<Chat>(incoming);
                 LiteDB.BsonValue newID = contextLite.Chat.Insert(chat);
                 //send notification
                 try
@@ -152,25 +153,32 @@ namespace Backend.Helpers
                 return ChatClass.ChatLoader(result, userKey);
             }
 
-            private static ChatLoader ChatLoader(Chat chat)
-            {
-                ChatLoader chatLoader = new ChatLoader()
-                {
-                    IsMine = false,
-                    Body = chat.Body,
-                    Date = chat.Date,
-                    Room_ID = chat.Room_ID,
-                    SenderName = chat.SenderName,
-                    ChatId = chat.Id,
-                    Quote = chat.Quote,
-                    QuotedChatAvailable = chat.QuotedChatAvailable,
-                    ImageUrl = chat.ImageUrl,
-                    IsImageAvailable = chat.IsImageAvailable,
-                    SenderKey = chat.SenderKey
-                };
+            //private static ChatLoader ChatLoader(Chat chat)
+            //{
+            //    ChatLoader chatLoader = new ChatLoader()
+            //    {
+            //        IsMine = false,
+            //        Body = chat.Body,
+            //        Date = chat.Date,
+            //        Room_ID = chat.Room_ID,
+            //        SenderName = chat.SenderName,
+            //        ChatId = chat.Id,
+            //        Quote = new QuoteLoader
+            //        {
+            //            Body = chat.Quote.Body,
+            //            ImageUrl = chat.Quote.ImageUrl,
+            //            IsImageAvailable = chat.Quote.IsImageAvailable,
+            //            OwnerKey = chat.Quote.OwnerKey,
+            //            OwnerName = chat.Quote.OwnerName
+            //        },
+            //        QuotedChatAvailable = chat.QuotedChatAvailable,
+            //        ImageUrl = chat.ImageUrl,
+            //        IsImageAvailable = chat.IsImageAvailable,
+            //        SenderKey = chat.SenderKey
+            //    };
 
-                return chatLoader;
-            }
+            //    return chatLoader;
+            //}
 
 
             private static List<ChatLoader> ChatLoader(IEnumerable<Chat> result, string userKey)
@@ -186,11 +194,19 @@ namespace Backend.Helpers
                         Room_ID = chat.Room_ID,
                         SenderName = chat.SenderName,
                         ChatId = chat.Id,
-                        Quote = chat.Quote,
+                        Quote = new QuoteLoader
+                        {
+                            Body = chat.Quote.Body,
+                            ImageUrl = chat.Quote.ImageUrl,
+                            IsImageAvailable = chat.Quote.IsImageAvailable,
+                            OwnerKey = chat.Quote.OwnerKey,
+                            OwnerName = chat.Quote.OwnerName,
+                            IsMine = chat.Quote.OwnerName.Equals(userKey)
+                        },
                         QuotedChatAvailable = chat.QuotedChatAvailable,
                         ImageUrl = chat.ImageUrl,
                         IsImageAvailable = chat.IsImageAvailable,
-                         SenderKey = chat.SenderKey
+                        SenderKey = chat.SenderKey
                     });
                 }
 
@@ -469,13 +485,13 @@ namespace Backend.Helpers
                 // Find All
                 return GetConfessLoader(list, key);
             }
-            public static ConfessLoader FetchOneConfessLoader(string guid, string key)
+            public static ConfessLoader FetchOneConfessLoader(string guid, string senderKey)
             {
                 Confess data = FetchOneConfessByGuid(guid);
                 //report seen
-                if (data.Owner_Guid != key)
+                if (data.Owner_Guid != senderKey)
                 {
-                    SeenClass.Post(guid, key);
+                    SeenClass.Post(guid, senderKey);
                 }
                 // contextLite.Confess.FindOne(d => d.Guid == guid);
 
@@ -485,7 +501,7 @@ namespace Backend.Helpers
                 //IFindFluent<Confess, Confess> cursor = context.Confess.Find(idFilter);
 
                 // Find All
-                return GetConfessLoader(data, key);
+                return GetConfessLoader(data, senderKey);
             }
 
             public static Confess FetchOneConfessByGuid(string guid)
@@ -664,13 +680,13 @@ namespace Backend.Helpers
                 //long count = context.Comment.CountDocuments(idFilter);
                 //return count.ToString();
             }
-            public static ConfessLoader CreateComment(CommentPoster comment)
+            public static void CreateComment(CommentPoster comment)
             {
                 comment.Comment.Id = Logical.Setter(comment.Comment.Id);
                 contextLite.Comment.Insert(comment.Comment);
 
                 //context.Comment.InsertOne(comment.Comment);
-                return ConfessClass.FetchOneConfessLoader(comment.ConfessGuid, comment.Key);
+
             }
             public static void UpdateComment(Comment comment)
             {

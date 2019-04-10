@@ -56,11 +56,17 @@ namespace Mobile
                 DependencyService.Get<IMessage>().ShortAlert("Please type a Body");
                 return;
             }
+            if (title.Text.Length > 50)
+            {
+                DependencyService.Get<IMessage>().ShortAlert("The Title is rather too long");
+                return;
+            }
             if (body.Text.Length < 100)
             {
                 DependencyService.Get<IMessage>().ShortAlert("Please type more texts for the Body");
                 return;
             }
+
 
 
             try
@@ -73,9 +79,9 @@ namespace Mobile
                     Category = cat.SelectedItem.ToString(),
                     Owner_Guid = await Logic.GetKey(),
                 };
-                //Save
-                await Store.ConfessClass.CreateConfess(confess);
-                DependencyService.Get<IMessage>().ShortAlert("Published");
+                //Send to Confession Model
+                MessagingCenter.Send<object, Confess>(this, Constants.send_confession, confess);
+                DependencyService.Get<IMessage>().ShortAlert("Queued for Sending");
                 ChangeLoading(false);
 
                 //close this page
@@ -92,19 +98,34 @@ namespace Mobile
         private void Title_TextChanged(object sender, TextChangedEventArgs e)
         {
             title.Text = Logic.ToTitle(title.Text);
+            int val = title.Text.Length;
+            int max = 50;
+            if (val == 0)
+            {
+                counterTitle.Text = "Title";
+            }
+            else if (val < max)
+            {
+                counterTitle.Text = $"Title ( type {max - val} characters or more)";
+            }
+            else
+            {
+                counterTitle.Text = "Title too long 😢.";
+
+            }
         }
 
         private void Body_TextChanged(object sender, TextChangedEventArgs e)
         {
             int val = body.Text.Length;
             int min = 100;
-            if (val > min)
+            if (val == 0 || val > min)
             {
                 counter.Text = "Body";
             }
             else
             {
-                counter.Text = $"Body( type {min - val} characters or more)";
+                counter.Text = $"Body ( type {min - val} characters or more)";
             }
         }
     }

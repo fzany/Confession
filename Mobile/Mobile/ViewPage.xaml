@@ -76,6 +76,9 @@
                             </StackLayout>
 
                             <StackLayout  Orientation="Horizontal"  Grid.Column="3">
+                                <StackLayout.GestureRecognizers>
+                                    <TapGestureRecognizer NumberOfTapsRequired="1" Tapped="Try_Delete_Tapped"/>
+                                </StackLayout.GestureRecognizers>
                                 <Label  FontFamily="{StaticResource FSolid}" Text="{Binding SeenLogo}"/>
                                 <Label Text="{Binding Seen}" FontFamily="{StaticResource Rob}" MaxLines="1"/>
                             </StackLayout>

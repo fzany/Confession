@@ -3,8 +3,7 @@ using CloudinaryDotNet.Actions;
 using System;
 using System.IO;
 using System.Threading.Tasks;
-
-namespace Backend.Helpers
+namespace Mobile.Helpers
 {
     public class Cloud
     {
@@ -17,7 +16,7 @@ namespace Backend.Helpers
             return new Cloudinary(account);
         }
 
-        public static async Task<string> SaveChatImageAsync(Stream data)
+        public static string SaveChatImage(Stream data)
         {
             if (data == null)
             {
@@ -33,11 +32,11 @@ namespace Backend.Helpers
                 Format = "png",
                 Tags = "chat"
             };
-            ImageUploadResult uploadResult = await cloudinary.UploadAsync(uploadParams);
+            ImageUploadResult uploadResult = cloudinary.Upload(uploadParams);
             return uploadResult.SecureUri.AbsoluteUri;
         }
 
-        public static async Task<string> SaveByteArrayAsync(byte[] data)
+        public static string SaveByteArray(byte[] data)
         {
             if (data == null)
             {
@@ -49,9 +48,11 @@ namespace Backend.Helpers
             ImageUploadParams uploadParams = new ImageUploadParams()
             {
                 File = new FileDescription(Logic.GetGuid(), stream),
-                PublicId = Logic.GetGuid()
+                PublicId = Logic.GetGuid(),
+                Format = "png",
+                Tags = "chat"
             };
-            ImageUploadResult uploadResult = await cloudinary.UploadAsync(uploadParams);
+            ImageUploadResult uploadResult = cloudinary.Upload(uploadParams);
             return uploadResult.SecureUri.AbsoluteUri;
 
         }

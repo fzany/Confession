@@ -16,8 +16,8 @@
             <ActivityIndicator IsEnabled="False" IsRunning="False" IsVisible="False" x:Name="loadingBox"/>
             <ScrollView>
                 <StackLayout>
-                    <Label Text="Title" FontFamily="{StaticResource Rob}" FontSize="Small"/>
-                    <Entry Text="{Binding Title}" FontFamily="{StaticResource Rob}" x:Name="title" TextChanged="title_TextChanged"   />
+                    <Label Text="Title" x:Name="counterTitle" FontFamily="{StaticResource Rob}" FontSize="Small"/>
+                    <Entry Text="{Binding Title}" MaxLength="50" FontFamily="{StaticResource Rob}" x:Name="title" TextChanged="title_TextChanged"   />
                     <Label Text="Category" FontFamily="{StaticResource Rob}" FontSize="Small"/>
                     <Picker  VerticalOptions="Center" HorizontalOptions="FillAndExpand" x:Name="cat" FontFamily="{StaticResource Rob}" Title="Choose Category" SelectedItem="{Binding Category}"/>
                     <Label Text="Body" x:Name="counter" FontFamily="{StaticResource Rob}" FontSize="Small"/>

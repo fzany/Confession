@@ -40,18 +40,20 @@ namespace Mobile.Helpers
             HttpResponseMessage response = await client.PutAsync(urlLink, new StringContent(content, Encoding.UTF8, Constants.ContentTypeHeaderJson)).ConfigureAwait(false);
             return await response.Content.ReadAsStringAsync();
         }
-        internal static async Task<string> PostImageStream(Stream stream)
+        internal static async Task<string> PostImageStream(byte[] input)
         {
             try
             {
+                Stream stream = new MemoryStream(input);
                 using (HttpClient client = new HttpClient())
                 {
                     client.BaseAddress = new Uri(Constants.BaseURL);
                     client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue(Constants.AuthorizationHeaderType, await Logic.GetToken());
                     StreamContent inputData = new StreamContent(stream);
                     string urlLink = "chat/postimage";
-                    HttpResponseMessage response = await client.PostAsync(urlLink, inputData);
-                    return await response.Content.ReadAsStringAsync();
+                    HttpResponseMessage response = await client.PostAsync(urlLink, inputData).ConfigureAwait(false);
+                    var result =  await response.Content.ReadAsStringAsync();
+                    return result;
                 }
             }
             catch (Exception ex)

@@ -47,7 +47,7 @@ namespace Mobile
         }
 
         private async void DeleteButtonClicked(object sender, EventArgs e)
-        {     
+        {
 
             if (!Logic.IsInternet())
             {
@@ -82,6 +82,21 @@ namespace Mobile
         private void title_TextChanged(object sender, TextChangedEventArgs e)
         {
             title.Text = Logic.ToTitle(title.Text);
+            int val = title.Text.Length;
+            int max = 50;
+            if (val == 0)
+            {
+                counterTitle.Text = "Title";
+            }
+            else if (val < max)
+            {
+                counterTitle.Text = $"Title ( type {max - val} characters or more)";
+            }
+            else
+            {
+                counterTitle.Text = "Title too long 😢.";
+
+            }
         }
 
         private async void UpdateButton_Clicked(object sender, EventArgs e)
@@ -106,11 +121,18 @@ namespace Mobile
                 DependencyService.Get<IMessage>().ShortAlert("Please type a Body");
                 return;
             }
+            if (title.Text.Length > 50)
+            {
+                DependencyService.Get<IMessage>().ShortAlert("The Title is rather too long");
+                return;
+            }
             if (body.Text.Length < 100)
             {
                 DependencyService.Get<IMessage>().ShortAlert("Please type more texts for the Body");
                 return;
             }
+
+
             ChangeLoading(true);
 
             try

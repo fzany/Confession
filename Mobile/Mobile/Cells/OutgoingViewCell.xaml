@@ -38,8 +38,8 @@
                             <RowDefinition Height="Auto"/>
                         </Grid.RowDefinitions>
                         <Label Grid.Column="0" Grid.Row="0" VerticalOptions="CenterAndExpand" Text="{Binding Body}" TextColor="Black"/>
-                        <Label Grid.Column="1" Grid.Row="0" Text="{Binding Time}" TextColor="Gray" FontSize="Micro"/>
-                        <Label Grid.Column="2" Grid.Row="0" Text="✔" IsVisible="{Binding IsSent}" TextColor="{StaticResource PrimaryDark}"/>
+                        <Label Grid.Column="1" Grid.Row="0" Text="{Binding Time}" VerticalOptions="EndAndExpand" HorizontalOptions="EndAndExpand" TextColor="Gray" FontSize="Micro"/>
+                        <Label Grid.Column="2" Grid.Row="0" Text="✔" IsVisible="{Binding IsSent}"  TextColor="{StaticResource PrimaryDark}" VerticalOptions="EndAndExpand"/>
                     </Grid>
                 </StackLayout>
             </Frame>

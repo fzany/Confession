@@ -1,18 +1,21 @@
 ﻿using Microsoft.AppCenter.Crashes;
+using Microsoft.AspNetCore.SignalR.Client;
 using Mobile.Helpers;
 using Mobile.Helpers.Local;
+using Newtonsoft.Json;
 using System;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
 using System.Threading.Tasks;
+using Xamarin.Essentials;
 using Xamarin.Forms;
 
 namespace Mobile.Models
 {
     public class ConfessionViewModel : INotifyPropertyChanged
     {
-        public ObservableCollection<ConfessLoader> Loaders { get; set; }
+        public ObservableCollection<ConfessLoader> Loaders { get; set; } = new ObservableCollection<ConfessLoader>();
         public LoadMode Mode = LoadMode.None;
         public string CurrentCategory = string.Empty;
 
@@ -51,9 +54,75 @@ namespace Mobile.Models
             }
         }
 
+
+        private HubConnection hubConnection;
+        public async Task ConnectToHub()
+        {
+            try
+            {
+                if (Logic.IsInternet())
+                {
+                    if (!IsHubConnected())
+                    {
+                        await hubConnection.StartAsync();
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Crashes.TrackError(ex);
+            }
+        }
+        public async Task DisConnectHub()
+        {
+            try
+            {
+                await hubConnection.StopAsync();
+            }
+            catch (Exception ex)
+            {
+                Crashes.TrackError(ex);
+            }
+        }
+        public bool IsHubConnected()
+        {
+            try
+            {
+                HubConnectionState state = hubConnection.State;
+                return state == HubConnectionState.Connected;
+            }
+            catch (Exception ex)
+            {
+                Crashes.TrackError(ex);
+                return false;
+            }
+        }
         public ConfessionViewModel()
         {
-            Loaders = new ObservableCollection<ConfessLoader>();
+            Connectivity.ConnectivityChanged += Connectivity_ConnectivityChangedAsync;
+
+            hubConnection = new HubConnectionBuilder()
+                .WithUrl("https://confessbackend.azurewebsites.net/chatHub")
+                .Build();
+
+            hubConnection.On<string>("ReceiveConfession", (message) =>
+            {
+                try
+                {
+                    ConfessLoader incomingConfession = JsonConvert.DeserializeObject<ConfessLoader>(message);
+                    //check if it's mine, etc
+                    SetLoaders(incomingConfession);
+
+                    //save to local db
+                    LocalStore.Confession.SaveLoader(incomingConfession);
+                }
+
+                catch (Exception ex)
+                {
+                    Crashes.TrackError(ex);
+                }
+            });
+
             IsErrorAvailable = false;
             Task.Run(async () =>
             {
@@ -62,6 +131,10 @@ namespace Mobile.Models
             });
         }
 
+        private async void Connectivity_ConnectivityChangedAsync(object sender, ConnectivityChangedEventArgs e)
+        {
+            await ConnectToHub();
+        }
         protected virtual void OnPropertyChanged(string propertyName)
         {
             PropertyChanged?.Invoke(this,
@@ -165,6 +238,7 @@ namespace Mobile.Models
         {
             if (Loaders_new == null)
             {
+                IsBusy = false;
                 return;
             }
 
@@ -181,7 +255,7 @@ namespace Mobile.Models
                     load.DislikeColor = Color.FromHex(load.DislikeColorString);
                 }
 
-                //set ad visibility to every 6 items
+                //set ad visibility to every 10 items
                 if (Logic.IsInternet())
                 {
                     adCounter++;
@@ -197,6 +271,33 @@ namespace Mobile.Models
             Loaders = new ObservableCollection<ConfessLoader>(Loaders_new.Reverse());
             PropertyChanged?.Invoke(this,
        new PropertyChangedEventArgs(nameof(Loaders)));
+            IsBusy = false;
+        }
+        private void SetLoaders(ConfessLoader load)
+        {
+            if (load == null)
+            {
+                IsBusy = false;
+                return;
+            }
+
+            if (!string.IsNullOrEmpty(load.LikeColorString))
+            {
+                load.LikeColor = Color.FromHex(load.LikeColorString);
+            }
+
+            if (!string.IsNullOrEmpty(load.DislikeColorString))
+            {
+                load.DislikeColor = Color.FromHex(load.DislikeColorString);
+            }
+            if(Loaders.Any(d=>d.Guid == load.Guid))
+            {
+                //remove first
+                Loaders.Remove(Loaders.FirstOrDefault(d => d.Guid == load.Guid));
+            }
+            Loaders.Insert(0, load);
+            OnPropertyChanged(nameof(Loaders));
+            IsBusy = false;
         }
 
 
@@ -235,6 +336,31 @@ namespace Mobile.Models
             {
                 Mode = LoadMode.None;
                 LoadData();
+            });
+
+            //Send out a Confession
+            MessagingCenter.Subscribe<object, Confess>(this, Constants.send_confession, async (sender, arg) =>
+            {
+                if (arg != null)
+                {
+                    SetLoaders(new ConfessLoader()
+                    {
+                        Body = arg.Body,
+                        Category = arg.Category,
+                        CommentCount = "0",
+                        Date = "pending",
+                        Guid = arg.Guid,
+                        Id = arg.Id,
+                        Likes = "0",
+                        DisLikes = "0",
+                        Owner_Guid = arg.Owner_Guid,
+                        Seen = "0",
+                        Title = arg.Title, 
+                    });
+                    string serialisedMessage = JsonConvert.SerializeObject(arg);
+                    await hubConnection.InvokeAsync("SendConfession", serialisedMessage);
+                    await Task.Delay(10);
+                }
             });
         }
 

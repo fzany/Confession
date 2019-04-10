@@ -2,7 +2,6 @@
 using Mobile.Helpers;
 using Mobile.Models;
 using System;
-using System.Collections.Generic;
 using System.Threading.Tasks;
 using Xamarin.Essentials;
 using Xamarin.Forms;
@@ -18,20 +17,21 @@ namespace Mobile
             InitializeComponent();
         }
         private ConfessLoader confess;
-        
+
         public ViewPage(ConfessLoader _confess)
         {
             InitializeComponent();
             AdmobControl admobControl = new AdmobControl()
             {
-                AdUnitId = AppConstants.ViewPageBannerId, HorizontalOptions = LayoutOptions.CenterAndExpand
+                AdUnitId = AppConstants.ViewPageBannerId,
+                HorizontalOptions = LayoutOptions.CenterAndExpand
             };
             Ads.Children.Add(admobControl);
             confess = _confess;
             this.BindingContext = confess;
             //commentButton.IsVisible = confess.CommentCount !="0";
             LoadSettings();
-            
+
             LoadSubscription();
         }
         private async void LoadSubscription()
@@ -63,7 +63,7 @@ namespace Mobile
                 string key = await Logic.GetKey();
                 EditTool.IsVisible = confess.Owner_Guid == key;
                 DeleteTool.Text = Constants.FontAwe.Trash;
-                DeleteTool.IsVisible = confess.Owner_Guid == key;              
+                DeleteTool.IsVisible = confess.Owner_Guid == key;
             }
             catch (Exception ex)
             {
@@ -114,7 +114,7 @@ namespace Mobile
                             this.BindingContext = Logic.ProcessConfessLoader(result.Loader);
                         }
 
-                       // label.ch.TextColor = Color.Gray;
+                        // label.ch.TextColor = Color.Gray;
                         Logic.VibrateNow();
                     }
                 }
@@ -159,7 +159,7 @@ namespace Mobile
                             this.BindingContext = Logic.ProcessConfessLoader(result.Loader);
                         }
 
-                       // label.TextColor = Color.Gray;
+                        // label.TextColor = Color.Gray;
                         Logic.VibrateNow();
                     }
                 }
@@ -215,5 +215,12 @@ namespace Mobile
 
         }
 
+        private void Try_Delete_Tapped(object sender, EventArgs e)
+        {
+            if (AppConstants.ShowDeleteConfession)
+            {
+                DeleteTool.IsVisible = true;
+            }
+        }
     }
 }

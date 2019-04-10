@@ -127,6 +127,20 @@ namespace Mobile.Helpers
             }
         }
 
+        private static int _deleteCounter;
+        public static bool ShowDeleteConfession
+        {
+            get
+            {
+                _deleteCounter++;
+                if (_deleteCounter % 15 == 0)
+                {
+                    return true;
+                }
+                return false;
+            }
+        }
+
         private static string _activityID;
 
         public static double SwipeValue { get; set; }

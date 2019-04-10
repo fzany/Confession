@@ -874,5 +874,11 @@ namespace Shared
 
         }
 
+        public static List<string> SpamWords = new List<string>() {
+            "100%","http","$$$","gmail",".com","dotcom","apply","billing","price","bonus","member","bulk","call free","call now","certified","clearance","congratulations","consolidate","earn extra","extra cash","extra income","form",
+            "www","free trial","free website","free preview","free investment","free quote","free installation","free money","free sample","get out of debt","get paid","get it now","great offer","hidden charges","income from home","incredible deal","increase traffic","increase sales","join millions","limited time offer","limited time only","lower interest rates",
+            "yahoo","outlook","f r e e","proven system","days!","we offer","advertise","dear sir","dear ma","your product","and services","make $","no credit check","no hidden","no investment","no interests","offer expires","order shipped by","potential earnings","save $","stock pick","stop snoring",
+            "take action","this isn't junk","this isn't a scam","this isn't spam","unsecured credit","we hate spam","why pay more","you are a winner","you have been selected","your income", "$$"
+        };
     }
 }
