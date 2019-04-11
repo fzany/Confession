@@ -1,6 +1,8 @@
-﻿using Microsoft.AppCenter;
+﻿using FFImageLoading;
+using Microsoft.AppCenter;
 using Microsoft.AppCenter.Crashes;
 using Mobile.Helpers;
+using Mobile.Helpers.Local;
 using Mobile.Models;
 using System;
 using System.Collections.Generic;
@@ -34,7 +36,15 @@ namespace Mobile
         {
             // base.OnAppearing();
             LoadCheckData();
+            LoadMemoryData();
         }
+
+        private void LoadMemoryData()
+        {
+            double memoryUsed = LocalStore.Generic.GetDatabaseSize();
+            storageLabel.Text = $"Over {Math.Round((memoryUsed/ 1000000), 2)} Mb used.";
+        }
+
         private async void LoadCheckData()
         {
             if (!Logic.IsInternet())
@@ -72,7 +82,7 @@ namespace Mobile
             }
             catch (Exception ex)
             {
-                Crashes.TrackError(ex);
+                Crashes.TrackError(ex, Logic.GetErrorProperties(ex));
                 ChangeLoading(false);
             }
             finally
@@ -168,9 +178,23 @@ namespace Mobile
                 return;
             }
             ChangeLoading(true);
+            await Task.Delay(10);
             string newName = await Store.GenericClass.GetName();
             ChatName.Text = newName;
             ChangeLoading(false);
         }
+
+        private async void Clear_Local_Tapped(object sender, EventArgs e)
+        {
+            ChangeLoading(true);
+            await Task.Delay(10);
+            await ImageService.Instance.InvalidateCacheAsync(FFImageLoading.Cache.CacheType.All);
+            ChangeLoading(false);
+
+            DependencyService.Get<IMessage>().ShortAlert("Cleared");
+
+        }
+
+
     }
 }

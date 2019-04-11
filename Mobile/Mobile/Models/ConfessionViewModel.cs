@@ -70,7 +70,7 @@ namespace Mobile.Models
             }
             catch (Exception ex)
             {
-                Crashes.TrackError(ex);
+                Crashes.TrackError(ex, Logic.GetErrorProperties(ex));
             }
         }
         public async Task DisConnectHub()
@@ -81,7 +81,7 @@ namespace Mobile.Models
             }
             catch (Exception ex)
             {
-                Crashes.TrackError(ex);
+                Crashes.TrackError(ex, Logic.GetErrorProperties(ex));
             }
         }
         public bool IsHubConnected()
@@ -93,7 +93,7 @@ namespace Mobile.Models
             }
             catch (Exception ex)
             {
-                Crashes.TrackError(ex);
+                Crashes.TrackError(ex, Logic.GetErrorProperties(ex));
                 return false;
             }
         }
@@ -119,7 +119,7 @@ namespace Mobile.Models
 
                 catch (Exception ex)
                 {
-                    Crashes.TrackError(ex);
+                    Crashes.TrackError(ex, Logic.GetErrorProperties(ex));
                 }
             });
 
@@ -225,7 +225,7 @@ namespace Mobile.Models
             }
             catch (Exception ex)
             {
-                Crashes.TrackError(ex);
+                Crashes.TrackError(ex, Logic.GetErrorProperties(ex));
             }
             finally
             {

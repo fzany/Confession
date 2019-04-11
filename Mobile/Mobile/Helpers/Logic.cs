@@ -46,7 +46,7 @@ namespace Mobile.Helpers
 
         internal static string GetGuid()
         {
-           return  MongoDB.Bson.ObjectId.GenerateNewId().ToString();
+            return MongoDB.Bson.ObjectId.GenerateNewId().ToString();
         }
 
         public static Models.DeviceInfo GetDeviceInformation()
@@ -69,9 +69,13 @@ namespace Mobile.Helpers
             string result = string.Empty;
 
             if (dateTime.Date == DateTime.Today.Date)
+            {
                 result = "Today".ToUpper();
+            }
             else if (dateTime.Date == DateTime.Today.AddDays(-1).Date)
+            {
                 result = "Yesterday".ToUpper();
+            }
             else
             {
                 result = $"{dateTime.Day} {CultureInfo.CurrentCulture.DateTimeFormat.GetMonthName(dateTime.Month)} {dateTime.Year}";
@@ -136,15 +140,21 @@ namespace Mobile.Helpers
 
         internal static async Task<string> GetTrueSenderName(string senderKey, string senderName)
         {
-           if(senderKey == await GetKey())
+            if (senderKey == await GetKey())
+            {
                 return "You";
+            }
+
             return senderName;
         }
 
         internal static string GetTrueSenderName(bool isMine, string senderName)
         {
             if (isMine)
+            {
                 return "You";
+            }
+
             return senderName;
         }
 
@@ -166,7 +176,7 @@ namespace Mobile.Helpers
             "General","Money", "Health",
             "Crime" ,"Hilarious"};
 
-        internal static async  Task<bool> CheckIfMine(string ownerKey)
+        internal static async Task<bool> CheckIfMine(string ownerKey)
         {
             return ownerKey == await GetKey();
         }
@@ -249,6 +259,42 @@ namespace Mobile.Helpers
                 // Possible that device doesn't support secure storage on device.
                 return "";
             }
+        }
+
+        internal static IDictionary<string, string> GetErrorProperties(Exception exc)
+        {
+            StringBuilder sw = new StringBuilder();
+            sw.AppendLine($"********************, { DateTime.UtcNow}");
+            if (exc.InnerException != null)
+            {
+                sw.Append("Inner Exception Type: ");
+                sw.AppendLine(exc.InnerException.GetType().ToString());
+                sw.Append("Inner Exception: ");
+                sw.AppendLine(exc.InnerException.Message);
+                sw.Append("Inner Source: ");
+                sw.AppendLine(exc.InnerException.Source);
+                if (exc.InnerException.StackTrace != null)
+                {
+                    sw.AppendLine("Inner Stack Trace: ");
+                    sw.AppendLine(exc.InnerException.StackTrace);
+                }
+            }
+            sw.Append("Exception Type: ");
+            sw.AppendLine(exc.GetType().ToString());
+            sw.AppendLine("Exception: " + exc.Message);
+            sw.AppendLine("Source: ");
+            sw.AppendLine("Stack Trace: ");
+            if (exc.StackTrace != null)
+            {
+                sw.AppendLine(exc.StackTrace);
+                sw.AppendLine();
+            }
+            sw.AppendLine(exc.ToString());
+            Dictionary<string, string> parameters = new Dictionary<string, string>() {
+    { "exception", sw.ToString() }};
+
+
+            return parameters;
         }
 
         public static async Task<string> CreateChatName(string name)
@@ -356,17 +402,20 @@ namespace Mobile.Helpers
             }
             catch (FeatureNotSupportedException ex)
             {
-                Crashes.TrackError(ex);
+                Crashes.TrackError(ex, Logic.GetErrorProperties(ex));
             }
             catch (Exception ex)
             {
-                Crashes.TrackError(ex);
+                Crashes.TrackError(ex, Logic.GetErrorProperties(ex));
             }
         }
         public static string FilterCharacters(string input)
         {
             if (string.IsNullOrWhiteSpace(input))
+            {
                 return string.Empty;
+            }
+
             Regex regex = new Regex("[^a-zA-Z0-9]");
             return regex.Replace(input, "");
         }
@@ -396,7 +445,7 @@ namespace Mobile.Helpers
             }
             catch (Exception ex)
             {
-                Crashes.TrackError(ex);
+                Crashes.TrackError(ex, Logic.GetErrorProperties(ex));
                 return Color.FromHex(colours[ind]);
             }
 

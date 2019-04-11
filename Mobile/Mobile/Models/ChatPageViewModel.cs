@@ -73,10 +73,52 @@ namespace Mobile.Models
         }
 
         public string Room_ID { get; set; }
-        public bool ShowScrollTap { get; set; } = false; //Show the jump icon 
-        public bool LastMessageVisible { get; set; } = true;
-        public int PendingMessageCount { get; set; } = 0;
-        public bool PendingMessageCountVisible => PendingMessageCount > 0;
+
+        private bool isShowScrollTap;
+        public bool ShowScrollTap
+        {
+            get => isShowScrollTap;
+            set
+            {
+                isShowScrollTap = value;
+                OnPropertyChanged(nameof(ShowScrollTap));
+            }
+        }
+
+        private bool isLastMessageVisible;
+        public bool LastMessageVisible
+        {
+            get => isLastMessageVisible;
+            set
+            {
+                isLastMessageVisible = value;
+                OnPropertyChanged(nameof(LastMessageVisible));
+            }
+        }
+
+
+        private int localPendingMessageCount;
+        public int PendingMessageCount
+        {
+            get => localPendingMessageCount;
+            set
+            {
+                localPendingMessageCount = value;
+                OnPropertyChanged(nameof(PendingMessageCount));
+            }
+        }
+
+
+        private bool isPendingMessageCountVisible;
+        public bool PendingMessageCountVisible
+        {
+            get => isPendingMessageCountVisible;
+            set
+            {
+                isPendingMessageCountVisible = PendingMessageCount > 0;
+                OnPropertyChanged(nameof(PendingMessageCountVisible));
+            }
+        }
         public Queue<ChatLoader> DelayedMessages { get; set; } = new Queue<ChatLoader>();
 
         private ChatLoader quotedChat;
@@ -118,7 +160,7 @@ namespace Mobile.Models
             }
             catch (Exception ex)
             {
-                Crashes.TrackError(ex);
+                Crashes.TrackError(ex, Logic.GetErrorProperties(ex));
             }
         }
         public async Task DisConnectHub()
@@ -129,7 +171,7 @@ namespace Mobile.Models
             }
             catch (Exception ex)
             {
-                Crashes.TrackError(ex);
+                Crashes.TrackError(ex, Logic.GetErrorProperties(ex));
             }
         }
         public bool IsHubConnected()
@@ -141,7 +183,7 @@ namespace Mobile.Models
             }
             catch (Exception ex)
             {
-                Crashes.TrackError(ex);
+                Crashes.TrackError(ex, Logic.GetErrorProperties(ex));
                 return false;
             }
         }
@@ -193,18 +235,18 @@ namespace Mobile.Models
                             insert_loader.IsMine = false;
 
                             #region MyRegion
-                            //if (LastMessageVisible)
-                            //{
-                            //    Messages.Add(insert_loader);
-                            //}
-                            //else
-                            //{
-                            //    DelayedMessages.Enqueue(insert_loader);
-                            //    PendingMessageCount++;
-                            //} 
+                            if (LastMessageVisible)
+                            {
+                                Messages.Add(insert_loader);
+                            }
+                            else
+                            {
+                                DelayedMessages.Enqueue(insert_loader);
+                                PendingMessageCount++;
+                            }
                             #endregion
 
-                            Messages.Add(insert_loader);
+                            //Messages.Add(insert_loader);         //test uncomment
                             Logic.VibrateNow();
 
                         }
@@ -212,23 +254,33 @@ namespace Mobile.Models
                         {
                             //the message is mine. so update delivered.
                             insert_loader.IsMine = true;
-                            Messages.FirstOrDefault(d => d.ChatId == incomingChat.Id).IsSent = true;
+                            //Messages.FirstOrDefault(d => d.ChatId == incomingChat.Id).IsSent = true;
+
+                            //rather than updating just IsSent property, just update the entire object
+                            //check for existence
+                            if (Messages.Any(d => d.ChatId == incomingChat.Id))
+                            {
+                                ChatLoader temp_msg = Messages.FirstOrDefault(d => d.ChatId == incomingChat.Id);
+                                int index = Messages.IndexOf(temp_msg);
+                                Messages.RemoveAt(index);
+                                Messages.Insert(index, insert_loader);
+                            }
                             OnPropertyChanged("IsSent");
+                            await Task.Delay(10);
                         }
                     }
 
                     LocalStore.Chat.SaveLoader(insert_loader);
+                    OnPropertyChanged(nameof(Messages));
+                    await Task.Delay(10);
+                    MessagingCenter.Send<object>(this, Constants.scroll_chat);
                 }
 
                 catch (Exception ex)
                 {
-                    Crashes.TrackError(ex);
+                    Crashes.TrackError(ex, Logic.GetErrorProperties(ex));
                 }
-                finally
-                {
-                    OnPropertyChanged(nameof(Messages));
-                    MessagingCenter.Send<object>(this, Constants.scroll_chat);
-                }
+
 
             });
 
@@ -237,13 +289,13 @@ namespace Mobile.Models
 
             OnSendCommand = new Command(async () =>
             {
-                if (!string.IsNullOrEmpty(TextToSend))
+                if (!string.IsNullOrWhiteSpace(TextToSend.Trim()))
                 {
                     try
                     {
                         Chat new_send = new Chat()
                         {
-                            Body = TextToSend,
+                            Body = TextToSend.Trim(),
                             Room_ID = this.Room_ID,
                             SenderKey = await Logic.GetKey(),
                             SenderName = await Logic.GetChatName(),
@@ -313,11 +365,10 @@ namespace Mobile.Models
                     }
                     catch (Exception ex)
                     {
-                        Crashes.TrackError(ex);
+                        Crashes.TrackError(ex, Logic.GetErrorProperties(ex));
                     }
 
                 }
-
             });
 
             OnQuoteCommand = new Command((arg) =>
@@ -504,7 +555,7 @@ namespace Mobile.Models
                 }
                 catch (Exception ex)
                 {
-                    Crashes.TrackError(ex);
+                    Crashes.TrackError(ex, Logic.GetErrorProperties(ex));
                 }
             });
         }
@@ -554,8 +605,7 @@ namespace Mobile.Models
             }
             catch (Exception ex)
             {
-                Crashes.TrackError(ex);
-                result = LocalStore.Chat.FetchByRoomID(this.Room_ID);
+                Crashes.TrackError(ex, Logic.GetErrorProperties(ex));
             }
             finally
             {
@@ -572,18 +622,29 @@ namespace Mobile.Models
         private void OnMessageAppearing(ChatLoader message)
         {
             int idx = Messages.IndexOf(message);
-            if (idx <= 6)
+            int lastIndex = Messages.IndexOf(Messages.LastOrDefault());
+
+            //check if the current guy is in the last 10
+
+            if (lastIndex - idx <= 10)
             {
                 Device.BeginInvokeOnMainThread(() =>
                 {
                     while (DelayedMessages.Count > 0)
                     {
-                        Messages.Insert(0, DelayedMessages.Dequeue());
+                        //Messages.Insert(0, DelayedMessages.Dequeue());
+                        Messages.Add(DelayedMessages.Dequeue());
                     }
+
                     ShowScrollTap = false;
                     LastMessageVisible = true;
                     PendingMessageCount = 0;
                 });
+            }
+            else
+            {
+                ShowScrollTap = true;
+                LastMessageVisible = false;
             }
             ShowHeaderData(message.Date);
         }
@@ -619,7 +680,9 @@ namespace Mobile.Models
         private void OnMessageDisappearing(ChatLoader message)
         {
             int idx = Messages.IndexOf(message);
-            if (idx >= 6)
+            int lastIndex = Messages.IndexOf(Messages.LastOrDefault());
+
+            if (lastIndex -idx >= 10)
             {
                 Device.BeginInvokeOnMainThread(() =>
                 {

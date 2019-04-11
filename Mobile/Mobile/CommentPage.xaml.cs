@@ -32,8 +32,12 @@ namespace Mobile
             ScrollListCommand = new Command(() =>
             {
                 Device.BeginInvokeOnMainThread(() =>
-                  List_View.ScrollTo((this.BindingContext as CommentViewModel).Loaders.Last(), ScrollToPosition.End, false)
-              );
+                {
+                    if ((this.BindingContext as CommentViewModel).Loaders.Count > 0)
+                    {
+                        List_View.ScrollTo((this.BindingContext as CommentViewModel).Loaders.Last(), ScrollToPosition.End, false);
+                    }
+                });
             });
         }
 
@@ -49,7 +53,7 @@ namespace Mobile
                     current_context.OnQuoteCommand.Execute(Guid);
                 }
             }
-            
+
         }
         private void Delete_Quote_Tapped(object sender, EventArgs e)
         {
@@ -83,11 +87,11 @@ namespace Mobile
             }
             catch (FeatureNotSupportedException ex)
             {
-                Crashes.TrackError(ex);
+                Crashes.TrackError(ex, Logic.GetErrorProperties(ex));
             }
             catch (Exception ex)
             {
-                Crashes.TrackError(ex);
+                Crashes.TrackError(ex, Logic.GetErrorProperties(ex));
             }
         }
 

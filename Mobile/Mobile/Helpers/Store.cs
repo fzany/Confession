@@ -25,7 +25,7 @@ namespace Mobile.Helpers
                 }
                 catch (Exception ex)
                 {
-                    Crashes.TrackError(ex);
+                    Crashes.TrackError(ex, Logic.GetErrorProperties(ex));
                     return "";
                 }
             }
@@ -45,7 +45,7 @@ namespace Mobile.Helpers
                 }
                 catch (Exception ex)
                 {
-                    Crashes.TrackError(ex);
+                    Crashes.TrackError(ex, Logic.GetErrorProperties(ex));
                     return new UserData() { };
                 }
             }
@@ -88,7 +88,7 @@ namespace Mobile.Helpers
                     }
                     catch (Exception ex)
                     {
-                        Crashes.TrackError(ex);
+                        Crashes.TrackError(ex, Logic.GetErrorProperties(ex));
                     }
                 }
                 else
@@ -107,7 +107,7 @@ namespace Mobile.Helpers
                 }
                 catch (Exception ex)
                 {
-                    Crashes.TrackError(ex);
+                    Crashes.TrackError(ex, Logic.GetErrorProperties(ex));
                 }
             }
         }
@@ -128,7 +128,7 @@ namespace Mobile.Helpers
                 }
                 catch (Exception ex)
                 {
-                    Crashes.TrackError(ex);
+                    Crashes.TrackError(ex, Logic.GetErrorProperties(ex));
                 }
             }
 
@@ -146,7 +146,7 @@ namespace Mobile.Helpers
                 }
                 catch (Exception ex)
                 {
-                    Crashes.TrackError(ex);
+                    Crashes.TrackError(ex, Logic.GetErrorProperties(ex));
                 }
             }
             internal static async Task<ObservableCollection<ChatRoomLoader>> Rooms()
@@ -160,7 +160,7 @@ namespace Mobile.Helpers
                 }
                 catch (Exception ex)
                 {
-                    Crashes.TrackError(ex);
+                    Crashes.TrackError(ex, Logic.GetErrorProperties(ex));
                     return new ObservableCollection<ChatRoomLoader>() { };
                 }
             }
@@ -181,7 +181,7 @@ namespace Mobile.Helpers
                 }
                 catch (Exception ex)
                 {
-                    Crashes.TrackError(ex);
+                    Crashes.TrackError(ex, Logic.GetErrorProperties(ex));
                     return new ObservableCollection<ChatLoader>() { };
                 }
             }
@@ -195,7 +195,7 @@ namespace Mobile.Helpers
                 }
                 catch (Exception ex)
                 {
-                    Crashes.TrackError(ex);
+                    Crashes.TrackError(ex, Logic.GetErrorProperties(ex));
                 }
             }
             public static async Task Update(Chat chat)
@@ -207,7 +207,7 @@ namespace Mobile.Helpers
                 }
                 catch (Exception ex)
                 {
-                    Crashes.TrackError(ex);
+                    Crashes.TrackError(ex, Logic.GetErrorProperties(ex));
                 }
             }
 
@@ -221,7 +221,7 @@ namespace Mobile.Helpers
                 }
                 catch (Exception ex)
                 {
-                    Crashes.TrackError(ex);
+                    Crashes.TrackError(ex, Logic.GetErrorProperties(ex));
                 }
             }
 
@@ -239,7 +239,7 @@ namespace Mobile.Helpers
                 }
                 catch (Exception ex)
                 {
-                    Crashes.TrackError(ex);
+                    Crashes.TrackError(ex, Logic.GetErrorProperties(ex));
                 }
             }
             public static async Task CreateConfess(Confess confess)
@@ -251,7 +251,7 @@ namespace Mobile.Helpers
                 }
                 catch (Exception ex)
                 {
-                    Crashes.TrackError(ex);
+                    Crashes.TrackError(ex, Logic.GetErrorProperties(ex));
                 }
             }
             public static async Task UpdateConfess(Confess confess)
@@ -263,7 +263,7 @@ namespace Mobile.Helpers
                 }
                 catch (Exception ex)
                 {
-                    Crashes.TrackError(ex);
+                    Crashes.TrackError(ex, Logic.GetErrorProperties(ex));
                 }
             }
 
@@ -278,7 +278,7 @@ namespace Mobile.Helpers
                 }
                 catch (Exception ex)
                 {
-                    Crashes.TrackError(ex);
+                    Crashes.TrackError(ex, Logic.GetErrorProperties(ex));
                     return new ObservableCollection<ConfessLoader>();
                 }
             }
@@ -294,7 +294,7 @@ namespace Mobile.Helpers
                 }
                 catch (Exception ex)
                 {
-                    Crashes.TrackError(ex);
+                    Crashes.TrackError(ex, Logic.GetErrorProperties(ex));
                     return new ObservableCollection<ConfessLoader>();
                 }
             }
@@ -311,7 +311,7 @@ namespace Mobile.Helpers
                 }
                 catch (Exception ex)
                 {
-                    Crashes.TrackError(ex);
+                    Crashes.TrackError(ex, Logic.GetErrorProperties(ex));
                     return new Confess() { };
                 }
             }
@@ -329,7 +329,7 @@ namespace Mobile.Helpers
                 }
                 catch (Exception ex)
                 {
-                    Crashes.TrackError(ex);
+                    Crashes.TrackError(ex, Logic.GetErrorProperties(ex));
                     return new ObservableCollection<ConfessLoader>();
                 }
             }
@@ -348,7 +348,7 @@ namespace Mobile.Helpers
                 }
                 catch (Exception ex)
                 {
-                    Crashes.TrackError(ex);
+                    Crashes.TrackError(ex, Logic.GetErrorProperties(ex));
                     return new Setting() { };
                 }
             }
@@ -367,7 +367,7 @@ namespace Mobile.Helpers
                 }
                 catch (Exception ex)
                 {
-                    Crashes.TrackError(ex);
+                    Crashes.TrackError(ex, Logic.GetErrorProperties(ex));
                     return null;
                 }
             }
@@ -390,7 +390,7 @@ namespace Mobile.Helpers
                 }
                 catch (Exception ex)
                 {
-                    Crashes.TrackError(ex);
+                    Crashes.TrackError(ex, Logic.GetErrorProperties(ex));
                     return null;
                 }
             }
@@ -406,7 +406,7 @@ namespace Mobile.Helpers
                 }
                 catch (Exception ex)
                 {
-                    Crashes.TrackError(ex);
+                    Crashes.TrackError(ex, Logic.GetErrorProperties(ex));
                     return new ObservableCollection<CommentLoader>() { };
                 }
             }
@@ -425,7 +425,7 @@ namespace Mobile.Helpers
                 }
                 catch (Exception ex)
                 {
-                    Crashes.TrackError(ex);
+                    Crashes.TrackError(ex, Logic.GetErrorProperties(ex));
                     return null;
                 }
             }
@@ -444,7 +444,7 @@ namespace Mobile.Helpers
                 }
                 catch (Exception ex)
                 {
-                    Crashes.TrackError(ex);
+                    Crashes.TrackError(ex, Logic.GetErrorProperties(ex));
                     return null;
                 }
             }

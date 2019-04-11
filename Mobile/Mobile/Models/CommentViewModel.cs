@@ -135,7 +135,7 @@ namespace Mobile.Models
                         }
                         catch (Exception ex)
                         {
-                            Crashes.TrackError(ex);
+                            Crashes.TrackError(ex, Logic.GetErrorProperties(ex));
                         }
                     }
                 }
@@ -187,7 +187,7 @@ namespace Mobile.Models
                     }
                     catch (Exception ex)
                     {
-                        Crashes.TrackError(ex);
+                        Crashes.TrackError(ex, Logic.GetErrorProperties(ex));
                     }
                 }
             });
@@ -216,7 +216,7 @@ namespace Mobile.Models
                 }
                 catch (Exception ex)
                 {
-                    Crashes.TrackError(ex);
+                    Crashes.TrackError(ex, Logic.GetErrorProperties(ex));
                 }
                 DependencyService.Get<IMessage>().ShortAlert("Deleted");
             });
@@ -231,7 +231,7 @@ namespace Mobile.Models
                     return;
                 }
                 //comment_Input
-                if (string.IsNullOrWhiteSpace(TextToSend))
+                if (string.IsNullOrWhiteSpace(TextToSend.Trim()))
                 {
                     DependencyService.Get<IMessage>().ShortAlert("Enter some text");
                     return;
@@ -240,7 +240,7 @@ namespace Mobile.Models
                 {
                     Comment newComment = new Comment()
                     {
-                        Body = TextToSend,
+                        Body = TextToSend.Trim(),
                         Confess_Guid = Confess_Guid,
                         Owner_Guid = await Logic.GetKey(),
                         QuotedCommentAvailable = IsQuotedCommentAvailable,
@@ -267,7 +267,7 @@ namespace Mobile.Models
                 }
                 catch (Exception ex)
                 {
-                    Crashes.TrackError(ex);
+                    Crashes.TrackError(ex, Logic.GetErrorProperties(ex));
                 }
                 //reload data
                 if (AppConstants.ShowAds)
@@ -351,7 +351,7 @@ namespace Mobile.Models
             }
             catch (Exception ex)
             {
-                Crashes.TrackError(ex);
+                Crashes.TrackError(ex, Logic.GetErrorProperties(ex));
             }
             finally
             {

@@ -58,7 +58,7 @@ namespace Mobile.Helpers
             }
             catch (Exception ex)
             {
-                Crashes.TrackError(ex);
+                Crashes.TrackError(ex, Logic.GetErrorProperties(ex));
                 return string.Empty;
             }
         }

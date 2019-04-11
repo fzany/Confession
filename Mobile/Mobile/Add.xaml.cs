@@ -41,7 +41,7 @@ namespace Mobile
                 DependencyService.Get<IMessage>().ShortAlert(Constants.No_Internet);
                 return;
             }
-            if (string.IsNullOrEmpty(title.Text))
+            if (string.IsNullOrWhiteSpace(title.Text.Trim()))
             {
                 DependencyService.Get<IMessage>().ShortAlert("Please type a Title");
                 return;
@@ -51,7 +51,7 @@ namespace Mobile
                 DependencyService.Get<IMessage>().ShortAlert("Please choose a Category");
                 return;
             }
-            if (string.IsNullOrEmpty(body.Text))
+            if (string.IsNullOrWhiteSpace(body.Text))
             {
                 DependencyService.Get<IMessage>().ShortAlert("Please type a Body");
                 return;
@@ -74,8 +74,8 @@ namespace Mobile
                 ChangeLoading(true);
                 Confess confess = new Confess()
                 {
-                    Title = title.Text,
-                    Body = body.Text,
+                    Title = title.Text.Trim(),
+                    Body = body.Text.Trim(),
                     Category = cat.SelectedItem.ToString(),
                     Owner_Guid = await Logic.GetKey(),
                 };
@@ -90,7 +90,7 @@ namespace Mobile
             }
             catch (Exception ex)
             {
-                Crashes.TrackError(ex);
+                Crashes.TrackError(ex, Logic.GetErrorProperties(ex));
                 ChangeLoading(false);
             }
         }

@@ -113,7 +113,7 @@ namespace Mobile.Models
             catch (Exception ex)
             {
                 IsBusy = false;
-                Crashes.TrackError(ex);
+                Crashes.TrackError(ex, Logic.GetErrorProperties(ex));
             }
             finally
             {

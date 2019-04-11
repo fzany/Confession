@@ -65,7 +65,7 @@ namespace Mobile
                 }
                 catch (Exception ex)
                 {
-                    Crashes.TrackError(ex);
+                    Crashes.TrackError(ex, Logic.GetErrorProperties(ex));
                 }
                 DependencyService.Get<IMessage>().ShortAlert("Deleted");
                 await Navigation.PopAsync();
@@ -156,7 +156,7 @@ namespace Mobile
             }
             catch (Exception ex)
             {
-                Crashes.TrackError(ex);
+                Crashes.TrackError(ex, Logic.GetErrorProperties(ex));
             }
         }
 

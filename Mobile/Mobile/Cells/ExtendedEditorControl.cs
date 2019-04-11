@@ -56,8 +56,6 @@ namespace Mobile.Cells
         {
             if (IsExpandable)
                 InvalidateMeasure();
-
-
         }
 
     }

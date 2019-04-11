@@ -1,11 +1,8 @@
 ﻿using Mobile.Cells;
 using Mobile.Helpers;
 using Mobile.Models;
-using Plugin.Media;
 using System;
-using System.IO;
 using System.Linq;
-using System.Threading.Tasks;
 using System.Windows.Input;
 using Xamarin.Forms;
 using Xamarin.Forms.Xaml;
@@ -38,8 +35,12 @@ namespace Mobile
             ScrollListCommand = new Command(() =>
             {
                 Device.BeginInvokeOnMainThread(() =>
-                  ChatList.ScrollTo((this.BindingContext as ChatPageViewModel).Messages.Last(), ScrollToPosition.End, false)
-              );
+                {
+                    if ((this.BindingContext as ChatPageViewModel).Messages.Count > 0)
+                    {
+                        ChatList.ScrollTo((this.BindingContext as ChatPageViewModel).Messages.LastOrDefault(), ScrollToPosition.End, false);
+                    }
+                });
             });
 
             FocusCommand = new Command(() =>
@@ -64,7 +65,7 @@ namespace Mobile
 
 
         }
-       
+
         protected override void OnDisappearing()
         {
             base.OnDisappearing();
@@ -91,7 +92,7 @@ namespace Mobile
                         vm.ShowScrollTap = false;
                         vm.LastMessageVisible = true;
                         vm.PendingMessageCount = 0;
-                        ChatList?.ScrollToFirst();
+                        ChatList?.ScrollToLast();
                     });
 
 
@@ -103,6 +104,11 @@ namespace Mobile
         private void Settings_Tapped(object sender, EventArgs e)
         {
             Navigation.PushModalAsync(new CreateName(chatRoomLoader));
+        }
+
+        private void Scroll_Tapped(object sender, EventArgs e)
+        {
+            ScrollListCommand.Execute(null);
         }
     }
 }

@@ -86,7 +86,7 @@ namespace Backend.Helpers
                 return contextLite.UserData.FindOne(d => d.Key[0] == confessOwnerID);
             }
 
-         
+
         }
 
         public static class ChatClass
@@ -152,7 +152,7 @@ namespace Backend.Helpers
                 IEnumerable<Chat> result = contextLite.Chat.Find(f => f.Room_ID == roomID);
                 return ChatClass.ChatLoader(result, userKey);
             }
-
+            //fix before uncommenting,
             //private static ChatLoader ChatLoader(Chat chat)
             //{
             //    ChatLoader chatLoader = new ChatLoader()
@@ -186,7 +186,7 @@ namespace Backend.Helpers
                 List<ChatLoader> chatLoaders = new List<ChatLoader>();
                 foreach (Chat chat in result)
                 {
-                    chatLoaders.Add(new Shared.ChatLoader()
+                    ChatLoader new_loader = new ChatLoader()
                     {
                         IsMine = chat.SenderKey.Equals(userKey),
                         Body = chat.Body,
@@ -194,7 +194,14 @@ namespace Backend.Helpers
                         Room_ID = chat.Room_ID,
                         SenderName = chat.SenderName,
                         ChatId = chat.Id,
-                        Quote = new QuoteLoader
+                        QuotedChatAvailable = chat.QuotedChatAvailable,
+                        ImageUrl = chat.ImageUrl,
+                        IsImageAvailable = chat.IsImageAvailable,
+                        SenderKey = chat.SenderKey
+                    };
+                    if (chat.QuotedChatAvailable & chat.Quote != null)
+                    {
+                        new_loader.Quote = new QuoteLoader
                         {
                             Body = chat.Quote.Body,
                             ImageUrl = chat.Quote.ImageUrl,
@@ -202,12 +209,10 @@ namespace Backend.Helpers
                             OwnerKey = chat.Quote.OwnerKey,
                             OwnerName = chat.Quote.OwnerName,
                             IsMine = chat.Quote.OwnerName.Equals(userKey)
-                        },
-                        QuotedChatAvailable = chat.QuotedChatAvailable,
-                        ImageUrl = chat.ImageUrl,
-                        IsImageAvailable = chat.IsImageAvailable,
-                        SenderKey = chat.SenderKey
-                    });
+                        };
+                    }
+
+                    chatLoaders.Add(new_loader);
                 }
 
                 return chatLoaders;
@@ -283,6 +288,30 @@ namespace Backend.Helpers
                     contextLite.Confess.Delete(d => d.Guid == data.Guid);
                 }
             }
+
+            internal static void ResetChat()
+            {
+                //clear the chatdb
+                //clear the members in the groups
+                //clear the fake user
+                var chats = contextLite.Chat.FindAll().ToList();
+                foreach(var chat in chats)
+                {
+                    contextLite.Chat.Delete(chat.Id);
+                }
+                List<ChatRoom> allRooms = contextLite.ChatRoom.FindAll().ToList();
+                foreach (ChatRoom room in allRooms)
+                {
+                    room.Members.Clear();
+                    contextLite.ChatRoom.Update(room);
+                }
+                List<LiteDB.BsonDocument> allOldUsers = contextLite.UserRaw.FindAll().ToList();
+                foreach (LiteDB.BsonDocument oldUser in allOldUsers)
+                {
+                    contextLite.UserRaw.Delete(oldUser);
+                }
+            }
+
             public static class Create
             {
                 public static void CreateConfess(List<Confess> Confess)

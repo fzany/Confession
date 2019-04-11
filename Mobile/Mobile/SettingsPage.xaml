@@ -40,12 +40,21 @@
                 <BoxView HeightRequest="1" BackgroundColor="Silver" HorizontalOptions="FillAndExpand"/>
             </StackLayout>
 
+            <Label x:Name="storageLabel" FontSize="Micro"/>
+            <Label FontAttributes="Bold" Text="Clear Cache" FontSize="Medium" HorizontalOptions="FillAndExpand">
+                <Label.GestureRecognizers>
+                    <TapGestureRecognizer NumberOfTapsRequired="1" Tapped="Clear_Local_Tapped"/>
+                </Label.GestureRecognizers>
+            </Label>
+            <BoxView HeightRequest="1" BackgroundColor="Silver" HorizontalOptions="FillAndExpand"/>
+
             <Label TextColor="Red" FontAttributes="Bold" Text="Reset Identity" FontSize="Medium" HorizontalOptions="FillAndExpand">
                 <Label.GestureRecognizers>
                     <TapGestureRecognizer NumberOfTapsRequired="1" Tapped="Clear_Tapped"/>
                 </Label.GestureRecognizers>
             </Label>
             <BoxView HeightRequest="1" BackgroundColor="Silver" HorizontalOptions="FillAndExpand"/>
+            
             <ActivityIndicator IsEnabled="False" IsRunning="False" IsVisible="False" x:Name="loadingBox"/>
 
             <StackLayout x:Name="Ads" VerticalOptions="EndAndExpand"/>

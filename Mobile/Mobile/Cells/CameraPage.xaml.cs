@@ -104,7 +104,7 @@ namespace Mobile.Cells
             }
             catch (Exception ex)
             {
-                Crashes.TrackError(ex);
+                Crashes.TrackError(ex, Logic.GetErrorProperties(ex));
                 await Navigation.PopModalAsync();
             }
         }
@@ -137,7 +137,7 @@ namespace Mobile.Cells
             }
             catch (Exception ex)
             {
-                Crashes.TrackError(ex);
+                Crashes.TrackError(ex, Logic.GetErrorProperties(ex));
                 await Navigation.PopModalAsync();
             }
         }

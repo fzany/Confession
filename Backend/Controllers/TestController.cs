@@ -27,6 +27,23 @@ namespace Backend.Controllers
             {
                 return new List<UserData>();
             }
+        }
+
+        [HttpGet]
+        [Route("test/resetchat")]
+        public ActionResult<string> ResetChat()
+        {
+            try
+            {
+                Store.Migrate.ResetChat();
+
+                //return data
+                return Ok("Done");
+            }
+            catch
+            {
+                return BadRequest();
+            }
 
         }
 

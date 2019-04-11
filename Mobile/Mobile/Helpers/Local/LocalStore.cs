@@ -1,5 +1,8 @@
-﻿using Mobile.Models;
+﻿using Microsoft.AppCenter.Crashes;
+using Mobile.Models;
 using System.Collections.ObjectModel;
+using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
 
 namespace Mobile.Helpers.Local
@@ -174,6 +177,42 @@ namespace Mobile.Helpers.Local
                 }
             }
 
+        }
+
+        public static class Generic
+        {
+            public static void DropCollections()
+            {
+                try
+                {
+                    Local.ConfessLoader.Delete(f => f.Id.Length > 0);
+                    Local.CommentLoader.Delete(f => f.Id.Length > 0);
+                    Local.ChatLoader.Delete(f => f.Id.Length > 0);
+                    Local.ChatRoomLoader.Delete(f => f.Id.Length > 0);
+                }
+                catch (System.Exception ex)
+                {
+                    Crashes.TrackError(ex, Logic.GetErrorProperties(ex));
+                }
+
+            }
+            public static double GetDatabaseSize()
+            {
+                try
+                {
+                    double value = 0;
+                    value += Encoding.Unicode.GetByteCount(Local.ConfessLoader.FindAll().ToList().ToString());
+                    value += Encoding.Unicode.GetByteCount(Local.CommentLoader.FindAll().ToList().ToString());
+                    value += Encoding.Unicode.GetByteCount(Local.ChatLoader.FindAll().ToList().ToString());
+                    value += Encoding.Unicode.GetByteCount(Local.ChatRoomLoader.FindAll().ToList().ToString());
+                    return value;
+                }
+                catch (System.Exception ex)
+                {
+                    Crashes.TrackError(ex, Logic.GetErrorProperties(ex));
+                    return 0;
+                }
+            }
         }
     }
 }
