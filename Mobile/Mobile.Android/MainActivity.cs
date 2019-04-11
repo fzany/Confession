@@ -16,7 +16,7 @@ using Xamarin.Forms;
 
 namespace Mobile.Droid
 {
-    [Activity(Label = "Confessor", LaunchMode = LaunchMode.SingleInstance, Icon = "@mipmap/icon", ScreenOrientation = ScreenOrientation.Portrait, Theme = "@style/MainTheme", MainLauncher = false, ConfigurationChanges = ConfigChanges.ScreenSize | ConfigChanges.Orientation)]
+    [Activity(Label = "Confessor", LaunchMode = LaunchMode.SingleTop, Icon = "@mipmap/icon", ScreenOrientation = ScreenOrientation.Portrait, Theme = "@style/MainTheme", MainLauncher = false, ConfigurationChanges = ConfigChanges.ScreenSize | ConfigChanges.Orientation)]
     public class MainActivity : global::Xamarin.Forms.Platform.Android.FormsAppCompatActivity
     {
         private NotificationChannel channel;

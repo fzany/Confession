@@ -1,5 +1,6 @@
 ﻿using Microsoft.AppCenter.Crashes;
 using Mobile.Models;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
@@ -127,14 +128,21 @@ namespace Mobile.Helpers.Local
             public static void SaveLoader(ChatLoader loader)
             {
 
-                if (Local.ChatLoader.Exists(d => d.ChatId == loader.ChatId))
+                try
                 {
-                    //update such confession
-                    Local.ChatLoader.Update(loader);
+                    if (Local.ChatLoader.Exists(d => d.ChatId == loader.ChatId))
+                    {
+                        //update such confession
+                        Local.ChatLoader.Update(loader.ChatId, loader);
+                    }
+                    else
+                    {
+                        Local.ChatLoader.Insert(loader);
+                    }
                 }
-                else
+                catch (System.Exception ex)
                 {
-                    Local.ChatLoader.Insert(loader);
+                    Crashes.TrackError(ex, Logic.GetErrorProperties(ex));
                 }
             }
 
@@ -159,21 +167,28 @@ namespace Mobile.Helpers.Local
             public static void SaveLoaders(ObservableCollection<ChatRoomLoader> loaders)
             {
                 ObservableCollection<ChatRoomLoader> insert_loaders = new ObservableCollection<ChatRoomLoader>();
-                foreach (ChatRoomLoader load in loaders)
+                try
                 {
-                    if (Local.ChatRoomLoader.Exists(d => d.Id == load.Id))
+                    foreach (ChatRoomLoader load in loaders)
                     {
-                        //update such confession
-                        Local.ChatRoomLoader.Update(load);
+                        if (Local.ChatRoomLoader.Exists(d => d.Id == load.Id))
+                        {
+                            //update such confession
+                            Local.ChatRoomLoader.Update(load);
+                        }
+                        else
+                        {
+                            insert_loaders.Add(load);
+                        }
                     }
-                    else
+                    if (insert_loaders.Count > 0)
                     {
-                        insert_loaders.Add(load);
+                        Local.ChatRoomLoader.InsertBulk(insert_loaders);
                     }
                 }
-                if (insert_loaders.Count > 0)
+                catch (System.Exception ex)
                 {
-                    Local.ChatRoomLoader.InsertBulk(insert_loaders);
+                    Crashes.TrackError(ex, Logic.GetErrorProperties(ex));
                 }
             }
 
@@ -185,10 +200,28 @@ namespace Mobile.Helpers.Local
             {
                 try
                 {
-                    Local.ConfessLoader.Delete(f => f.Id.Length > 0);
-                    Local.CommentLoader.Delete(f => f.Id.Length > 0);
-                    Local.ChatLoader.Delete(f => f.Id.Length > 0);
-                    Local.ChatRoomLoader.Delete(f => f.Id.Length > 0);
+                    List<ConfessLoader> allconfe = Local.ConfessLoader.FindAll().ToList();
+                    foreach (ConfessLoader conff in allconfe)
+                    {
+                        Local.ConfessLoader.Delete(conff.Id);
+                    }
+                    List<CommentLoader> allcomm = Local.CommentLoader.FindAll().ToList();
+                    foreach (CommentLoader comm in allcomm)
+                    {
+                        Local.CommentLoader.Delete(comm.Id);
+                    }
+
+                    List<ChatLoader> allchat = Local.ChatLoader.FindAll().ToList();
+                    foreach (ChatLoader chat in allchat)
+                    {
+                        Local.ChatLoader.Delete(chat.Id);
+                    }
+
+                    List<ChatRoomLoader> allrooms = Local.ChatRoomLoader.FindAll().ToList();
+                    foreach (ChatRoomLoader room in allrooms)
+                    {
+                        Local.ChatRoomLoader.Delete(room.Id);
+                    }
                 }
                 catch (System.Exception ex)
                 {

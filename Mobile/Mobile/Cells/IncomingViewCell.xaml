@@ -25,7 +25,8 @@
                                 <Label FontAttributes="Bold" Text="{Binding SenderNameShow}" TextColor="{Binding SenderColor}"/>
                                 <Label Text="{Binding Body}" TextColor="Gray"/>
                             </StackLayout>
-                            <ffimageloading:CachedImage Grid.Column="2" WidthRequest="30" HeightRequest="30" IsVisible="{Binding IsImageAvailable}" Source="{Binding ImageSource}" DownsampleToViewSize="True"/>
+                            <!--<ffimageloading:CachedImage Grid.Column="2" WidthRequest="30" HeightRequest="30" IsVisible="{Binding IsImageAvailable}" Source="{Binding ImageSource}" DownsampleToViewSize="True"/>-->
+                            <Image Grid.Column="2" WidthRequest="30" HeightRequest="30" IsVisible="{Binding IsImageAvailable}" Source="{Binding ImageSource}"/>
 
                         </Grid>
                     </Frame>

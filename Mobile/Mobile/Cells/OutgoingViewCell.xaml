@@ -33,7 +33,8 @@
                             <ffimageloading:CachedImage Grid.Column="2" WidthRequest="30" HeightRequest="30" IsVisible="{Binding IsImageAvailable}" Source="{Binding ImageSource}" DownsampleToViewSize="True"/>
                         </Grid>
                     </Frame>
-                    <ffimageloading:CachedImage WidthRequest="200" HeightRequest="200" CacheDuration="5" LoadingPlaceholder="load.gif" IsVisible="{Binding IsImageAvailable}" Source="{Binding ImageSource}" DownsampleToViewSize="True"/>
+                    <!--<ffimageloading:CachedImage WidthRequest="200" HeightRequest="200" CacheDuration="5" LoadingPlaceholder="load.gif" IsVisible="{Binding IsImageAvailable}" Source="{Binding ImageSource}" DownsampleToViewSize="True"/>-->
+                    <Image WidthRequest="200" HeightRequest="200" IsVisible="{Binding IsImageAvailable}" Source="{Binding ImageSource}"/>
                     <!--<Grid>
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="Auto" />

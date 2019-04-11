@@ -37,6 +37,7 @@
                  Margin="1"  
                  Keyboard="Chat"  
                  HorizontalOptions="FillAndExpand" 
+                 MaxLength="200"
                  Placeholder="Type your comment here"  
                  Completed="Handle_Completed"
                  ReturnType="Send"

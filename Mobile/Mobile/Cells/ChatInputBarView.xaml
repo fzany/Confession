@@ -29,7 +29,8 @@
                             <Label FontAttributes="Bold" Text="{Binding SenderNameShow}" TextColor="{Binding SenderColor}"/>
                             <Label Text="{Binding Body}" TextColor="Gray"/>
                         </StackLayout>
-                        <ffimageloading:CachedImage Grid.Column="2" WidthRequest="30" HeightRequest="30" IsVisible="{Binding IsImageAvailable}" Source="{Binding ImageSource}" DownsampleToViewSize="True"/>
+                        <Image Grid.Column="2" WidthRequest="30" HeightRequest="30" IsVisible="{Binding IsImageAvailable}" Source="{Binding ImageSource}"/>
+                        <!--<ffimageloading:CachedImage Grid.Column="2" WidthRequest="30" HeightRequest="30" IsVisible="{Binding IsImageAvailable}" Source="{Binding ImageSource}" DownsampleToViewSize="True"/>-->
                         <Label Margin="0,0,5,0" Grid.Column="2" ClassId="{Binding ChatId}" FontFamily="{StaticResource FSolid}" x:Name="Delete_Quote_Label" VerticalOptions="StartAndExpand" HorizontalOptions="EndAndExpand" TextColor="Gray" FontSize="Medium">
                             <Label.GestureRecognizers>
                                 <TapGestureRecognizer NumberOfTapsRequired="1" Tapped="Delete_Quote_Tapped"/>
@@ -47,6 +48,7 @@
                  Margin="1"
                  Keyboard="Chat"  
                  IsExpandable="true"
+                 MaxLength="200"                                   
                  HorizontalOptions="FillAndExpand" 
                  PlaceholderColor="LightGray"
                  Placeholder="Type your message here"

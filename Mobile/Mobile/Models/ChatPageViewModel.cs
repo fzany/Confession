@@ -209,8 +209,22 @@ namespace Mobile.Models
                         SenderName = incomingChat.SenderName,
                         QuotedChatAvailable = incomingChat.QuotedChatAvailable,
                         ChatId = incomingChat.Id,
-                        IsSent = true,
+                        IsSent = true, 
+                        ImageUrl = incomingChat.ImageUrl,
+                        IsImageAvailable = incomingChat.IsImageAvailable, 
+                         SenderKey = incomingChat.SenderKey, Id = incomingChat.Id,
                     };
+                    //cater for image
+                    if (incomingChat.IsImageAvailable)
+                    {
+                        insert_loader.ImageSource = new UriImageSource
+                        {
+                            CachingEnabled = true,
+                            CacheValidity = TimeSpan.FromDays(7),
+                            Uri = new Uri(incomingChat.ImageUrl)
+                        };
+                    }
+                    //cater for Quote
                     if (incomingChat.Quote != null)
                     {
                         insert_loader.Quote = new QuoteLoader
@@ -531,25 +545,33 @@ namespace Mobile.Models
                         RemoveQuoteCommand.Execute(null);
                         //get the string for the image from Cloudinary
 
-                        string ImageUrl = Cloud.SaveByteArray(arg.stream);// await BaseClient.PostImageStream(arg.stream);
-                        //DependencyService.Get<IMessage>().ShortAlert($"Url: {ImageUrl}");
-
-                        if (!string.IsNullOrEmpty(ImageUrl))
+                        //try to separate and run in backgroud.
+#pragma warning disable CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
+                        Task.Run(async () =>
                         {
-                            new_send.ImageUrl = ImageUrl;
-                            string serialisedMessage = JsonConvert.SerializeObject(new_send);
+                            string ImageUrl = Cloud.SaveByteArray(arg.stream);// await BaseClient.PostImageStream(arg.stream);
+                                                                              //DependencyService.Get<IMessage>().ShortAlert($"Url: {ImageUrl}");
 
-                            await hubConnection.InvokeAsync("SendMessage", serialisedMessage);
+                            if (!string.IsNullOrEmpty(ImageUrl))
+                            {
+                                new_send.ImageUrl = ImageUrl;
+                                string serialisedMessage = JsonConvert.SerializeObject(new_send);
 
-                            //update the local msg with the url
-                            Messages.FirstOrDefault(d => d.ChatId == new_send.Id).ImageSource = new UriImageSource { CachingEnabled = true, CacheValidity = TimeSpan.FromDays(7), Uri = new Uri(ImageUrl) };// ImageSource.FromUri(new Uri(ImageUrl));
-                            Messages.FirstOrDefault(d => d.ChatId == new_send.Id).ImageUrl = ImageUrl;
-                            OnPropertyChanged(nameof(Messages));
+                                await hubConnection.InvokeAsync("SendMessage", serialisedMessage);
 
-                            await Task.Delay(10);
+                                //update the local msg with the url
+                                Messages.FirstOrDefault(d => d.ChatId == new_send.Id).ImageSource = new UriImageSource { CachingEnabled = true, CacheValidity = TimeSpan.FromDays(7), Uri = new Uri(ImageUrl) };// ImageSource.FromUri(new Uri(ImageUrl));
+                                Messages.FirstOrDefault(d => d.ChatId == new_send.Id).ImageUrl = ImageUrl;
+                                OnPropertyChanged(nameof(Messages));
 
-                            MessagingCenter.Send<object, ChatRoomLoader>(this, Constants.update_chatroom_chat_list, new ChatRoomLoader() { Id = Room_ID, ChatsCount = (Messages.Count + 1).ToString() });
-                        }
+                                await Task.Delay(10);
+
+                                MessagingCenter.Send<object, ChatRoomLoader>(this, Constants.update_chatroom_chat_list, new ChatRoomLoader() { Id = Room_ID, ChatsCount = (Messages.Count + 1).ToString() });
+                            }
+                        });
+#pragma warning restore CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
+
+
                     }
 
                 }

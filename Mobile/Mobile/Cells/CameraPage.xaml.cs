@@ -56,10 +56,10 @@ namespace Mobile.Cells
 
         private void ProcessPhotoInStream(Stream stream)
         {
-            SendImage.CacheType = FFImageLoading.Cache.CacheType.None;
-            SendImage.LoadingPlaceholder = "load.gif";
-            SendImage.ErrorPlaceholder = "error.png";
-            SendImage.Source = null;
+            //SendImage.CacheType = FFImageLoading.Cache.CacheType.None;
+            //SendImage.LoadingPlaceholder = "load.gif";
+            //SendImage.ErrorPlaceholder = "error.png";
+            //SendImage.Source = null;
             SendImage.Source = ImageSource.FromStream(() => stream);
         }
 
