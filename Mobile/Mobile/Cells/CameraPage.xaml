@@ -9,8 +9,7 @@
             <RowDefinition Height="*"/>
             <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
-        <Image x:Name="SendImage" Grid.Row="0" Grid.RowSpan="2" VerticalOptions="FillAndExpand" HorizontalOptions="FillAndExpand" />
-        <!--<ffimageloading:CachedImage DownsampleToViewSize="False" x:Name="SendImage" Grid.Row="0" Grid.RowSpan="2" VerticalOptions="FillAndExpand" HorizontalOptions="FillAndExpand" />-->
+        <ffimageloading:CachedImage DownsampleToViewSize="False" x:Name="SendImage" Grid.Row="0" Grid.RowSpan="2" VerticalOptions="FillAndExpand" HorizontalOptions="FillAndExpand" />
 
         <Grid Grid.Row="0" Grid.Column="0" VerticalOptions="EndAndExpand" HorizontalOptions="FillAndExpand" Margin="5,0">
             <Grid.ColumnDefinitions>
