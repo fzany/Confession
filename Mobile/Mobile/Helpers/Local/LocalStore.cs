@@ -1,5 +1,6 @@
 ﻿using Microsoft.AppCenter.Crashes;
 using Mobile.Models;
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
@@ -19,7 +20,7 @@ namespace Mobile.Helpers.Local
                 ObservableCollection<ConfessLoader> insert_loaders = new ObservableCollection<ConfessLoader>();
                 foreach (ConfessLoader load in loaders)
                 {
-                    if (Local.ConfessLoader.Exists(d => d.Guid == load.Guid))
+                    if (Local.ConfessLoader.Exists(d => d.Id == load.Id))
                     {
                         //update such confession
                         Local.ConfessLoader.Update(load);
@@ -60,7 +61,7 @@ namespace Mobile.Helpers.Local
 
             internal static void SaveLoader(ConfessLoader incomingConfession)
             {
-                if (Local.ConfessLoader.Exists(d => d.Guid == incomingConfession.Guid))
+                if (Local.ConfessLoader.Exists(d => d.Id == incomingConfession.Id))
                 {
                     Local.ConfessLoader.Update(incomingConfession);
                 }
@@ -78,7 +79,7 @@ namespace Mobile.Helpers.Local
                 ObservableCollection<CommentLoader> insert_loaders = new ObservableCollection<CommentLoader>();
                 foreach (CommentLoader load in loaders)
                 {
-                    if (Local.CommentLoader.Exists(d => d.Guid == load.Guid))
+                    if (Local.CommentLoader.Exists(d => d.Id == load.Id))
                     {
                         //update such confession
                         Local.CommentLoader.Update(load);
@@ -109,7 +110,7 @@ namespace Mobile.Helpers.Local
                 ObservableCollection<ChatLoader> insert_loaders = new ObservableCollection<ChatLoader>();
                 foreach (ChatLoader load in loaders)
                 {
-                    if (Local.ChatLoader.Exists(d => d.ChatId == load.ChatId))
+                    if (Local.ChatLoader.Exists(d => d.Id == load.Id))
                     {
                         //update such confession
                         Local.ChatLoader.Update(load);
@@ -130,10 +131,10 @@ namespace Mobile.Helpers.Local
 
                 try
                 {
-                    if (Local.ChatLoader.Exists(d => d.ChatId == loader.ChatId))
+                    if (Local.ChatLoader.Exists(d => d.Id == loader.Id))
                     {
                         //update such confession
-                        Local.ChatLoader.Update(loader.ChatId, loader);
+                        Local.ChatLoader.Update(loader);
                     }
                     else
                     {
@@ -192,6 +193,15 @@ namespace Mobile.Helpers.Local
                 }
             }
 
+            internal static void UpdateMembership(string roomId, string count)
+            {
+                if(Local.ChatRoomLoader.Exists(d=>d.Id == roomId))
+                {
+                    var room = Local.ChatRoomLoader.FindOne(d => d.Id == roomId);
+                    room.MembersCount = count;
+                    Local.ChatRoomLoader.Update(room);
+                }
+            }
         }
 
         public static class Generic

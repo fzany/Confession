@@ -123,6 +123,28 @@ namespace Mobile.Models
                 }
             });
 
+            hubConnection.On<string>("DeleteConfession", (guid) =>
+            {
+                try
+                {
+                    //delete from model
+                    if (!string.IsNullOrEmpty(guid))
+                    {
+                        if (Loaders.Any(d => d.Guid == guid))
+                        {
+                            Loaders.Remove(Loaders.First(d => d.Guid == guid));
+                        }
+                        OnPropertyChanged(nameof(Loaders));
+                        LocalStore.Confession.DeleteLoader(guid);
+                    }
+                }
+
+                catch (Exception ex)
+                {
+                    Crashes.TrackError(ex, Logic.GetErrorProperties(ex));
+                }
+            });
+
             IsErrorAvailable = false;
             Task.Run(async () =>
             {
@@ -143,6 +165,7 @@ namespace Mobile.Models
 
         public async Task LoadData()
         {
+            await ConnectToHub();
             ObservableCollection<ConfessLoader> TempLoaders = new ObservableCollection<ConfessLoader>();
             //if (!Logic.IsInternet())
             //{
@@ -290,7 +313,7 @@ namespace Mobile.Models
             {
                 load.DislikeColor = Color.FromHex(load.DislikeColorString);
             }
-            if(Loaders.Any(d=>d.Guid == load.Guid))
+            if (Loaders.Any(d => d.Guid == load.Guid))
             {
                 //remove first
                 Loaders.Remove(Loaders.FirstOrDefault(d => d.Guid == load.Guid));
@@ -355,7 +378,7 @@ namespace Mobile.Models
                         DisLikes = "0",
                         Owner_Guid = arg.Owner_Guid,
                         Seen = "0",
-                        Title = arg.Title, 
+                        Title = arg.Title,
                     });
                     string serialisedMessage = JsonConvert.SerializeObject(arg);
                     await hubConnection.InvokeAsync("SendConfession", serialisedMessage);

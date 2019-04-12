@@ -1,4 +1,5 @@
 ﻿using Microsoft.AppCenter.Crashes;
+using Microsoft.AspNetCore.SignalR.Client;
 using Mobile.Helpers;
 using Mobile.Helpers.Local;
 using System;
@@ -6,13 +7,14 @@ using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
 using System.Threading.Tasks;
+using Xamarin.Essentials;
 using Xamarin.Forms;
 
 namespace Mobile.Models
 {
     public class ChatRoomsViewModel : INotifyPropertyChanged
     {
-        public ObservableCollection<ChatRoomLoader> ChatRooms { get; set; }
+        public ObservableCollection<ChatRoomLoader> ChatRooms { get; set; } = new ObservableCollection<ChatRoomLoader>();
         private bool isNoInternet;
         public bool IsNoInternet
         {
@@ -35,15 +37,88 @@ namespace Mobile.Models
                 OnPropertyChanged(nameof(IsBusy));
             }
         }
+
+        private HubConnection hubConnection;
+        public async Task ConnectToHub()
+        {
+            try
+            {
+                if (Logic.IsInternet())
+                {
+                    if (!IsHubConnected())
+                    {
+                        await hubConnection.StartAsync();
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Crashes.TrackError(ex, Logic.GetErrorProperties(ex));
+            }
+        }
+        public async Task DisConnectHub()
+        {
+            try
+            {
+                await hubConnection.StopAsync();
+            }
+            catch (Exception ex)
+            {
+                Crashes.TrackError(ex, Logic.GetErrorProperties(ex));
+            }
+        }
+        public bool IsHubConnected()
+        {
+            try
+            {
+                HubConnectionState state = hubConnection.State;
+                return state == HubConnectionState.Connected;
+            }
+            catch (Exception ex)
+            {
+                Crashes.TrackError(ex, Logic.GetErrorProperties(ex));
+                return false;
+            }
+        }
         public ChatRoomsViewModel()
         {
-            ChatRooms = new ObservableCollection<ChatRoomLoader>();
+            Connectivity.ConnectivityChanged += Connectivity_ConnectivityChangedAsync;
+
+            hubConnection = new HubConnectionBuilder()
+                .WithUrl("https://confessbackend.azurewebsites.net/chatHub")
+                .Build();
+
+            hubConnection.On<string, string>("RoomMembership", (roomId, count) =>
+            {
+                try
+                {
+                    //update in model
+                    ChatRooms.FirstOrDefault(d => d.Id == roomId).MembersCount = count;
+                    //update Ui
+                    OnPropertyChanged(nameof(ChatRooms));
+                    //update to local db
+                    LocalStore.ChatRoom.UpdateMembership(roomId, count);
+                }
+
+                catch (Exception ex)
+                {
+                    Crashes.TrackError(ex, Logic.GetErrorProperties(ex));
+                }
+            });
+
+
+
             IsNoInternet = false;
             LoadSubscriptions();
             Task.Run(async () =>
             {
                 await LoadData();
             });
+        }
+
+        private async void Connectivity_ConnectivityChangedAsync(object sender, ConnectivityChangedEventArgs e)
+        {
+            await ConnectToHub();
         }
 
         private void LoadSubscriptions()
@@ -77,6 +152,7 @@ namespace Mobile.Models
 
         public async Task LoadData()
         {
+            await ConnectToHub();
             ObservableCollection<ChatRoomLoader> ChatRoomsTemp = new ObservableCollection<ChatRoomLoader>();
             try
             {

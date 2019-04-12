@@ -4,39 +4,40 @@
           xmlns:local="clr-namespace:Mobile.Helpers"
           xmlns:ffimageloading="clr-namespace:FFImageLoading.Forms;assembly=FFImageLoading.Forms"
           x:Class="Mobile.Cells.IncomingViewCell">
-    <local:DraggableView x:Name="dragView"  VerticalOptions="CenterAndExpand" BackgroundColor="Transparent" HorizontalOptions="StartAndExpand"
-                          DragMode="Touch" DragDirection="Horizontal" ClassId="{Binding ChatId}" DragEnd="dragView_DragEnd" >
-        <local:DraggableView.Content>
-            <Frame BackgroundColor="White" CornerRadius="5"
+    <Grid>
+        <local:DraggableView x:Name="dragView"  VerticalOptions="CenterAndExpand" BackgroundColor="Transparent" HorizontalOptions="StartAndExpand"
+                        Margin="10,5,80,5" DragMode="Touch" DragDirection="Horizontal" ClassId="{Binding ChatId}" DragEnd="dragView_DragEnd" >
+            <local:DraggableView.Content>
+                <Frame BackgroundColor="White" CornerRadius="5"
               Padding="5" ClassId="{Binding ChatId}"
               HasShadow="false"
-              Margin="10,5,80,5">
-                <StackLayout Spacing="5" Padding="0">
-                    <Label Text="{Binding SenderName}" FontSize="Small" TextColor="{Binding SenderColor}" FontAttributes="Bold" />
-                    <Frame IsVisible="{Binding QuotedChatAvailable}" HorizontalOptions="FillAndExpand" CornerRadius="5" Padding="0" HasShadow="False">
-                        <Grid BindingContext="{Binding Quote}" BackgroundColor="{StaticResource PrimaryGray}">
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="Auto" />
-                                <ColumnDefinition Width="Auto" />
-                                <ColumnDefinition Width="Auto" />
-                            </Grid.ColumnDefinitions>
-                            <BoxView Color="{Binding SenderColor}" WidthRequest="4" VerticalOptions="FillAndExpand" Grid.Column="0"/>
-                            <StackLayout Spacing="3" Grid.Column="1">
-                                <Label FontAttributes="Bold" Text="{Binding SenderNameShow}" TextColor="{Binding SenderColor}"/>
-                                <Label Text="{Binding Body}" TextColor="Gray"/>
-                            </StackLayout>
-                            <ffimageloading:CachedImage Grid.Column="2" WidthRequest="30" HeightRequest="30" IsVisible="{Binding IsImageAvailable}" Source="{Binding ImageSource}" DownsampleToViewSize="True"/>
+              >
+                    <StackLayout Spacing="5" Padding="0">
+                        <Label Text="{Binding SenderName}" FontSize="Small" TextColor="{Binding SenderColor}" FontAttributes="Bold" />
+                        <Frame IsVisible="{Binding QuotedChatAvailable}" HorizontalOptions="FillAndExpand" CornerRadius="5" Padding="0" HasShadow="False">
+                            <Grid BindingContext="{Binding Quote}" BackgroundColor="{StaticResource PrimaryGray}">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto" />
+                                    <ColumnDefinition Width="Auto" />
+                                    <ColumnDefinition Width="Auto" />
+                                </Grid.ColumnDefinitions>
+                                <BoxView Color="{Binding SenderColor}" WidthRequest="4" VerticalOptions="FillAndExpand" Grid.Column="0"/>
+                                <StackLayout Spacing="3" Grid.Column="1">
+                                    <Label FontAttributes="Bold" Text="{Binding SenderNameShow}" TextColor="{Binding SenderColor}"/>
+                                    <Label Text="{Binding Body}" TextColor="Gray"/>
+                                </StackLayout>
+                                <ffimageloading:CachedImage Grid.Column="2" WidthRequest="30" HeightRequest="30" IsVisible="{Binding IsImageAvailable}" Source="{Binding ImageSource}" DownsampleToViewSize="True"/>
 
-                        </Grid>
-                    </Frame>
-                    <ffimageloading:CachedImage WidthRequest="200" HeightRequest="200" CacheDuration="5" LoadingPlaceholder="load.gif" IsVisible="{Binding IsImageAvailable}" Source="{Binding ImageSource}" DownsampleToViewSize="True"/>
-                    <StackLayout Orientation="Horizontal">
-                        <Label Text="{Binding Body}" TextColor="Black" VerticalOptions="CenterAndExpand"/>
-                        <Label Text="{Binding Time}" TextColor="Gray" VerticalOptions="EndAndExpand"  FontSize="Micro"/>
+                            </Grid>
+                        </Frame>
+                        <ffimageloading:CachedImage WidthRequest="200" HeightRequest="200" CacheDuration="5" LoadingPlaceholder="load.gif" IsVisible="{Binding IsImageAvailable}" Source="{Binding ImageSource}" DownsampleToViewSize="True"/>
+                        <StackLayout Orientation="Horizontal">
+                            <Label Text="{Binding Body}" TextColor="Black" VerticalOptions="CenterAndExpand"/>
+                            <Label Text="{Binding Time}" TextColor="Gray" VerticalOptions="EndAndExpand"  FontSize="Micro"/>
+                        </StackLayout>
                     </StackLayout>
-                </StackLayout>
-            </Frame>
-        </local:DraggableView.Content>
-    </local:DraggableView>
-
+                </Frame>
+            </local:DraggableView.Content>
+        </local:DraggableView>
+    </Grid>
 </ViewCell>

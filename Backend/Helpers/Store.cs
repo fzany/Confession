@@ -254,6 +254,11 @@ namespace Backend.Helpers
             {
                 return contextLite.ChatRoom.FindOne(f => f.Id == id);
             }
+
+            internal static string GetRoomMemberCount(string roomId)
+            {
+                return contextLite.ChatRoom.FindOne(d => d.Id == roomId).Members.Count.ToString();
+            }
         }
 
         public static class SettingsClass

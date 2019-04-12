@@ -66,5 +66,42 @@ namespace Backend.Helpers
             }
 
         }
+
+        public async Task DeleteConfession(string guid)
+        {
+            //check for emptiness
+            if (!string.IsNullOrEmpty(guid))
+            {
+                await Clients.All.SendAsync("DeleteConfession", guid);
+            }
+
+        }
+
+        public async Task DeleteChat(string guid)
+        {
+            //check for emptiness
+            if (!string.IsNullOrEmpty(guid))
+            {
+                await Clients.All.SendAsync("DeleteChat", guid);
+            }
+
+        }
+
+        public async Task SendGeneric(string confessKey, string Senderkey)
+        {
+            ConfessLoader confess = Store.ConfessClass.FetchOneConfessLoader(confessKey, Senderkey);
+            await Clients.All.SendAsync("ReceiveConfession", JsonConvert.SerializeObject(confess));
+        }
+
+        public async Task RoomMembership(string roomId)
+        {
+            string count = Store.ChatClass.GetRoomMemberCount(roomId);
+            await Clients.All.SendAsync("RoomMembership", roomId, count);
+        }
+        public async Task LeaveRoom(string confessKey, string Senderkey)
+        {
+            ConfessLoader confess = Store.ConfessClass.FetchOneConfessLoader(confessKey, Senderkey);
+            await Clients.All.SendAsync("ReceiveConfession", JsonConvert.SerializeObject(confess));
+        }
     }
 }

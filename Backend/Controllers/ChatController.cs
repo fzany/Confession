@@ -15,6 +15,12 @@ namespace Backend.Controllers
     [ApiController]
     public class ChatController : ControllerBase
     {
+        private ChatHub context;
+        public ChatController(ChatHub hub)
+        {
+            context = hub;
+        }
+
         [HttpGet]
         [Route("chat/fetchrooms")]
         public ActionResult<List<ChatRoomLoader>> FetchChatRooms()
@@ -45,6 +51,7 @@ namespace Backend.Controllers
             {
                 //prepare responses
                 Store.ChatClass.JoinRoom(userKey, id);
+                var forget = context.RoomMembership(id);
                 //return data
                 return Ok();
             }
@@ -64,6 +71,7 @@ namespace Backend.Controllers
             {
                 //prepare responses
                 Store.ChatClass.LeaveRoom(userKey, id);
+                var forget = context.RoomMembership(id);
                 //return data
                 return Ok();
             }

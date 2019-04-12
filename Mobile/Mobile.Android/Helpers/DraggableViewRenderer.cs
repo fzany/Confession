@@ -65,7 +65,6 @@ namespace Mobile.Droid.Helpers
         {
             DraggableView dragView = Element as DraggableView;
             base.OnElementPropertyChanged(sender, e);
-
         }
         protected override void OnVisibilityChanged(AView.View changedView, [GeneratedEnum] ViewStates visibility)
         {
@@ -95,7 +94,7 @@ namespace Mobile.Droid.Helpers
                                 originalY = GetY();
                                 firstTime = false;
                             }
-                            dragView.DragStarted();
+                             dragView.DragStarted();
                         }
 
                         touchedDown = true;
@@ -108,7 +107,9 @@ namespace Mobile.Droid.Helpers
                     double dragvalue = 0;
                     if (touchedDown)
                     {
-                        if (dragView.DragDirection == DragDirectionType.All || dragView.DragDirection == DragDirectionType.Horizontal)
+                        //if (dragView.DragDirection == DragDirectionType.All || dragView.DragDirection == DragDirectionType.Horizontal)
+
+                        if (dragView.DragDirection == DragDirectionType.Horizontal)
                         {
                             float diff = x - dX;
                             if (diff <= 0)
@@ -126,16 +127,16 @@ namespace Mobile.Droid.Helpers
                             dragvalue = diff;
                         }
 
-                        if (dragView.DragDirection == DragDirectionType.All || dragView.DragDirection == DragDirectionType.Vertical)
-                        {
-                            SetY(y - dY);
-                        }
+                        //if (dragView.DragDirection == DragDirectionType.All || dragView.DragDirection == DragDirectionType.Vertical)
+                        //{
+                        //    SetY(y - dY);
+                        //}
                     }
                     dragView.DragEnded(dragged, dragvalue);
                     break;
                 case MotionEventActions.Up:
                     touchedDown = false;
-                    dragView.DragEnded(false, 0);
+                    //dragView.DragEnded(false, 0);
                     break;
                 case MotionEventActions.Cancel:
                     touchedDown = false;

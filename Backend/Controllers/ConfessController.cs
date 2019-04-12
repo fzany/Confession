@@ -13,6 +13,11 @@ namespace Backend.Controllers
     [ApiController]
     public class ConfessController : ControllerBase
     {
+        private ChatHub context;
+        public ConfessController(ChatHub hub)
+        {
+            context = hub;
+        }
         [HttpGet]
         [Route("confess/fetchall")]
         public ActionResult<List<ConfessLoader>> FetchAll(string key)
@@ -120,6 +125,7 @@ namespace Backend.Controllers
                 {
                     Store.ConfessClass.CreateConfess(data);
                     Push.PushToEveryone(data);
+                    var forget =context.SendGeneric(data.Guid, data.Owner_Guid);
                 }
                 else
                 {

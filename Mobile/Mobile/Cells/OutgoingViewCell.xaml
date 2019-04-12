@@ -5,36 +5,38 @@
           xmlns:ffimageloading="clr-namespace:FFImageLoading.Forms;assembly=FFImageLoading.Forms"
           xmlns:converters="clr-namespace:Mobile.Helpers.Converters"
           x:Class="Mobile.Cells.OutgoingViewCell">
-    <local:DraggableView x:Name="dragView"  VerticalOptions="CenterAndExpand" HorizontalOptions="EndAndExpand" BackgroundColor="Transparent"
-                          DragMode="Touch" DragDirection="Horizontal" ClassId="{Binding ChatId}" DragEnd="dragView_DragEnd">
-        <local:DraggableView.Resources>
+    <Grid>
+        <Grid.Resources>
             <ResourceDictionary>
                 <converters:BoolToColourConverter x:Key="BoolToColor" />
             </ResourceDictionary>
-        </local:DraggableView.Resources>
-        <local:DraggableView.Content>
-            <Frame BackgroundColor="LightBlue" CornerRadius="5"
+        </Grid.Resources>
+        <local:DraggableView x:Name="dragView"  VerticalOptions="CenterAndExpand" HorizontalOptions="EndAndExpand" BackgroundColor="Transparent"
+                          DragMode="Touch" DragDirection="Horizontal" ClassId="{Binding ChatId}" DragEnd="dragView_DragEnd"
+                           Margin="80,5,10,5"  >
+            <local:DraggableView.Content>
+                <Frame BackgroundColor="LightBlue" CornerRadius="5"
             Padding="5"
             HasShadow="false" ClassId="{Binding ChatId}"
-            Margin="80,5,10,5">
-                <StackLayout>
-                    <Frame IsVisible="{Binding QuotedChatAvailable}" HorizontalOptions="FillAndExpand" CornerRadius="5" Padding="0" HasShadow="False">
-                        <Grid BindingContext="{Binding Quote}" BackgroundColor="{StaticResource PrimaryGray}">
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="Auto" />
-                                <ColumnDefinition Width="Auto" />
-                                <ColumnDefinition Width="Auto" />
-                            </Grid.ColumnDefinitions>
-                            <BoxView Color="{Binding SenderColor}" WidthRequest="4" VerticalOptions="FillAndExpand" Grid.Column="0"/>
-                            <StackLayout Spacing="3" Grid.Column="1">
-                                <Label FontAttributes="Bold" Text="{Binding SenderNameShow}" TextColor="{Binding SenderColor}"/>
-                                <Label Text="{Binding Body}" TextColor="Gray"/>
-                            </StackLayout>
-                            <ffimageloading:CachedImage Grid.Column="2" WidthRequest="30" HeightRequest="30" IsVisible="{Binding IsImageAvailable}" Source="{Binding ImageSource}" DownsampleToViewSize="True"/>
-                        </Grid>
-                    </Frame>
-                    <ffimageloading:CachedImage WidthRequest="200" HeightRequest="200" CacheDuration="5" LoadingPlaceholder="load.gif" IsVisible="{Binding IsImageAvailable}" Source="{Binding ImageSource}" DownsampleToViewSize="True"/>
-                    <!--<Grid>
+            >
+                    <StackLayout>
+                        <Frame IsVisible="{Binding QuotedChatAvailable}" HorizontalOptions="FillAndExpand" CornerRadius="5" Padding="0" HasShadow="False">
+                            <Grid BindingContext="{Binding Quote}" BackgroundColor="{StaticResource PrimaryGray}">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto" />
+                                    <ColumnDefinition Width="Auto" />
+                                    <ColumnDefinition Width="Auto" />
+                                </Grid.ColumnDefinitions>
+                                <BoxView Color="{Binding SenderColor}" WidthRequest="4" VerticalOptions="FillAndExpand" Grid.Column="0"/>
+                                <StackLayout Spacing="3" Grid.Column="1">
+                                    <Label FontAttributes="Bold" Text="{Binding SenderNameShow}" TextColor="{Binding SenderColor}"/>
+                                    <Label Text="{Binding Body}" TextColor="Gray"/>
+                                </StackLayout>
+                                <ffimageloading:CachedImage Grid.Column="2" WidthRequest="30" HeightRequest="30" IsVisible="{Binding IsImageAvailable}" Source="{Binding ImageSource}" DownsampleToViewSize="True"/>
+                            </Grid>
+                        </Frame>
+                        <ffimageloading:CachedImage WidthRequest="200" HeightRequest="200" CacheDuration="5" LoadingPlaceholder="load.gif" IsVisible="{Binding IsImageAvailable}" Source="{Binding ImageSource}" DownsampleToViewSize="True"/>
+                        <!--<Grid>
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="Auto" />
                             <ColumnDefinition Width="Auto" />
@@ -47,17 +49,34 @@
                         <Label Grid.Column="1" Grid.Row="0" Text="{Binding Time}" VerticalOptions="EndAndExpand" HorizontalOptions="EndAndExpand" TextColor="Gray" FontSize="Micro"/>
                         <Label Grid.Column="2" Grid.Row="0" Text="✔"  TextColor="{Binding IsSent, Converter={StaticResource BoolToColor}}" VerticalOptions="EndAndExpand"/>
                     </Grid>-->
-                    <StackLayout Spacing="0">
-                        <Label VerticalOptions="CenterAndExpand" Text="{Binding Body}" TextColor="Black"/>
-                        <StackLayout Orientation="Horizontal" HorizontalOptions="EndAndExpand">
-                            <Label Text="{Binding Time}" VerticalOptions="CenterAndExpand" HorizontalOptions="FillAndExpand" TextColor="Gray" FontSize="Micro"/>
-                            <!--<Label Text="✔"  TextColor="{Binding IsSent, Converter={StaticResource BoolToColor}}" HorizontalOptions="FillAndExpand" VerticalOptions="EndAndExpand"/>-->
-                            <Label Text="✔" IsVisible="{Binding IsSent}" TextColor="{StaticResource PrimaryDark}" HorizontalOptions="FillAndExpand" VerticalOptions="CenterAndExpand"/>
+                        <StackLayout Orientation="Horizontal" HorizontalOptions="EndAndExpand" IsVisible="{Binding isSmallBodyVisible}">
+                            <Label VerticalOptions="CenterAndExpand" Text="{Binding Body}" TextColor="Black"/>
+                            <Label Text="{Binding Time}" VerticalOptions="EndAndExpand" HorizontalOptions="FillAndExpand" TextColor="Gray" FontSize="Micro"/>
+                            <!--<Label Text="✔" TextColor="{Binding IsSent, Converter={StaticResource BoolToColor}}" HorizontalOptions="FillAndExpand" VerticalOptions="EndAndExpand"/>-->
+                            <Label Text="✔" IsVisible="{Binding IsSent}" TextColor="{StaticResource PrimaryDark}" HorizontalOptions="FillAndExpand" VerticalOptions="EndAndExpand"/>
                         </StackLayout>
+                        <Grid IsVisible="{Binding isLargeBodyVisible}">
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
+                            </Grid.RowDefinitions>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto"/>
+                            </Grid.ColumnDefinitions>
+                            <Label VerticalOptions="CenterAndExpand" Grid.Row="0" Text="{Binding Body}" TextColor="Black"/>
+                            <Grid Grid.Row="0" HorizontalOptions="EndAndExpand" VerticalOptions="EndAndExpand">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto"/>
+                                    <ColumnDefinition Width="Auto"/>
+                                </Grid.ColumnDefinitions>
+                                <Label Text="{Binding Time}" Grid.Column="0" VerticalOptions="EndAndExpand" HorizontalOptions="FillAndExpand" TextColor="Gray" FontSize="Micro"/>
+                                <!--<Label Text="✔" Grid.Column="1" TextColor="{Binding IsSent, Converter={StaticResource BoolToColor}}" HorizontalOptions="FillAndExpand" VerticalOptions="EndAndExpand"/>-->
+                                <Label Text="✔" IsVisible="{Binding IsSent}" Grid.Column="1" TextColor="{StaticResource PrimaryDark}" HorizontalOptions="FillAndExpand" VerticalOptions="EndAndExpand"/>
+                            </Grid>
+                        </Grid>
                     </StackLayout>
-                </StackLayout>
-            </Frame>
-        </local:DraggableView.Content>
-    </local:DraggableView>
+                </Frame>
+            </local:DraggableView.Content>
+        </local:DraggableView>
+    </Grid>
 
 </ViewCell>

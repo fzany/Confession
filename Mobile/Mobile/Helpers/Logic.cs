@@ -124,6 +124,16 @@ namespace Mobile.Helpers
             return sob.ToString();
         }
 
+        internal static bool ReverseBool(bool isSmallBodyVisible)
+        {
+            return !isSmallBodyVisible;
+        }
+
+        internal static bool CalCulateIfBodyIsLarge(string body)
+        {
+            return body.Length < 50;
+        }
+
         internal static byte[] GetByteArrayFromString(Stream stream)
         {
             byte[] buffer = new byte[16 * 1024];
@@ -201,7 +211,8 @@ namespace Mobile.Helpers
 
         public static string ToTitle(string input)
         {
-            return System.Globalization.CultureInfo.InvariantCulture.TextInfo.ToTitleCase(input);
+            // return CultureInfo.InvariantCulture.TextInfo.ToTitleCase(input);
+            return input[0].ToString().ToUpper() + input.Substring(1);
         }
 
         public static async Task<string> Createkey()
