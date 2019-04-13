@@ -189,6 +189,8 @@ namespace Mobile.Models
         }
         public ChatPageViewModel()
         {
+            Task forget = ConnectToHub();
+
             Connectivity.ConnectivityChanged += Connectivity_ConnectivityChangedAsync;
 
             hubConnection = new HubConnectionBuilder()
@@ -209,10 +211,11 @@ namespace Mobile.Models
                         SenderName = incomingChat.SenderName,
                         QuotedChatAvailable = incomingChat.QuotedChatAvailable,
                         ChatId = incomingChat.Id,
-                        IsSent = true, 
+                        IsSent = true,
                         ImageUrl = incomingChat.ImageUrl,
-                        IsImageAvailable = incomingChat.IsImageAvailable, 
-                         SenderKey = incomingChat.SenderKey, Id = incomingChat.Id,
+                        IsImageAvailable = incomingChat.IsImageAvailable,
+                        SenderKey = incomingChat.SenderKey,
+                        Id = incomingChat.Id,
                     };
                     //cater for image
                     if (incomingChat.IsImageAvailable)
@@ -704,7 +707,7 @@ namespace Mobile.Models
             int idx = Messages.IndexOf(message);
             int lastIndex = Messages.IndexOf(Messages.LastOrDefault());
 
-            if (lastIndex -idx >= 10)
+            if (lastIndex - idx >= 10)
             {
                 Device.BeginInvokeOnMainThread(() =>
                 {

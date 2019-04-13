@@ -5,6 +5,10 @@
           xmlns:ffimageloading="clr-namespace:FFImageLoading.Forms;assembly=FFImageLoading.Forms"
           xmlns:converters="clr-namespace:Mobile.Helpers.Converters"
           x:Class="Mobile.Cells.OutgoingViewCell">
+    <ViewCell.ContextActions>
+        <MenuItem Text="Report" Clicked="OnReport" ></MenuItem>
+        <MenuItem Text="Delete" Clicked="OnDelete"></MenuItem>
+    </ViewCell.ContextActions>
     <Grid>
         <Grid.Resources>
             <ResourceDictionary>
@@ -62,10 +66,10 @@
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="Auto"/>
                             </Grid.ColumnDefinitions>
-                            <Label VerticalOptions="CenterAndExpand" Grid.Row="0" Text="{Binding Body}" TextColor="Black"/>
+                            <Label VerticalOptions="FillAndExpand" Grid.Row="0" Text="{Binding Body}" TextColor="Black"/>
                             <Grid Grid.Row="0" HorizontalOptions="EndAndExpand" VerticalOptions="EndAndExpand">
                                 <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="Auto"/>
+                                    <ColumnDefinition Width="Auto"/> 
                                     <ColumnDefinition Width="Auto"/>
                                 </Grid.ColumnDefinitions>
                                 <Label Text="{Binding Time}" Grid.Column="0" VerticalOptions="EndAndExpand" HorizontalOptions="FillAndExpand" TextColor="Gray" FontSize="Micro"/>

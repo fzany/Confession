@@ -11,6 +11,9 @@ namespace Backend.Controllers
     [ApiController]
     public class LikeController : ControllerBase
     {
+        private static readonly ChatHub context = new ChatHub();
+
+
         [HttpGet]
         [Route("like/fetch/count")]
         public ActionResult<string> GetCount(string guid, bool isComment)
@@ -23,6 +26,7 @@ namespace Backend.Controllers
             }
             catch (Exception ex)
             {
+                var forget_error = context.Error(ex);
                 return StatusCode(500, ex.ToString());
             }
         }
@@ -39,6 +43,7 @@ namespace Backend.Controllers
             }
             catch (Exception ex)
             {
+                var forget_error = context.Error(ex);
                 return StatusCode(500, ex.ToString());
             }
         }
@@ -57,6 +62,7 @@ namespace Backend.Controllers
             }
             catch (Exception ex)
             {
+                var forget_error = context.Error(ex);
                 return StatusCode(500, ex.ToString());
             }
         }

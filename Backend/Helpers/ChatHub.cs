@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.SignalR;
 using Newtonsoft.Json;
 using Shared;
+using System;
 using System.Threading.Tasks;
 
 namespace Backend.Helpers
@@ -67,22 +68,22 @@ namespace Backend.Helpers
 
         }
 
-        public async Task DeleteConfession(string guid)
+        public async Task SendDeleteConfession(string guid)
         {
             //check for emptiness
             if (!string.IsNullOrEmpty(guid))
             {
-                await Clients.All.SendAsync("DeleteConfession", guid);
+                await Clients.All.SendAsync("ReceiveDeleteConfession", guid);
             }
 
         }
 
-        public async Task DeleteChat(string guid)
+        public async Task SendDeleteChat(string guid)
         {
             //check for emptiness
             if (!string.IsNullOrEmpty(guid))
             {
-                await Clients.All.SendAsync("DeleteChat", guid);
+                await Clients.All.SendAsync("ReceiveDeleteChat", guid);
             }
 
         }
@@ -93,15 +94,25 @@ namespace Backend.Helpers
             await Clients.All.SendAsync("ReceiveConfession", JsonConvert.SerializeObject(confess));
         }
 
-        public async Task RoomMembership(string roomId)
+        public async Task SendRoomMembership(string roomId)
         {
             string count = Store.ChatClass.GetRoomMemberCount(roomId);
-            await Clients.All.SendAsync("RoomMembership", roomId, count);
+            await Clients.All.SendAsync("ReceiveRoomMembership", roomId, count);
         }
         public async Task LeaveRoom(string confessKey, string Senderkey)
         {
             ConfessLoader confess = Store.ConfessClass.FetchOneConfessLoader(confessKey, Senderkey);
             await Clients.All.SendAsync("ReceiveConfession", JsonConvert.SerializeObject(confess));
+        }
+
+        public async Task Error(Exception ex)
+        {
+            await Clients.All.SendAsync("ReceiveError", Logic.GetException(ex));
+        }
+
+        public async Task SendLog(Logg log)
+        {
+            await Clients.All.SendAsync("ReceiveLog", JsonConvert.SerializeObject(log));
         }
     }
 }

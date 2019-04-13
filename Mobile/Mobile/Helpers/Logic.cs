@@ -131,6 +131,10 @@ namespace Mobile.Helpers
 
         internal static bool CalCulateIfBodyIsLarge(string body)
         {
+            if (body == null)
+                return false;
+            else if (string.IsNullOrWhiteSpace(body))
+                return false;
             return body.Length < 50;
         }
 

@@ -11,6 +11,9 @@ namespace Backend.Controllers
     [ApiController]
     public class CommentController : ControllerBase
     {
+        private static readonly ChatHub context = new ChatHub();
+
+
         [HttpGet]
         [Route("comment/fetch/count")]
         public ActionResult<string> GetCommentCount(string guid)
@@ -23,7 +26,8 @@ namespace Backend.Controllers
             }
             catch (Exception ex)
             {
-                return StatusCode(500, ex.ToString());
+                var forget_error = context.Error(ex);
+                return "0";
             }
         }
         [HttpGet]
@@ -40,7 +44,8 @@ namespace Backend.Controllers
             }
             catch (Exception ex)
             {
-                return StatusCode(500, ex.ToString());
+                var forget_error = context.Error(ex);
+                return new List<CommentLoader>() { };
             }
         }
 
@@ -67,7 +72,8 @@ namespace Backend.Controllers
             }
             catch (Exception ex)
             {
-                return StatusCode(500, ex.ToString());
+                var forget_error = context.Error(ex);
+                return new ConfessLoader() { };
             }
         }
 
@@ -83,7 +89,8 @@ namespace Backend.Controllers
             }
             catch (Exception ex)
             {
-                return StatusCode(500, ex.ToString());
+                var forget_error = context.Error(ex);
+                return new ConfessLoader() { };
             }
         }
     }

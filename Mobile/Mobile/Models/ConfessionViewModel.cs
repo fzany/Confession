@@ -123,7 +123,7 @@ namespace Mobile.Models
                 }
             });
 
-            hubConnection.On<string>("DeleteConfession", (guid) =>
+            hubConnection.On<string>("ReceiveDeleteConfession", (guid) =>
             {
                 try
                 {
@@ -382,6 +382,16 @@ namespace Mobile.Models
                     });
                     string serialisedMessage = JsonConvert.SerializeObject(arg);
                     await hubConnection.InvokeAsync("SendConfession", serialisedMessage);
+                    await Task.Delay(10);
+                }
+            });
+
+            //Delete a Confession
+            MessagingCenter.Subscribe<object, string>(this, Constants.delete_confession, async (sender, arg) =>
+            {
+                if (arg != null)
+                {
+                    await hubConnection.InvokeAsync("SendDeleteConfession", arg);
                     await Task.Delay(10);
                 }
             });

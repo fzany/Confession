@@ -32,5 +32,15 @@ namespace Mobile.Cells
                 }
             }
         }
+
+        private void OnReport(object sender, EventArgs e)
+        {
+
+        }
+
+        private void OnDelete(object sender, EventArgs e)
+        {
+
+        }
     }
 }

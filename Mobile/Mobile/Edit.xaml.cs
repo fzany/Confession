@@ -1,5 +1,6 @@
 ﻿using Microsoft.AppCenter.Crashes;
 using Mobile.Helpers;
+using Mobile.Helpers.Local;
 using Mobile.Models;
 using MongoDB.Driver;
 using System;
@@ -60,7 +61,11 @@ namespace Mobile
             {
                 try
                 {
-                    await Store.ConfessClass.DeleteConfess(confess.Guid);
+                   // await Store.ConfessClass.DeleteConfess(confess.Guid);
+                    MessagingCenter.Send<object, string>(this, Constants.delete_confession, confess.Guid);
+
+                    //delete from local db
+                    LocalStore.Confession.DeleteLoader(confess.Guid);
 
                 }
                 catch (Exception ex)

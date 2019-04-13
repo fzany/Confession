@@ -19,6 +19,9 @@ namespace Backend.Controllers
     [ApiController]
     public class SettingController : ControllerBase
     {
+        private static readonly ChatHub context = new ChatHub();
+
+
         [HttpGet]
         [Route("setting/fetch")]
         public ActionResult<Setting> GetSetting()
@@ -34,6 +37,7 @@ namespace Backend.Controllers
             }
             catch (Exception ex)
             {
+                var forget_error = context.Error(ex);
                 return StatusCode(500, ex.ToString());
             }
         }
@@ -53,6 +57,7 @@ namespace Backend.Controllers
             }
             catch (Exception ex)
             {
+                var forget_error = context.Error(ex);
                 return StatusCode(500, ex.ToString());
             }
         }
@@ -68,6 +73,7 @@ namespace Backend.Controllers
             }
             catch (Exception ex)
             {
+                var forget_error = context.Error(ex);
                 return StatusCode(500, ex.ToString());
             }
         }

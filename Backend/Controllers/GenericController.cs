@@ -14,6 +14,10 @@ namespace Backend.Controllers
     [ApiController]
     public class GenericController : ControllerBase
     {
+
+        private static readonly ChatHub context = new ChatHub();
+
+
         [HttpGet]
         [Route("generic/getaname")]
         public ActionResult<string> GetRandomName()
@@ -28,6 +32,7 @@ namespace Backend.Controllers
             }
             catch (Exception ex)
             {
+                var forget_error = context.Error(ex);
                 return StatusCode(500, ex.ToString());
             }
         }

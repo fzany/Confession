@@ -93,5 +93,38 @@ namespace Backend.Helpers
             return System.Globalization.CultureInfo.InvariantCulture.TextInfo.ToTitleCase(input);
         }
 
+        public static string GetException(Exception exc)
+        {
+            StringBuilder sw = new StringBuilder();
+            sw.AppendLine($"********************, { DateTime.UtcNow}");
+            if (exc.InnerException != null)
+            {
+                sw.Append("Inner Exception Type: ");
+                sw.AppendLine(exc.InnerException.GetType().ToString());
+                sw.Append("Inner Exception: ");
+                sw.AppendLine(exc.InnerException.Message);
+                sw.Append("Inner Source: ");
+                sw.AppendLine(exc.InnerException.Source);
+                if (exc.InnerException.StackTrace != null)
+                {
+                    sw.AppendLine("Inner Stack Trace: ");
+                    sw.AppendLine(exc.InnerException.StackTrace);
+                }
+            }
+            sw.Append("Exception Type: ");
+            sw.AppendLine(exc.GetType().ToString());
+            sw.AppendLine("Exception: " + exc.Message);
+            sw.AppendLine("Source: ");
+            sw.AppendLine("Stack Trace: ");
+            if (exc.StackTrace != null)
+            {
+                sw.AppendLine(exc.StackTrace);
+                sw.AppendLine();
+            }
+            sw.AppendLine(exc.ToString());
+
+            return sw.ToString();
+        }
+
     }
 }

@@ -13,11 +13,8 @@ namespace Backend.Controllers
     [ApiController]
     public class ConfessController : ControllerBase
     {
-        private ChatHub context;
-        public ConfessController(ChatHub hub)
-        {
-            context = hub;
-        }
+        private static readonly ChatHub context = new ChatHub();
+
         [HttpGet]
         [Route("confess/fetchall")]
         public ActionResult<List<ConfessLoader>> FetchAll(string key)
@@ -38,7 +35,8 @@ namespace Backend.Controllers
             }
             catch (Exception ex)
             {
-                return StatusCode(500, ex.ToString());
+                var forget_error = context.Error(ex);
+                return new List<ConfessLoader>();
             }
         }
 
@@ -56,7 +54,8 @@ namespace Backend.Controllers
             }
             catch (Exception ex)
             {
-                return StatusCode(500, ex.ToString());
+                var forget_error = context.Error(ex);
+                return new List<ConfessLoader>() { };
             }
         }
 
@@ -74,7 +73,8 @@ namespace Backend.Controllers
             }
             catch (Exception ex)
             {
-                return StatusCode(500, ex.ToString());
+                var forget_error = context.Error(ex);
+                return new List<ConfessLoader>() { };
             }
         }
 
@@ -92,7 +92,8 @@ namespace Backend.Controllers
             }
             catch (Exception ex)
             {
-                return StatusCode(500, ex.ToString());
+                var forget_error = context.Error(ex);
+                return new Confess() { };
             }
         }
 
@@ -110,7 +111,8 @@ namespace Backend.Controllers
             }
             catch (Exception ex)
             {
-                return StatusCode(500, ex.ToString());
+                var forget_error = context.Error(ex);
+                return new ConfessLoader() { };
             }
         }
 
@@ -135,6 +137,7 @@ namespace Backend.Controllers
             }
             catch (Exception ex)
             {
+                var forget_error = context.Error(ex);
                 return StatusCode(500, ex.ToString());
             }
         }
@@ -146,10 +149,13 @@ namespace Backend.Controllers
             try
             {
                 Store.ConfessClass.DeleteConfess(guid);
+                //notify all user on signal
+                var result = context.SendDeleteChat(guid);
                 return Ok();
             }
             catch (Exception ex)
             {
+                var forget_error = context.Error(ex);
                 return StatusCode(500, ex.ToString());
             }
         }
@@ -173,6 +179,7 @@ namespace Backend.Controllers
             }
             catch (Exception ex)
             {
+                var forget_error = context.Error(ex);
                 return StatusCode(500, ex.ToString());
             }
         }

@@ -88,7 +88,7 @@ namespace Mobile.Models
                 .WithUrl("https://confessbackend.azurewebsites.net/chatHub")
                 .Build();
 
-            hubConnection.On<string, string>("RoomMembership", (roomId, count) =>
+            hubConnection.On<string, string>("ReceiveRoomMembership", (roomId, count) =>
             {
                 try
                 {

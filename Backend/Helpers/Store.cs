@@ -9,6 +9,8 @@ namespace Backend.Helpers
 {
     public class Store
     {
+        private static readonly ChatHub hubcontext = new ChatHub();
+        
         private static readonly DataContext context = new DataContext();
         private static readonly DataContextLite contextLite = new DataContextLite();
 
@@ -109,8 +111,9 @@ namespace Backend.Helpers
                 {
                     Push.SendChatNotification(chat);
                 }
-                catch (Exception)
+                catch (Exception ex)
                 {
+                    var forget_error = hubcontext.Error(ex);
                 }
                 //ChatLoader loader = ChatLoader(chat);
                 Chat returnChat = contextLite.Chat.FindById(newID);
@@ -450,10 +453,10 @@ namespace Backend.Helpers
                         context.Logger.InsertOne(migrator);
 
                     }
-                    catch (Exception)
+                    catch (Exception ex)
                     {
 
-
+                        var forget_error = hubcontext.Error(ex);
                     }
                     return migrator;
                 }
@@ -560,8 +563,9 @@ namespace Backend.Helpers
                     //IFindFluent<Confess, Confess> cursor = context.Confess.Find(empty);
                     return GetConfessLoader(data, key);
                 }
-                catch (Exception)
+                catch (Exception ex)
                 {
+                    var forget_error = hubcontext.Error(ex);
                     return new List<ConfessLoader>();
                 }
             }
