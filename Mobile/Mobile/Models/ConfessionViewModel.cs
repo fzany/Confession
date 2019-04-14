@@ -79,6 +79,8 @@ namespace Mobile.Models
         {
             try
             {
+                if (hubConnection == null)
+                { ResetConnection(); }
                 await hubConnection.StopAsync();
             }
             catch (Exception ex)
@@ -90,6 +92,8 @@ namespace Mobile.Models
         {
             try
             {
+                if (hubConnection == null)
+                { ResetConnection(); }
                 HubConnectionState state = hubConnection.State;
                 return state == HubConnectionState.Connected;
             }
@@ -99,13 +103,17 @@ namespace Mobile.Models
                 return false;
             }
         }
-        public ConfessionViewModel()
-        {
-            Connectivity.ConnectivityChanged += Connectivity_ConnectivityChangedAsync;
 
+        private void ResetConnection()
+        {
             hubConnection = new HubConnectionBuilder()
                 .WithUrl("https://confessbackend.azurewebsites.net/chatHub")
                 .Build();
+        }
+        public ConfessionViewModel()
+        {
+            Connectivity.ConnectivityChanged += Connectivity_ConnectivityChangedAsync;
+            ResetConnection();
 
             hubConnection.On<string>("ReceiveConfession", (message) =>
             {
@@ -394,6 +402,7 @@ namespace Mobile.Models
                         Title = arg.Title,
                     });
                     string serialisedMessage = JsonConvert.SerializeObject(arg);
+                    await ConnectToHub();
                     await hubConnection.InvokeAsync("SendConfession", serialisedMessage);
                     await Task.Delay(10);
                 }
@@ -404,6 +413,7 @@ namespace Mobile.Models
             {
                 if (arg != null)
                 {
+                    await ConnectToHub();
                     await hubConnection.InvokeAsync("SendDeleteConfession", arg);
                     await Task.Delay(10);
                 }

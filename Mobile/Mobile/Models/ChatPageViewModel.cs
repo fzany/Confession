@@ -178,6 +178,10 @@ namespace Mobile.Models
         {
             try
             {
+                if (hubConnection == null)
+                {
+                    ResetConnection();
+                }
                 HubConnectionState state = hubConnection.State;
                 return state == HubConnectionState.Connected;
             }
@@ -187,15 +191,19 @@ namespace Mobile.Models
                 return false;
             }
         }
+        private void ResetConnection()
+        {
+            hubConnection = new HubConnectionBuilder()
+               .WithUrl("https://confessbackend.azurewebsites.net/chatHub")
+               .Build();
+        }
         public ChatPageViewModel()
         {
             Task forget = ConnectToHub();
 
             Connectivity.ConnectivityChanged += Connectivity_ConnectivityChangedAsync;
+            ResetConnection();
 
-            hubConnection = new HubConnectionBuilder()
-                .WithUrl("https://confessbackend.azurewebsites.net/chatHub")
-                .Build();
 
             hubConnection.On<string>("ReceiveMessage", async (message) =>
             {
@@ -215,7 +223,6 @@ namespace Mobile.Models
                         ImageUrl = incomingChat.ImageUrl,
                         IsImageAvailable = incomingChat.IsImageAvailable,
                         SenderKey = incomingChat.SenderKey,
-                        Id = incomingChat.Id,
                     };
                     //cater for image
                     if (incomingChat.IsImageAvailable)
@@ -372,7 +379,7 @@ namespace Mobile.Models
                         RemoveQuoteCommand.Execute(null);
                         string serialisedMessage = JsonConvert.SerializeObject(new_send);
 
-
+                        await ConnectToHub();
                         await hubConnection.InvokeAsync("SendMessage", serialisedMessage);
 
                         await Task.Delay(10);
@@ -560,6 +567,7 @@ namespace Mobile.Models
                                 new_send.ImageUrl = ImageUrl;
                                 string serialisedMessage = JsonConvert.SerializeObject(new_send);
 
+                                await ConnectToHub();
                                 await hubConnection.InvokeAsync("SendMessage", serialisedMessage);
 
                                 //update the local msg with the url

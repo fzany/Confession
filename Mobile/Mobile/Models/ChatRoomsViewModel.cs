@@ -62,6 +62,10 @@ namespace Mobile.Models
         {
             try
             {
+                if (hubConnection == null)
+                {
+                    ResetConnection();
+                }
                 await hubConnection.StopAsync();
             }
             catch (Exception ex)
@@ -73,6 +77,10 @@ namespace Mobile.Models
         {
             try
             {
+                if (hubConnection == null)
+                {
+                    ResetConnection();
+                }
                 HubConnectionState state = hubConnection.State;
                 return state == HubConnectionState.Connected;
             }
@@ -82,13 +90,19 @@ namespace Mobile.Models
                 return false;
             }
         }
+
+        private void ResetConnection()
+        {
+            hubConnection = new HubConnectionBuilder()
+               .WithUrl("https://confessbackend.azurewebsites.net/chatHub")
+               .Build();
+        }
         public ChatRoomsViewModel()
         {
             Connectivity.ConnectivityChanged += Connectivity_ConnectivityChangedAsync;
+            ResetConnection();
 
-            hubConnection = new HubConnectionBuilder()
-                .WithUrl("https://confessbackend.azurewebsites.net/chatHub")
-                .Build();
+
 
             hubConnection.On<string, string>("ReceiveRoomMembership", (roomId, count) =>
             {

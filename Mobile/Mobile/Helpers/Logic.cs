@@ -132,11 +132,19 @@ namespace Mobile.Helpers
         internal static bool CalCulateIfBodyIsSmall(string body, bool QuotedChatAvailable)
         {
             if (QuotedChatAvailable)
+            {
                 return false;
+            }
+
             if (body == null)
+            {
                 return false;
+            }
             else if (string.IsNullOrWhiteSpace(body))
+            {
                 return false;
+            }
+
             return body.Length < 50;
         }
 
@@ -428,13 +436,21 @@ namespace Mobile.Helpers
         }
         public static string FilterCharacters(string input)
         {
-            if (string.IsNullOrWhiteSpace(input))
+            try
             {
-                return string.Empty;
-            }
+                if (string.IsNullOrWhiteSpace(input))
+                {
+                    return Constants.DefaultName;
+                }
 
-            Regex regex = new Regex("[^a-zA-Z0-9]");
-            return regex.Replace(input, "");
+                Regex regex = new Regex("[^a-zA-Z0-9]");
+                return regex.Replace(input, "");
+            }
+            catch (Exception ex)
+            {
+                Crashes.TrackError(ex, Logic.GetErrorProperties(ex));
+                return Constants.DefaultName;
+            }
         }
         public static Color GetColourFromName(string name)
         {

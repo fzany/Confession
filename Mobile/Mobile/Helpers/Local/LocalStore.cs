@@ -1,4 +1,5 @@
-﻿using Microsoft.AppCenter.Crashes;
+﻿using LiteDB;
+using Microsoft.AppCenter.Crashes;
 using Mobile.Models;
 using System;
 using System.Collections.Generic;
@@ -107,23 +108,20 @@ namespace Mobile.Helpers.Local
             //continue
             public static void SaveLoaders(ObservableCollection<ChatLoader> loaders)
             {
-                ObservableCollection<ChatLoader> insert_loaders = new ObservableCollection<ChatLoader>();
                 foreach (ChatLoader load in loaders)
                 {
-                    if (Local.ChatLoader.Exists(d => d.Id == load.Id))
+                    if (Local.ChatLoader.Exists(d => d.ChatId == load.ChatId))
                     {
                         //update such confession
                         Local.ChatLoader.Update(load);
                     }
                     else
                     {
-                        insert_loaders.Add(load);
+                        load.Id = MongoDB.Bson.ObjectId.GenerateNewId().ToString();
+                        Local.ChatLoader.Insert(load);
                     }
                 }
-                if (insert_loaders.Count > 0)
-                {
-                    Local.ChatLoader.InsertBulk(insert_loaders);
-                }
+                
             }
 
             public static void SaveLoader(ChatLoader loader)
@@ -131,13 +129,14 @@ namespace Mobile.Helpers.Local
 
                 try
                 {
-                    if (Local.ChatLoader.Exists(d => d.Id == loader.Id))
+                    if (Local.ChatLoader.Exists(d => d.ChatId == loader.ChatId))
                     {
                         //update such confession
                         Local.ChatLoader.Update(loader);
                     }
                     else
                     {
+                        loader.Id = MongoDB.Bson.ObjectId.GenerateNewId().ToString();
                         Local.ChatLoader.Insert(loader);
                     }
                 }
@@ -210,27 +209,27 @@ namespace Mobile.Helpers.Local
             {
                 try
                 {
-                    List<ConfessLoader> allconfe = Local.ConfessLoader.FindAll().ToList();
-                    foreach (ConfessLoader conff in allconfe)
+                    List<BsonDocument> allconfe = Local.ConfessRaw.FindAll().ToList();
+                    foreach (var conff in allconfe)
                     {
-                        Local.ConfessLoader.Delete(conff.Id);
+                        Local.ConfessRaw.Delete(conff);
                     }
-                    List<CommentLoader> allcomm = Local.CommentLoader.FindAll().ToList();
-                    foreach (CommentLoader comm in allcomm)
+                    List<BsonDocument> allcomm = Local.CommentRaw.FindAll().ToList();
+                    foreach (var comm in allcomm)
                     {
-                        Local.CommentLoader.Delete(comm.Id);
-                    }
-
-                    List<ChatLoader> allchat = Local.ChatLoader.FindAll().ToList();
-                    foreach (ChatLoader chat in allchat)
-                    {
-                        Local.ChatLoader.Delete(chat.Id);
+                        Local.CommentRaw.Delete(comm);
                     }
 
-                    List<ChatRoomLoader> allrooms = Local.ChatRoomLoader.FindAll().ToList();
-                    foreach (ChatRoomLoader room in allrooms)
+                    List<BsonDocument> allchat = Local.ChatRaw.FindAll().ToList();
+                    foreach (var chat in allchat)
                     {
-                        Local.ChatRoomLoader.Delete(room.Id);
+                        Local.ChatRaw.Delete(chat);
+                    }
+
+                    List<BsonDocument> allrooms = Local.ChatRoomRaw.FindAll().ToList();
+                    foreach (var room in allrooms)
+                    {
+                        Local.ChatRoomLoader.Delete(room);
                     }
                 }
                 catch (System.Exception ex)
