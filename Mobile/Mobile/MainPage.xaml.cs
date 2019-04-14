@@ -80,10 +80,11 @@ namespace Mobile
             await Navigation.PushModalAsync(new ChatLister());
         }
 
-        private void List_View_Refreshing(object sender, EventArgs e)
-        {
-            MessagingCenter.Send<object>(this, Constants.none_nav);
-        }
+        //private void List_View_Refreshing(object sender, EventArgs e)
+        //{
+        //   // MessagingCenter.Send<object>(this, Constants.none_nav);
+        //    _confessionViewModel.OnRefreshCommand.Execute(null);
+        //}
 
      
     }

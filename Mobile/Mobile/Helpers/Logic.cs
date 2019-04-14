@@ -129,8 +129,10 @@ namespace Mobile.Helpers
             return !isSmallBodyVisible;
         }
 
-        internal static bool CalCulateIfBodyIsLarge(string body)
+        internal static bool CalCulateIfBodyIsSmall(string body, bool QuotedChatAvailable)
         {
+            if (QuotedChatAvailable)
+                return false;
             if (body == null)
                 return false;
             else if (string.IsNullOrWhiteSpace(body))

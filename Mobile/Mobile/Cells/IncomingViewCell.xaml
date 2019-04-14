@@ -6,7 +6,7 @@
           x:Class="Mobile.Cells.IncomingViewCell">
     <Grid>
         <local:DraggableView x:Name="dragView"  VerticalOptions="CenterAndExpand" BackgroundColor="Transparent" HorizontalOptions="StartAndExpand"
-                        Margin="10,5,80,5" DragMode="Touch" DragDirection="Horizontal" ClassId="{Binding ChatId}" DragEnd="dragView_DragEnd" >
+                        Margin="10,3,80,3" DragMode="Touch" DragDirection="Horizontal" ClassId="{Binding ChatId}" DragEnd="dragView_DragEnd" >
             <local:DraggableView.Content>
                 <Frame BackgroundColor="White" CornerRadius="5"
               Padding="5" ClassId="{Binding ChatId}"

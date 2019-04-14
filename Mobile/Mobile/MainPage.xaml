@@ -35,9 +35,8 @@
                       HorizontalOptions="FillAndExpand"
                       VerticalOptions="FillAndExpand" 
                       ItemSelected="List_View_ItemSelected" 
-                      IsRefreshing="{Binding IsBusy}"
+                      IsRefreshing="{Binding IsBusy}" RefreshCommand="{Binding OnRefreshCommand}"
                   IsPullToRefreshEnabled="True"
-                  Refreshing="List_View_Refreshing"
                       CachingStrategy="RecycleElement">
             <ListView.ItemTemplate>
                 <DataTemplate>

@@ -62,11 +62,26 @@
             </StackLayout>
         </Frame>
         <!--<views:FloatingActionButton Margin="0" Padding="0" Grid.Column="1" Grid.Row="0" VerticalOptions="EndAndExpand" HorizontalOptions="EndAndExpand" Image="sendchat.png" HeightRequest="90" WidthRequest="78" ButtonColor="{StaticResource PrimaryDark}" Clicked="Handle_Completed" />-->
-        <Frame BackgroundColor="{StaticResource PrimaryDark}" Padding="10" Grid.Column="1" Grid.Row="0" CornerRadius="50" VerticalOptions="CenterAndExpand" HorizontalOptions="FillAndExpand">
+        
+        <Frame HorizontalOptions="EndAndExpand" 
+                                 VerticalOptions="CenterAndExpand"
+                                 HasShadow="false" 
+                                 Grid.Row="0"  
+                                 Grid.Column="1"
+                                 HeightRequest="50" WidthRequest="50"
+                                 CornerRadius="25"
+                                 Padding="1"
+                                 BackgroundColor="{StaticResource PrimaryDark}" >
+            <StackLayout Spacing="3">
+                <Image Source="sendchat.png"
+                               WidthRequest="30"
+                               HeightRequest="30"
+                               VerticalOptions="CenterAndExpand"/>
+            </StackLayout>
             <Frame.GestureRecognizers>
-                <TapGestureRecognizer NumberOfTapsRequired="1" Tapped="Handle_Completed"/>
+                <TapGestureRecognizer Tapped="Handle_Completed" NumberOfTapsRequired="1"/>
             </Frame.GestureRecognizers>
-            <Image Source="sendchat.png" HeightRequest="20" WidthRequest="20" VerticalOptions="CenterAndExpand" HorizontalOptions="CenterAndExpand"/>
         </Frame>
+
     </Grid>
 </ContentView>

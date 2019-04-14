@@ -7,6 +7,7 @@ using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Windows.Input;
 using Xamarin.Essentials;
 using Xamarin.Forms;
 
@@ -15,6 +16,7 @@ namespace Mobile.Models
     public class ChatRoomsViewModel : INotifyPropertyChanged
     {
         public ObservableCollection<ChatRoomLoader> ChatRooms { get; set; } = new ObservableCollection<ChatRoomLoader>();
+        public ICommand OnRefreshCommand { get; set; }
         private bool isNoInternet;
         public bool IsNoInternet
         {
@@ -114,11 +116,22 @@ namespace Mobile.Models
             {
                 await LoadData();
             });
+
+            OnRefreshCommand = new Command((arg) =>
+            {
+                Task.Run(async () =>
+                {
+                    await LoadData();
+                });
+            });
         }
 
-        private async void Connectivity_ConnectivityChangedAsync(object sender, ConnectivityChangedEventArgs e)
+        private void Connectivity_ConnectivityChangedAsync(object sender, ConnectivityChangedEventArgs e)
         {
-            await ConnectToHub();
+            Task.Run(async () =>
+            {
+                await LoadData();
+            });
         }
 
         private void LoadSubscriptions()

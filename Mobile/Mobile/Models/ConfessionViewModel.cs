@@ -8,6 +8,7 @@ using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Windows.Input;
 using Xamarin.Essentials;
 using Xamarin.Forms;
 
@@ -18,6 +19,7 @@ namespace Mobile.Models
         public ObservableCollection<ConfessLoader> Loaders { get; set; } = new ObservableCollection<ConfessLoader>();
         public LoadMode Mode = LoadMode.None;
         public string CurrentCategory = string.Empty;
+        public ICommand OnRefreshCommand { get; set; }
 
         public event PropertyChangedEventHandler PropertyChanged;
 
@@ -151,11 +153,22 @@ namespace Mobile.Models
                 await LoadData();
                 Subscriptions();
             });
+
+            OnRefreshCommand = new Command((arg) =>
+            {
+                Task.Run(async () =>
+                {
+                    await LoadData();
+                });
+            });
         }
 
-        private async void Connectivity_ConnectivityChangedAsync(object sender, ConnectivityChangedEventArgs e)
+        private void Connectivity_ConnectivityChangedAsync(object sender, ConnectivityChangedEventArgs e)
         {
-            await ConnectToHub();
+            Task.Run(async () =>
+            {
+                await LoadData();
+            });
         }
         protected virtual void OnPropertyChanged(string propertyName)
         {

@@ -82,9 +82,7 @@ namespace Mobile.Models
         //internalImage
         public ImageSource ImageSource { get; set; }
 
-        public bool isSmallBodyVisible => Logic.CalCulateIfBodyIsLarge(Body);
-        public bool isLargeBodyVisible => Logic.ReverseBool(isSmallBodyVisible);
-
+        public bool IsSmallBodyVisible => Logic.CalCulateIfBodyIsSmall(Body, QuotedChatAvailable);
     }
 
     public class Quote

@@ -64,6 +64,9 @@ namespace Mobile.Droid.Helpers
         {
             base.OnElementPropertyChanged(sender, e);
 
+            //remove the line to editor
+            Control.SetBackgroundColor(Android.Graphics.Color.Transparent);
+
             var customControl = (ExtendedEditorControl)Element;
 
             if (ExtendedEditorControl.PlaceholderProperty.PropertyName == e.PropertyName)
