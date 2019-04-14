@@ -3,11 +3,13 @@ using Android.App;
 using Android.Content;
 using Android.Content.PM;
 using Android.Gms.Ads;
+using Android.Media;
 using Android.OS;
 using Android.Runtime;
 using Android.Support.V4.App;
 using FFImageLoading;
 using FFImageLoading.Forms.Platform;
+using Microsoft.AppCenter.Crashes;
 using Microsoft.AppCenter.Push;
 using Mobile.Helpers;
 using Plugin.CurrentActivity;
@@ -35,13 +37,13 @@ namespace Mobile.Droid
 
             MobileAds.Initialize(ApplicationContext, AppConstants.AppId);
             Push.PushNotificationReceived += Push_PushNotificationReceived;
-            
+
 
             CrossCurrentActivity.Current.Activity = this;
             CrossCurrentActivity.Current.Init(this, savedInstanceState);
 
             CachedImageRenderer.Init(true);
-            var config = new FFImageLoading.Config.Configuration()
+            FFImageLoading.Config.Configuration config = new FFImageLoading.Config.Configuration()
             {
                 VerboseLogging = false,
                 VerbosePerformanceLogging = false,
@@ -76,7 +78,55 @@ namespace Mobile.Droid
             notificationManager.CreateNotificationChannel(channel);
         }
 
-        private async void Push_PushNotificationReceived(object sender, PushNotificationReceivedEventArgs e)
+        private void SendNotification(string body, string title)
+        {
+            Intent intent = new Intent(this, typeof(MainActivity));
+            intent.AddFlags(ActivityFlags.ClearTop);
+            PendingIntent pendingIntent = PendingIntent.GetActivity(this, 0, intent, PendingIntentFlags.OneShot);
+
+            NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(this)
+                .SetSmallIcon(Resource.Drawable.logo50)
+                .SetContentTitle(title)
+                .SetContentText(body)
+                .SetContentIntent(pendingIntent)
+                .SetSound(RingtoneManager.GetDefaultUri(RingtoneType.Notification))
+                .SetAutoCancel(true);
+
+            NotificationManager notificationManager = NotificationManager.FromContext(this);
+            notificationManager.Notify(0, notificationBuilder.Build());
+        }
+        private void SendNotificationWithChannel(string body, string title)
+        {
+            if (channel == null || string.IsNullOrEmpty(channel.Id))
+            { CreateNotificationChannel(); }
+
+            // Instantiate the builder and set notification elements:
+            NotificationCompat.Builder builder = new NotificationCompat.Builder(this, channel.Id)
+                .SetContentTitle(title)
+                .SetContentText(body)
+                .SetDefaults((int)NotificationDefaults.Sound)
+                .SetSmallIcon(Resource.Drawable.logo50)
+                .SetAutoCancel(true);
+
+            // Build the notification:
+            Notification notification = builder.Build();
+
+            // Get the notification manager:
+            NotificationManager notificationManager =
+                GetSystemService(Context.NotificationService) as NotificationManager;
+
+            // Publish the notification:
+            const int notificationId = 0;
+            notificationManager.Notify(notificationId, notification);
+
+            //if (await Logic.GetKey() != SenderKey)
+            //{
+
+            //}
+
+
+        }
+        private void Push_PushNotificationReceived(object sender, PushNotificationReceivedEventArgs e)
         {
             #region Alert
             //Alert Builder (not Preferable)
@@ -93,28 +143,28 @@ namespace Mobile.Droid
             //string roomid = Logic.GetRoomID(); 
             #endregion
 
-
             //Notification Builder
-
-            // Instantiate the builder and set notification elements:
-            NotificationCompat.Builder builder = new NotificationCompat.Builder(this, channel.Id)
-                .SetContentTitle(e.Title)
-                .SetContentText(e.Message)
-                .SetDefaults((int)NotificationDefaults.Sound)
-                .SetSmallIcon(Resource.Drawable.logo50);
-            string SenderKey = e.CustomData["sender"];
-            if (await Logic.GetKey() != SenderKey)
+            try
             {
-                // Build the notification:
-                Notification notification = builder.Build();
 
-                // Get the notification manager:
-                NotificationManager notificationManager =
-                    GetSystemService(Context.NotificationService) as NotificationManager;
+                if (e != null)
+                {
+                    // string SenderKey = e.CustomData["sender"];
 
-                // Publish the notification:
-                const int notificationId = 0;
-                notificationManager.Notify(notificationId, notification);
+                    if (Build.VERSION.SdkInt < BuildVersionCodes.O)
+                    {
+
+                        SendNotification(e.Message, e.Title);
+                    }
+                    else
+                    {
+                        SendNotificationWithChannel(e.Message, e.Title);
+                    }
+                }
+            }
+            catch (System.Exception ex)
+            {
+                Crashes.TrackError(ex, Logic.GetErrorProperties(ex));
             }
         }
 

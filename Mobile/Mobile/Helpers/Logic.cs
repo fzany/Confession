@@ -286,7 +286,7 @@ namespace Mobile.Helpers
             }
         }
 
-        internal static IDictionary<string, string> GetErrorProperties(Exception exc)
+        public static IDictionary<string, string> GetErrorProperties(Exception exc)
         {
             StringBuilder sw = new StringBuilder();
             sw.AppendLine($"********************, { DateTime.UtcNow}");

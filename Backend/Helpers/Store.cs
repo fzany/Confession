@@ -105,19 +105,22 @@ namespace Backend.Helpers
             /// <returns></returns>
             internal static string ProcessMessage(Chat chat)
             {
-                LiteDB.BsonValue newID = contextLite.Chat.Insert(chat);
                 //send notification
                 try
                 {
+                    LiteDB.BsonValue newID = contextLite.Chat.Insert(chat);
+
                     Push.SendChatNotification(chat);
+                    //ChatLoader loader = ChatLoader(chat);
+                    Chat returnChat = contextLite.Chat.FindById(newID);
+                    return JsonConvert.SerializeObject(returnChat);
                 }
                 catch (Exception ex)
                 {
                     var forget_error = hubcontext.Error(ex);
+                    return JsonConvert.SerializeObject(new Chat() { });
                 }
-                //ChatLoader loader = ChatLoader(chat);
-                Chat returnChat = contextLite.Chat.FindById(newID);
-                return JsonConvert.SerializeObject(returnChat);
+
             }
 
             private static List<ChatRoomLoader> ChatRoomLoader(IEnumerable<ChatRoom> result, string userKey)
