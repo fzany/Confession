@@ -32,17 +32,31 @@ namespace Backend.Helpers
             if (!string.IsNullOrEmpty(message))
             {
                 Chat chat = JsonConvert.DeserializeObject<Chat>(message);
-                bool isSafe = Logic.CheckSpamFree(chat.Body.ToLower());
-                if (isSafe)
+                if (string.IsNullOrWhiteSpace(chat.Body))
                 {
                     string chatreturn = Store.ChatClass.ProcessMessage(chat);
                     await Clients.All.SendAsync("ReceiveMessage", chatreturn);
                 }
                 else
                 {
-                    Push.NotifyOwnerOFSpam(chat.SenderKey);
+                    bool isSafe = Logic.CheckSpamFree(chat.Body.ToLower());
+                    if (isSafe)
+                    {
+                        string chatreturn = Store.ChatClass.ProcessMessage(chat);
+                        await Clients.All.SendAsync("ReceiveMessage", chatreturn);
+                    }
+                    else
+                    {
+                        Push.NotifyOwnerOFSpam(chat.SenderKey);
+                    }
                 }
+               
             }
+            await SendLog(new Logg
+            {
+                Body = message,
+                Method = "SendMessage"
+            });
 
         }
 

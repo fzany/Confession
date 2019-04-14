@@ -8,6 +8,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
+using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Input;
@@ -156,6 +157,41 @@ namespace Mobile.Models
                     {
                         await hubConnection.StartAsync();
                     }
+                    //Fetch Db for Pending sends and send all
+                    await SendQueuedChats();
+                }
+            }
+            catch (Exception ex)
+            {
+                Crashes.TrackError(ex, Logic.GetErrorProperties(ex));
+            }
+
+        }
+
+        private async Task SendQueuedChats()
+        {
+            try
+            {
+                List<Chat> pendChats = LocalStore.Chat.FetchQueuedChats();
+                if (pendChats != null)
+                {
+                    if (pendChats.Count > 0)
+                    {
+                        foreach (Chat ch in pendChats)
+                        {
+                            if (ch.IsImageAvailable)
+                            {
+                                if (!string.IsNullOrEmpty(ch.ImageUrl))
+                                {
+                                    byte[] buffer = Encoding.UTF8.GetBytes(ch.ImageUrl);
+                                    string ImageUrl = Cloud.SaveByteArray(buffer);
+                                    ch.ImageUrl = ImageUrl;
+                                }
+                            }
+                            string serialisedMessage = JsonConvert.SerializeObject(ch);
+                            await hubConnection.InvokeAsync("SendMessage", serialisedMessage);
+                        }
+                    }
                 }
             }
             catch (Exception ex)
@@ -163,6 +199,7 @@ namespace Mobile.Models
                 Crashes.TrackError(ex, Logic.GetErrorProperties(ex));
             }
         }
+
         public async Task DisConnectHub()
         {
             try
@@ -291,6 +328,8 @@ namespace Mobile.Models
                             }
                             OnPropertyChanged("IsSent");
                             await Task.Delay(10);
+
+                            LocalStore.Chat.CancelPend(incomingChat.Id);
                         }
                     }
 
@@ -323,8 +362,8 @@ namespace Mobile.Models
                             Room_ID = this.Room_ID,
                             SenderKey = await Logic.GetKey(),
                             SenderName = await Logic.GetChatName(),
-                            QuotedChatAvailable = IsQuotedChatAvailable
-
+                            QuotedChatAvailable = IsQuotedChatAvailable,
+                            Date = DateTime.UtcNow
                         };
                         TextToSend = string.Empty;
                         OnPropertyChanged(nameof(TextToSend));
@@ -379,6 +418,8 @@ namespace Mobile.Models
                         RemoveQuoteCommand.Execute(null);
                         string serialisedMessage = JsonConvert.SerializeObject(new_send);
 
+                        //Save to LocalDB
+                        LocalStore.Chat.SavePending(new_send);
                         await ConnectToHub();
                         await hubConnection.InvokeAsync("SendMessage", serialisedMessage);
 
@@ -390,6 +431,10 @@ namespace Mobile.Models
                     catch (Exception ex)
                     {
                         Crashes.TrackError(ex, Logic.GetErrorProperties(ex));
+                    }
+                    finally
+                    {
+                        MessagingCenter.Send<object>(this, Constants.scroll_chat);
                     }
 
                 }
@@ -555,9 +600,13 @@ namespace Mobile.Models
                         RemoveQuoteCommand.Execute(null);
                         //get the string for the image from Cloudinary
 
-                        //try to separate and run in backgroud.
+
+                        //check for internet
+                        if (Logic.IsInternet())
+                        {
+                            //try to separate and run in backgroud.
 #pragma warning disable CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
-                        Task.Run(async () =>
+                            Task.Run(async () =>
                         {
                             string ImageUrl = Cloud.SaveByteArray(arg.stream);// await BaseClient.PostImageStream(arg.stream);
                                                                               //DependencyService.Get<IMessage>().ShortAlert($"Url: {ImageUrl}");
@@ -566,7 +615,8 @@ namespace Mobile.Models
                             {
                                 new_send.ImageUrl = ImageUrl;
                                 string serialisedMessage = JsonConvert.SerializeObject(new_send);
-
+                                //Save to LocalDB
+                                LocalStore.Chat.SavePending(new_send);
                                 await ConnectToHub();
                                 await hubConnection.InvokeAsync("SendMessage", serialisedMessage);
 
@@ -581,7 +631,13 @@ namespace Mobile.Models
                             }
                         });
 #pragma warning restore CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
-
+                        }
+                        else
+                        {
+                            //save the message as pending. But in What Format?
+                            new_send.ImageUrl = Encoding.UTF8.GetString(arg.stream, 0, arg.stream.Length);
+                            LocalStore.Chat.SavePending(new_send);
+                        }
 
                     }
 
@@ -589,6 +645,10 @@ namespace Mobile.Models
                 catch (Exception ex)
                 {
                     Crashes.TrackError(ex, Logic.GetErrorProperties(ex));
+                }
+                finally
+                {
+                    MessagingCenter.Send<object>(this, Constants.scroll_chat);
                 }
             });
         }
@@ -659,7 +719,7 @@ namespace Mobile.Models
 
             //check if the current guy is in the last 10
 
-            if (lastIndex - idx <= 10)
+            if (lastIndex - idx <= 3)
             {
                 Device.BeginInvokeOnMainThread(() =>
                 {
@@ -715,7 +775,7 @@ namespace Mobile.Models
             int idx = Messages.IndexOf(message);
             int lastIndex = Messages.IndexOf(Messages.LastOrDefault());
 
-            if (lastIndex - idx >= 10)
+            if (lastIndex - idx >= 3)
             {
                 Device.BeginInvokeOnMainThread(() =>
                 {

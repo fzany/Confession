@@ -43,12 +43,10 @@ namespace Mobile
                 introText.Text = $"Hey {chatname}, {Environment.NewLine}This is a new group and I feel you might just want to change your display name. {Environment.NewLine}Do this by typing something below or tap 'Random' to get a random name.{Environment.NewLine}Join the room afterwards to proceed.";
                 introText.IsVisible = true;
                 save_name_button.IsVisible = false;
-                backButton.IsVisible = false;
             }
             else
             {
                 introText.IsVisible = false;
-                backButton.IsVisible = true;
             }
 
         }
@@ -78,6 +76,11 @@ namespace Mobile
             }
             await Logic.CreateChatName(ChatName.Text);
             DependencyService.Get<IMessage>().ShortAlert("Name Updated. ");
+
+            if (item.IamMember)
+            {
+                Navigation.PopModalAsync();
+            }
         }
 
         private async void Join_Clicked(object sender, EventArgs e)
@@ -115,9 +118,6 @@ namespace Mobile
             ChangeLoading(false);
         }
 
-        private void Back_Clicked(object sender, EventArgs e)
-        {
-            Navigation.PopModalAsync();
-        }
+
     }
 }

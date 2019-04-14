@@ -6,13 +6,16 @@ var connection = new signalR.HubConnectionBuilder().withUrl("https://confessback
 document.getElementById("sendButton").disabled = true;
 
 connection.on("ReceiveError", function (message) {
-    debugger;
     var msg = message.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+    var li = document.createElement("li");
+    li.appendChild(document.createTextNode(msg));
     document.getElementById("messagesList").appendChild(li);
 });
 
 connection.on("ReceiveLog", function (message) {
     var msg = message.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+    var li = document.createElement("li");
+    li.appendChild(document.createTextNode(msg));
     document.getElementById("messagesList").appendChild(li);
 });
 

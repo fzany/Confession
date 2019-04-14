@@ -19,12 +19,14 @@ namespace Mobile.Helpers.Local
         public LiteCollection<CommentLoader> CommentLoader => Database.GetCollection<CommentLoader>(typeof(CommentLoader).Name.ToLower());
         public LiteCollection<ChatLoader> ChatLoader => Database.GetCollection<ChatLoader>(typeof(ChatLoader).Name.ToLower());
         public LiteCollection<ChatRoomLoader> ChatRoomLoader => Database.GetCollection<ChatRoomLoader>(typeof(ChatRoomLoader).Name.ToLower());
+        public LiteCollection<Chat> Chat => Database.GetCollection<Chat>(typeof(Chat).Name.ToLower());
 
 
         public LiteCollection<BsonDocument> ConfessRaw => Database.GetCollection<BsonDocument>(typeof(ConfessLoader).Name.ToLower());
         public LiteCollection<BsonDocument> CommentRaw => Database.GetCollection<BsonDocument>(typeof(CommentLoader).Name.ToLower());
-        public LiteCollection<BsonDocument> ChatRaw => Database.GetCollection<BsonDocument>(typeof(ChatLoader).Name.ToLower());
+        public LiteCollection<BsonDocument> ChatLoaderRaw => Database.GetCollection<BsonDocument>(typeof(ChatLoader).Name.ToLower());
         public LiteCollection<BsonDocument> ChatRoomRaw => Database.GetCollection<BsonDocument>(typeof(ChatRoomLoader).Name.ToLower());
+        public LiteCollection<BsonDocument> ChatRaw => Database.GetCollection<BsonDocument>(typeof(Chat).Name.ToLower());
 
     }
 }

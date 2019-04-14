@@ -146,6 +146,13 @@ namespace Mobile.Helpers.Local
                 }
             }
 
+          
+
+            internal static List<Models.Chat> FetchQueuedChats()
+            {
+                return Local.Chat.FindAll().ToList();
+            }
+
             public static ObservableCollection<ChatLoader> FetchByRoomID(string roomID)
             {
                 System.Collections.Generic.IEnumerable<ChatLoader> result = Local.ChatLoader.Find(b => b.Room_ID == roomID);
@@ -156,6 +163,25 @@ namespace Mobile.Helpers.Local
             {
                 Local.ChatLoader.Delete(g => g.ChatId == guid);
             }
+
+            internal static void SavePending(Models.Chat new_send)
+            {
+                try
+                {
+                    Local.Chat.Insert(new_send);
+                }
+                catch (System.Exception ex)
+                {
+                    Crashes.TrackError(ex, Logic.GetErrorProperties(ex));
+                }
+            }
+
+            internal static void CancelPend(string id)
+            {
+                Local.Chat.Delete(d=>d.Id == id);
+            }
+
+          
         }
 
         public static class ChatRoom
@@ -220,17 +246,25 @@ namespace Mobile.Helpers.Local
                         Local.CommentRaw.Delete(comm);
                     }
 
-                    List<BsonDocument> allchat = Local.ChatRaw.FindAll().ToList();
+                    List<BsonDocument> allchat = Local.ChatLoaderRaw.FindAll().ToList();
                     foreach (var chat in allchat)
                     {
-                        Local.ChatRaw.Delete(chat);
+                        Local.ChatLoaderRaw.Delete(chat);
                     }
 
                     List<BsonDocument> allrooms = Local.ChatRoomRaw.FindAll().ToList();
                     foreach (var room in allrooms)
                     {
-                        Local.ChatRoomLoader.Delete(room);
+                        Local.ChatRoomRaw.Delete(room);
                     }
+
+                    List<BsonDocument> allchats = Local.ChatRaw.FindAll().ToList();
+                    foreach (var chat in allchats)
+                    {
+                        Local.ChatRaw.Delete(chat);
+                    }
+
+                   
                 }
                 catch (System.Exception ex)
                 {
@@ -243,10 +277,11 @@ namespace Mobile.Helpers.Local
                 try
                 {
                     double value = 0;
-                    value += Encoding.Unicode.GetByteCount(Local.ConfessLoader.FindAll().ToList().ToString());
-                    value += Encoding.Unicode.GetByteCount(Local.CommentLoader.FindAll().ToList().ToString());
-                    value += Encoding.Unicode.GetByteCount(Local.ChatLoader.FindAll().ToList().ToString());
-                    value += Encoding.Unicode.GetByteCount(Local.ChatRoomLoader.FindAll().ToList().ToString());
+                    value += Encoding.Unicode.GetByteCount(Local.ConfessRaw.FindAll().ToList().ToString());
+                    value += Encoding.Unicode.GetByteCount(Local.CommentRaw.FindAll().ToList().ToString());
+                    value += Encoding.Unicode.GetByteCount(Local.ChatLoaderRaw.FindAll().ToList().ToString());
+                    value += Encoding.Unicode.GetByteCount(Local.ChatRoomRaw.FindAll().ToList().ToString());
+                    value += Encoding.Unicode.GetByteCount(Local.ChatRaw.FindAll().ToList().ToString());
                     return value;
                 }
                 catch (System.Exception ex)

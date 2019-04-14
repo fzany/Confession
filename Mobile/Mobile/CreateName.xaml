@@ -24,14 +24,7 @@
                 <Label FontFamily="{StaticResource Rob}" Text="What you set would be visible in all rooms!" HorizontalOptions="CenterAndExpand" FontSize="Micro"/>
             </StackLayout>
             <ActivityIndicator IsEnabled="False" IsRunning="False" IsVisible="False" x:Name="loadingBox"/>
-            <Grid>
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="Auto"/>
-                    <ColumnDefinition Width="*"/>
-                </Grid.ColumnDefinitions>
-                <Button Text="Go Back" FontSize="25" Grid.Column="0" Margin="0,0,5,0" BackgroundColor="{StaticResource PrimaryDark}" TextColor="White" x:Name="backButton" Clicked="Back_Clicked" VerticalOptions="EndAndExpand" HorizontalOptions="FillAndExpand"/>
-                <Button Text="Join Room" FontSize="25" Grid.Column="1" Margin="0,0,5,0" BackgroundColor="{StaticResource PrimaryDark}" TextColor="White" x:Name="joinButton" Clicked="Join_Clicked" VerticalOptions="EndAndExpand" HorizontalOptions="FillAndExpand"/>
-            </Grid>
+            <Button Text="Join Room" FontSize="25" Margin="0,0,5,0" BackgroundColor="{StaticResource PrimaryDark}" TextColor="White" x:Name="joinButton" Clicked="Join_Clicked" VerticalOptions="EndAndExpand" HorizontalOptions="FillAndExpand"/>
         </StackLayout>
     </ContentPage.Content>
 </ContentPage>
