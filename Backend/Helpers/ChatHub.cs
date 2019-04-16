@@ -149,6 +149,7 @@ namespace Backend.Helpers
             //check for emptiness
             if (!string.IsNullOrEmpty(guid))
             {
+                Store.ChatClass.DeleteChat(guid);
                 await Clients.All.SendAsync("ReceiveDeleteChat", guid);
             }
 

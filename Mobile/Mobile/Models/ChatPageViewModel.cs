@@ -26,6 +26,7 @@ namespace Mobile.Models
         public ICommand MessageAppearingCommand { get; set; }
         public ICommand MessageDisappearingCommand { get; set; }
         public ICommand OnQuoteCommand { get; set; }
+        public ICommand OnDeleteChatCommand { get; set; }
         public ICommand RemoveQuoteCommand { get; set; }
 
         private bool isNoInternet;
@@ -348,6 +349,18 @@ namespace Mobile.Models
 
 
             });
+            hubConnection.On<string>("ReceiveDeleteChat", (message) =>
+            {
+                if (!string.IsNullOrEmpty(message))
+                {
+                    Messages.Remove(Messages.FirstOrDefault(d => d.ChatId == message));
+                    OnPropertyChanged(nameof(Messages));
+                    //update the Ui
+                    //delete locally
+                    LocalStore.Chat.DeleteLoader(message);
+                }
+            });
+
 
             MessageAppearingCommand = new Command<ChatLoader>(OnMessageAppearing);
             MessageDisappearingCommand = new Command<ChatLoader>(OnMessageDisappearing);
@@ -448,6 +461,12 @@ namespace Mobile.Models
                 this.QuotedChat = Messages.First(d => d.ChatId == (string)arg);
             });
 
+            OnDeleteChatCommand = new Command(async (guid) =>
+            {
+                await ConnectToHub();
+                await hubConnection.InvokeAsync("SendDeleteChat", guid);
+                await Task.Delay(10);
+            });
             RemoveQuoteCommand = new Command(() =>
             {
                 this.IsQuotedChatAvailable = false;
@@ -637,7 +656,7 @@ namespace Mobile.Models
                         else
                         {
                             //save the message as pending. But in What Format?
-                            new_send.ImageUrl  =  Encoding.ASCII.GetString(arg.stream);
+                            new_send.ImageUrl = Encoding.ASCII.GetString(arg.stream);
                             LocalStore.Chat.SavePending(new_send);
                         }
 

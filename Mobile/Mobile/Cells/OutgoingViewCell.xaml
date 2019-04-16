@@ -6,8 +6,7 @@
           xmlns:converters="clr-namespace:Mobile.Helpers.Converters"
           x:Class="Mobile.Cells.OutgoingViewCell">
     <ViewCell.ContextActions>
-        <MenuItem Text="Report" Clicked="OnReport" ></MenuItem>
-        <MenuItem Text="Delete" Clicked="OnDelete"></MenuItem>
+        <MenuItem Text="Delete" ClassId="{Binding ChatId}" Clicked="OnDelete"></MenuItem>
     </ViewCell.ContextActions>
     <Grid>
         <Grid.Resources>
@@ -41,7 +40,7 @@
                                 <Grid Grid.Column="1" VerticalOptions="StartAndExpand">
                                     <Grid.RowDefinitions>
                                         <RowDefinition Height="Auto"/>
-                                        <RowDefinition Height="*"/>
+                                        <RowDefinition Height="Auto"/>
                                     </Grid.RowDefinitions>
                                     <Label FontAttributes="Bold" Grid.Row="0" Text="{Binding SenderNameShow}" TextColor="{Binding SenderColor}"/>
                                     <Label Text="{Binding Body}" Grid.Row="1" VerticalOptions="FillAndExpand" TextColor="Gray"/>

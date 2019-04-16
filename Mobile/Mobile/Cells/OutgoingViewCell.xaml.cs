@@ -33,13 +33,18 @@ namespace Mobile.Cells
             }
         }
 
-        private void OnReport(object sender, EventArgs e)
-        {
-
-        }
-
         private void OnDelete(object sender, EventArgs e)
         {
+            MenuItem menuitem = sender as MenuItem;
+            if (menuitem != null)
+            {
+                string chatId = menuitem.ClassId;
+                if (this.Parent.Parent.Parent.BindingContext is ChatPageViewModel parent_page_model)
+                {
+                    parent_page_model.OnDeleteChatCommand.Execute(chatId);
+                }
+            }
+
 
         }
     }
