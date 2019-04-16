@@ -24,7 +24,6 @@ namespace Mobile.Models
         public ICommand OnRefreshCommand { get; set; }
         public ICommand SendGetConfessionsCommand { get; set; }
         public ICommand ConfessAppearingCommand { get; set; }
-        public ICommand RegisterUserCommand { get; set; }
         public event PropertyChangedEventHandler PropertyChanged;
         public string LastShownConfessGuid { get; set; }
 
@@ -118,6 +117,7 @@ namespace Mobile.Models
         public ConfessionViewModel()
         {
             Task forget = ConnectToHub();
+           
             Connectivity.ConnectivityChanged += Connectivity_ConnectivityChangedAsync;
 
             hubConnection.On<string>("ReceiveConfession", (message) =>
@@ -202,114 +202,115 @@ namespace Mobile.Models
             {
                 Task.Run(() =>
                 {
-                    SendGetConfessionsCommand.Execute(null);
+                    LoadData();
                 });
             });
 
-            RegisterUserCommand = new Command(async () =>
-            {
-                try
-                {
-                    if (AppConstants.MakeRegistration)
-                    {
-                        //A first timer would return null
-                        Guid? installId = await AppCenter.GetInstallIdAsync();
-                        string currentkey = await Logic.GetKey();
-
-                        UserData user_data = new UserData
-                        {
-                            AppCenterID = installId.Value.ToString(),
-                            Biometry = false,
-                            ChatRoomNotification = true,
-                            CommentNotification = true,
-                            Logger = Logic.GetDeviceInformation(),
-                            Key = new List<string>() { currentkey }
-                        };
-
-                        try
-                        {
-                            string serialisedMessage = JsonConvert.SerializeObject(user_data);
-                            await ConnectToHub();
-                            await hubConnection.InvokeAsync("SendRegisterUser", serialisedMessage);
-                            await Task.Delay(10);                          
-                        }
-                        catch (Exception ex)
-                        {
-                            Crashes.TrackError(ex, Logic.GetErrorProperties(ex));
-                        }
-                       
-                    }
-
-
-                }
-                catch (Exception ex)
-                {
-                    Crashes.TrackError(ex, Logic.GetErrorProperties(ex));
-                }
-                finally
-                {
-                    IsBusy = false;
-                }
-
-            });
-
-            SendGetConfessionsCommand = new Command(async (art) =>
-            {
-                try
-                {
-                    if (!Logic.IsInternet())
-                    {
-                        await LoadOfflineData();
-                    }
-
-                    else
-                    {
-                        IsBusy = true;
-                        ConfessCaller caller = new ConfessCaller { UserKey = await Logic.GetKey() };
-                        switch (Mode)
-                        {
-                            case LoadMode.None:
-                                {
-                                    caller.FetchAll = true;
-                                    break;
-                                }
-                            case LoadMode.Category:
-                                {
-                                    caller.IsCategory = true;
-                                    caller.Category = CurrentCategory;
-                                    break;
-                                }
-                            case LoadMode.Mine:
-                                {
-                                    caller.FetchMine = true;
-                                    break;
-                                }
-                        }
-
-                        //send to signal r
-                        string serialisedMessage = JsonConvert.SerializeObject(caller);
-                        await ConnectToHub();
-                        await hubConnection.InvokeAsync("SendGetConfessions", serialisedMessage);
-                        await Task.Delay(10);
-                    }
-                }
-                catch (Exception ex)
-                {
-                    Crashes.TrackError(ex, Logic.GetErrorProperties(ex));
-                }
-                finally
-                {
-                    IsBusy = false;
-                }
-            });
+            SendGetConfessionsCommand = new Command(LoadData);
             ConfessAppearingCommand = new Command<ConfessLoader>(OnConfessorAppearing);
 
             Task.Run(() =>
             {
-                SendGetConfessionsCommand.Execute(null);
-                RegisterUserCommand.Execute(null);
+                LoadData();
                 Subscriptions();
             });
+        }
+
+        private async void RegisterUser()
+        {
+            try
+            {
+                if (AppConstants.MakeRegistration)
+                {
+                    //A first timer would return null
+                    Guid? installId = await AppCenter.GetInstallIdAsync();
+                    string currentkey = await Logic.GetKey();
+
+                    UserData user_data = new UserData
+                    {
+                        AppCenterID = installId.Value.ToString(),
+                        Biometry = false,
+                        ChatRoomNotification = true,
+                        CommentNotification = true,
+                        Logger = Logic.GetDeviceInformation(),
+                        Key = new List<string>() { currentkey }
+                    };
+
+                    try
+                    {
+                        string serialisedMessage = JsonConvert.SerializeObject(user_data);
+                        await ConnectToHub();
+                        await hubConnection.InvokeAsync("SendRegisterUser", serialisedMessage);
+                        await Task.Delay(10);
+                    }
+                    catch (Exception ex)
+                    {
+                        Crashes.TrackError(ex, Logic.GetErrorProperties(ex));
+                    }
+
+                }
+
+
+            }
+            catch (Exception ex)
+            {
+                Crashes.TrackError(ex, Logic.GetErrorProperties(ex));
+            }
+            finally
+            {
+                IsBusy = false;
+            }
+        }
+        private async void LoadData()
+        {
+            try
+            {
+                RegisterUser();
+                if (!Logic.IsInternet())
+                {
+                    await LoadOfflineData();
+                }
+
+                else
+                {
+                    IsBusy = true;
+                    ConfessCaller caller = new ConfessCaller { UserKey = await Logic.GetKey() };
+                    switch (Mode)
+                    {
+                        case LoadMode.None:
+                            {
+                                caller.FetchAll = true;
+                                break;
+                            }
+                        case LoadMode.Category:
+                            {
+                                caller.IsCategory = true;
+                                caller.Category = CurrentCategory;
+                                break;
+                            }
+                        case LoadMode.Mine:
+                            {
+                                caller.FetchMine = true;
+                                break;
+                            }
+                    }
+
+                    //send to signal r
+                    string serialisedMessage = JsonConvert.SerializeObject(caller);
+                    await ConnectToHub();
+                    await hubConnection.InvokeAsync("SendGetConfessions", serialisedMessage);
+                    await Task.Delay(10);
+                }
+            }
+            catch (Exception ex)
+            {
+                Crashes.TrackError(ex, Logic.GetErrorProperties(ex));
+            }
+            finally
+            {
+                IsBusy = false;
+            }
+
         }
 
         private void OnConfessorAppearing(ConfessLoader obj)
