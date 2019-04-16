@@ -16,7 +16,7 @@ namespace Backend.Controllers
     [ApiController]
     public class ChatController : ControllerBase
     {
-        private static readonly ChatHub context = new ChatHub();
+        
        
 
         [HttpGet]
@@ -35,7 +35,7 @@ namespace Backend.Controllers
             }
             catch (Exception ex)
             {
-                var forget_error = context.Error(ex);
+                
                 return StatusCode(500, Logic.GetException(ex));
             }
         }
@@ -50,13 +50,12 @@ namespace Backend.Controllers
             {
                 //prepare responses
                 Store.ChatClass.JoinRoom(userKey, id);
-                var forget = context.SendRoomMembership(id);
                 //return data
                 return Ok();
             }
             catch (Exception ex)
             {
-                var forget_error = context.Error(ex);
+                
                 return StatusCode(500, Logic.GetException(ex));
             }
         }
@@ -71,13 +70,12 @@ namespace Backend.Controllers
             {
                 //prepare responses
                 Store.ChatClass.LeaveRoom(userKey, id);
-                var forget = context.SendRoomMembership(id);
                 //return data
                 return Ok();
             }
             catch (Exception ex)
             {
-                var forget_error = context.Error(ex);
+                
                 return StatusCode(500, Logic.GetException(ex));
             }
         }
@@ -99,7 +97,7 @@ namespace Backend.Controllers
             catch (Exception ex)
             {
                 // return StatusCode(500, ex.ToString());
-                var forget_error = context.Error(ex);
+                
                 return StatusCode(500, Logic.GetException(ex));
             }
         }
@@ -117,12 +115,6 @@ namespace Backend.Controllers
             }
             catch (Exception ex)
             {
-                var forget_error = context.Error(ex);
-                var forg = context.SendLog(new Logg
-                {
-                    Body = JsonConvert.SerializeObject(data),
-                    Method = "chat/add"
-                });
                 return StatusCode(500, Logic.GetException(ex));
             }
            
@@ -148,7 +140,7 @@ namespace Backend.Controllers
             }
             catch (Exception ex)
             {
-                var forget_error = context.Error(ex);
+                
                 return StatusCode(500, Logic.GetException(ex));
             }
         }
@@ -166,7 +158,7 @@ namespace Backend.Controllers
             }
             catch (Exception ex)
             {
-                var forget_error = context.Error(ex);
+                
                 return StatusCode(500, Logic.GetException(ex));
             }
         }

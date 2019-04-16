@@ -19,7 +19,6 @@ namespace Mobile
         public CommentPage()
         {
             InitializeComponent();
-
         }
 
         public CommentPage(string _guid, string _name)
@@ -73,31 +72,26 @@ namespace Mobile
                 Label label = (Label)sender;
                 string guid = label.ClassId;
                 current_context.OnDeleteCommentCommand.Execute(guid);
-
-
-            }
-        }
-        private void VibrateNow()
-        {
-            try
-            {
-                // Or use specified time
-                TimeSpan duration = TimeSpan.FromMilliseconds(100);
-                Vibration.Vibrate(duration);
-            }
-            catch (FeatureNotSupportedException ex)
-            {
-                Crashes.TrackError(ex, Logic.GetErrorProperties(ex));
-            }
-            catch (Exception ex)
-            {
-                Crashes.TrackError(ex, Logic.GetErrorProperties(ex));
             }
         }
 
         private void List_View_ItemTapped(object sender, ItemTappedEventArgs e)
         {
             chatInput.UnFocusEntry();
+        }
+
+        private void Like_Tapped(object sender, EventArgs e)
+        {
+            StackLayout stack = (StackLayout)sender;
+            var guid = stack.ClassId;
+            current_context.OnLikeCommentCommand.Execute(guid);
+        }
+
+        private void DisLike_Tapped(object sender, EventArgs e)
+        {
+            StackLayout stack = (StackLayout)sender;
+            var guid = stack.ClassId;
+            current_context.OnDislikeCommentCommand.Execute(guid);
         }
     }
 }

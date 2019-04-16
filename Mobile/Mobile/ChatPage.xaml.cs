@@ -87,7 +87,8 @@ namespace Mobile
                     {
                         while (vm.DelayedMessages.Count > 0)
                         {
-                            vm.Messages.Insert(0, vm.DelayedMessages.Dequeue());
+                            //vm.Messages.Insert(0, vm.DelayedMessages.Dequeue());
+                            vm.Messages.Add(vm.DelayedMessages.Dequeue());
                         }
                         vm.ShowScrollTap = false;
                         vm.LastMessageVisible = true;

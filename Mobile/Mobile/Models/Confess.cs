@@ -1,8 +1,6 @@
 ﻿using Mobile.Helpers;
 using MongoDB.Bson.Serialization.Attributes;
 using System;
-using System.Collections.Generic;
-using System.Text;
 using Xamarin.Forms;
 
 namespace Mobile.Models
@@ -12,7 +10,7 @@ namespace Mobile.Models
         [BsonId]
         [BsonRepresentation(MongoDB.Bson.BsonType.ObjectId)]
         public string Id { get; set; } = MongoDB.Bson.ObjectId.GenerateNewId().ToString();
-        public string Guid { get; set; } = System.Guid.NewGuid().ToString().Replace("-","");
+        public string Guid { get; set; } = System.Guid.NewGuid().ToString().Replace("-", "");
         public string Title { get; set; } = string.Empty;
         public string Body { get; set; } = string.Empty;
         [BsonDateTimeOptions(Kind = DateTimeKind.Utc)]
@@ -40,7 +38,7 @@ namespace Mobile.Models
         public string CommentLogo { get; set; } = Constants.FontAwe.Comments;
         public string Share_Logo { get; set; } = Constants.FontAwe.Share;
 
-       
+
         public Color LikeColor { get; set; }
         public Color DislikeColor { get; set; }
 
@@ -56,5 +54,14 @@ namespace Mobile.Models
     {
         public ConfessLoader Loader { get; set; }
         public bool IsSuccessful { get; set; }
+    }
+    public class ConfessCaller
+    {
+        public string Category { get; set; } = string.Empty;
+        public bool IsCategory { get; set; } = false;
+        public bool FetchMine { get; set; } = false;
+        public bool FetchAll { get; set; } = false;
+        public string UserKey { get; set; }
+        public string LastShownGuid { get; set; } = string.Empty;
     }
 }

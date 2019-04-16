@@ -19,7 +19,6 @@
                   RowHeight="50" RefreshCommand="{Binding OnRefreshCommand}"
                   IsPullToRefreshEnabled="True"
              IsRefreshing="{Binding IsBusy}"
-            CachingStrategy="RecycleElement"
         HasUnevenRows="False" 
                       SeparatorVisibility="None">
             <ListView.Header>

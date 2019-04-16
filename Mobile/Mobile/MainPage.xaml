@@ -34,6 +34,7 @@
                       SeparatorVisibility="None" 
                       HorizontalOptions="FillAndExpand"
                       VerticalOptions="FillAndExpand" 
+                      ItemAppearing="Item_Appearing"
                       ItemSelected="List_View_ItemSelected" 
                       IsRefreshing="{Binding IsBusy}" RefreshCommand="{Binding OnRefreshCommand}"
                   IsPullToRefreshEnabled="True"

@@ -15,7 +15,7 @@ namespace Backend.Controllers
     [ApiController]
     public class DislikeController : ControllerBase
     {
-        private static readonly ChatHub context = new ChatHub();
+        
 
         [HttpGet]
         [Route("dislike/fetch/count")]
@@ -29,7 +29,7 @@ namespace Backend.Controllers
             }
             catch (Exception ex)
             {
-                var forget_error = context.Error(ex);
+                
                 return StatusCode(500, ex.ToString());
             }
         }
@@ -46,7 +46,7 @@ namespace Backend.Controllers
             }
             catch (Exception ex)
             {
-                var forget_error = context.Error(ex);
+                
                 return StatusCode(500, ex.ToString());
             }
         }
@@ -66,7 +66,7 @@ namespace Backend.Controllers
             }
             catch (Exception ex)
             {
-                var forget_error = context.Error(ex);
+                
                 return StatusCode(500, ex.ToString());
             }
         }

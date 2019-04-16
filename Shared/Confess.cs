@@ -47,4 +47,14 @@ namespace Shared
         public ConfessLoader Loader { get; set; }
         public bool IsSuccessful { get; set; }
     }
+    public class ConfessCaller
+    {
+        public string Category { get; set; } = string.Empty;
+        public bool IsCategory { get; set; } = false;
+        public bool FetchMine { get; set; } = false;
+        public bool FetchAll { get; set; } = false;
+        public string UserKey { get; set; }
+        public string LastShownGuid { get; set; } = string.Empty;
+
+    }
 }

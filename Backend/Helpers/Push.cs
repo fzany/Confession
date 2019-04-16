@@ -114,10 +114,10 @@ namespace Backend.Helpers
             }
         }
 
-        internal static async void SendCommentNotification(CommentPoster data)
+        internal static async void SendCommentNotification(Comment data)
         {
             //get the owner of the comment
-            UserData owner = Store.UserClass.FetchByConfessGuid(data.ConfessGuid);
+            UserData owner = Store.UserClass.FetchByConfessGuid(data.Confess_Guid);
             if (owner != null)
             {
                 if (!string.IsNullOrEmpty(owner.AppCenterID))
@@ -128,12 +128,12 @@ namespace Backend.Helpers
                         notification_content = new NotificationContent()
                         {
                             title = $"New Comment 📨!",
-                            body = data.Comment.Body,
+                            body = data.Body,
                             name = Guid.NewGuid().ToString().Replace("-", ""),
-                            custom_data = new Dictionary<string, string> { { "key1", data.ConfessGuid },
-                     { "key2", data.Comment.Id },
+                            custom_data = new Dictionary<string, string> { { "key1", data.Confess_Guid },
+                     { "key2", data.Id },
                      { "type", "Comment" },
-                     { "sender", data.Comment.Owner_Guid }}
+                     { "sender", data.Owner_Guid }}
 
 
 
@@ -167,6 +167,45 @@ namespace Backend.Helpers
 
         }
 
+        internal static async void NotifyOwnerOfCommentLike(string commentGuid, string confessGuid)
+        {
+            //Fetch the confession
+            var confession = Store.ConfessClass.FetchOneConfessByGuid(confessGuid);
+            //Fetch the Comment 
+            Comment comment = Store.CommentClass.FetchOneCommentByGuid(commentGuid);
+            //Fetch the owner
+            var owner = Store.UserClass.FetchUserByID(comment.Owner_Guid);
+            //send notification to the owner if exist appcenterid
+            if (owner != null)
+            {
+                if (!string.IsNullOrEmpty(owner.AppCenterID))
+                {
+                    //send notification to this user.
+                    PushToDevices dataToPush = new PushToDevices()
+                    {
+                        notification_content = new NotificationContent()
+                        {
+                            title = $"Someone 👍 your comment!",
+                            body = $"{comment.Body} on {confession.Title}",
+                            name = Guid.NewGuid().ToString().Replace("-", ""),
+                            custom_data = new Dictionary<string, string> { { "key1", comment.Owner_Guid },
+                     { "type", "Like" },
+                     { "sender", comment.Owner_Guid }
+                            }
+
+
+
+                        },
+                        notification_target = new NotificationTarget()
+                        {
+                            devices = new List<string>() { owner.AppCenterID }
+                        }
+                    };
+                    await PushToServer(dataToPush);
+                }
+            }
+
+        }
     }
 
     public class NotificationContent

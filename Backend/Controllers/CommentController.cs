@@ -11,7 +11,7 @@ namespace Backend.Controllers
     [ApiController]
     public class CommentController : ControllerBase
     {
-        private static readonly ChatHub context = new ChatHub();
+        
 
 
         [HttpGet]
@@ -26,7 +26,7 @@ namespace Backend.Controllers
             }
             catch (Exception ex)
             {
-                var forget_error = context.Error(ex);
+                
                 return "0";
             }
         }
@@ -44,7 +44,7 @@ namespace Backend.Controllers
             }
             catch (Exception ex)
             {
-                var forget_error = context.Error(ex);
+                
                 return new List<CommentLoader>() { };
             }
         }
@@ -59,7 +59,7 @@ namespace Backend.Controllers
                 if (isSafe)
                 {
                     Store.CommentClass.CreateComment(data);
-                    Push.SendCommentNotification(data);
+                    Push.SendCommentNotification(data.Comment);
                 }
                 else
                 {
@@ -72,7 +72,7 @@ namespace Backend.Controllers
             }
             catch (Exception ex)
             {
-                var forget_error = context.Error(ex);
+                
                 return new ConfessLoader() { };
             }
         }
@@ -89,7 +89,7 @@ namespace Backend.Controllers
             }
             catch (Exception ex)
             {
-                var forget_error = context.Error(ex);
+                
                 return new ConfessLoader() { };
             }
         }

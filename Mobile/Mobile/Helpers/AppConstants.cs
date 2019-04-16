@@ -141,6 +141,20 @@ namespace Mobile.Helpers
             }
         }
 
+        private static int _makeRegistration;
+        public static bool MakeRegistration
+        {
+            get
+            {
+                _makeRegistration++;
+                if (_makeRegistration == 1)
+                {
+                    return true;
+                }
+                return false;
+            }
+        }
+
         private static string _activityID;
 
         public static double SwipeValue { get; set; }

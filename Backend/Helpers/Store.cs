@@ -10,7 +10,7 @@ namespace Backend.Helpers
     public class Store
     {
         private static readonly ChatHub hubcontext = new ChatHub();
-        
+
         private static readonly DataContext context = new DataContext();
         private static readonly DataContextLite contextLite = new DataContextLite();
 
@@ -88,7 +88,45 @@ namespace Backend.Helpers
                 return contextLite.UserData.FindOne(d => d.Key[0] == confessOwnerID);
             }
 
+            internal static void RegisterOrUpdate(UserData data)
+            {
+                //fetch the current user. 
+                UserData user_data = FetchUser(data.Key[0], data.AppCenterID);
+                //A first timer would return null
+                if (user_data == null || string.IsNullOrEmpty(user_data.AppCenterID) || user_data.Logger == null || user_data.Key == null)
+                {
+                    //means a new user; 
+                    //Add user to the db
+                    user_data = new UserData
+                    {
+                        AppCenterID = data.AppCenterID,
+                        Biometry = false,
+                        ChatRoomNotification = true,
+                        CommentNotification = true,
+                        Logger = data.Logger
+                    };
+                    //specially treat keys to prevent loss. 
+                    if (user_data.Key == null || user_data.Key.Count == 0)
+                    {
+                        user_data.Key = data.Key;
+                    }
+                    else
+                    {
+                        if (!user_data.Key.Contains(data.Key[0]))
+                        {
+                            user_data.Key.Insert(0, data.Key[0]);
+                        }
+                    }
 
+                    AddUser(user_data);
+                }
+                else
+                {
+                    //An existing user would have all data complete but things might have changed
+                    //Note that anything that change like key and token would have been re-created
+                    //appcenter id too can change. 
+                }
+            }
         }
 
         public static class ChatClass
@@ -117,7 +155,7 @@ namespace Backend.Helpers
                 }
                 catch (Exception ex)
                 {
-                    var forget_error = hubcontext.Error(ex);
+                    System.Threading.Tasks.Task forget_error = hubcontext.Error(ex);
                     return JsonConvert.SerializeObject(new Chat() { });
                 }
 
@@ -305,8 +343,8 @@ namespace Backend.Helpers
                 //clear the chatdb
                 //clear the members in the groups
                 //clear the fake user
-                var chats = contextLite.Chat.FindAll().ToList();
-                foreach(var chat in chats)
+                List<Chat> chats = contextLite.Chat.FindAll().ToList();
+                foreach (Chat chat in chats)
                 {
                     contextLite.Chat.Delete(chat.Id);
                 }
@@ -459,7 +497,7 @@ namespace Backend.Helpers
                     catch (Exception ex)
                     {
 
-                        var forget_error = hubcontext.Error(ex);
+                        System.Threading.Tasks.Task forget_error = hubcontext.Error(ex);
                     }
                     return migrator;
                 }
@@ -568,7 +606,7 @@ namespace Backend.Helpers
                 }
                 catch (Exception ex)
                 {
-                    var forget_error = hubcontext.Error(ex);
+                    System.Threading.Tasks.Task forget_error = hubcontext.Error(ex);
                     return new List<ConfessLoader>();
                 }
             }
@@ -684,6 +722,41 @@ namespace Backend.Helpers
                 loaders.OrderByDescending(d => d.DateReal);
                 return loaders;
             }
+
+            private static CommentLoader GetLoader(Comment dt, string key)
+            {
+
+                CommentLoader loader = new CommentLoader
+                {
+                    Body = dt.Body,
+                    Date = Shared.TimeAgo.Ago(dt.Date),// $"{CultureInfo.CurrentCulture.DateTimeFormat.GetAbbreviatedDayName(dt.Date.DayOfWeek)}, {CultureInfo.CurrentCulture.DateTimeFormat.GetAbbreviatedMonthName(dt.Date.Month)} {dt.Date.Day}, {dt.Date.Year} {dt.Date.ToShortTimeString()}",
+                    DisLikes = DislikeClass.GetCount(dt.Guid, true),
+                    DateReal = dt.Date,
+                    Likes = LikeClass.GetCount(dt.Guid, true),
+                    Guid = dt.Guid,
+                    Owner_Guid = dt.Owner_Guid,
+                    Quote = dt.Quote,
+                    QuotedCommentAvailable = dt.QuotedCommentAvailable,
+                    Confess_Guid = dt.Confess_Guid
+                };
+                //load colors
+                if (LikeClass.CheckExistence(dt.Guid, true, key))
+                {
+                    loader.LikeColorString = "#1976D2";
+                }
+
+                if (DislikeClass.CheckExistence(dt.Guid, true, key))
+                {
+                    loader.DislikeColorString = "#1976D2";
+                }
+                if (dt.Owner_Guid == key)
+                {
+                    loader.DeleteVisibility = true;
+                }
+
+                return loader;
+            }
+
             public static void DeleteComment(string guid)
             {
                 contextLite.Comment.Delete(d => d.Guid == guid);
@@ -754,6 +827,23 @@ namespace Backend.Helpers
                     SeenClass.Post(guid, key);
                 }
                 return GetLoader(data, key);
+            }
+
+            internal static void InsertComment(Comment data)
+            {
+                data.Id = Logical.Setter(data.Id);
+                contextLite.Comment.Insert(data);
+            }
+
+            internal static CommentLoader FetchOneCommentLoader(Comment comment)
+            {
+                Comment query = contextLite.Comment.FindOne(d => d.Guid == comment.Guid);
+                return GetLoader(query, comment.Owner_Guid);
+            }
+
+            internal static Comment FetchOneCommentByGuid(string commentGuid)
+            {
+               return contextLite.Comment.FindOne(d => d.Guid == commentGuid);
             }
         }
 

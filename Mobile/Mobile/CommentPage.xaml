@@ -28,17 +28,17 @@
                        IsRefreshing="{Binding IsBusy}"
                         HasUnevenRows="True" SeparatorVisibility="None"
                       ItemTapped="List_View_ItemTapped"
-                          CachingStrategy="RecycleElement"
+                          
                         SelectionMode="None">
                 <ListView.ItemTemplate>
                     <DataTemplate>
                         <ViewCell>
-                            <StackLayout>
-                                <local:DraggableView  VerticalOptions="CenterAndExpand" BackgroundColor="Transparent" 
+                            <Frame CornerRadius="5" Margin="3" Padding="3">
+                                <StackLayout Spacing="0">
+                                    <local:DraggableView  VerticalOptions="CenterAndExpand" BackgroundColor="Transparent" 
            DragMode="Touch" DragDirection="Horizontal" ClassId="{Binding Guid}" DragEnd="dragView_DragEnd">
-                                    <local:DraggableView.Content>
-                                        <Frame CornerRadius="5" Margin="3" Padding="3">
-                                            <StackLayout Spacing="1" Margin="3" Padding="3">
+                                        <local:DraggableView.Content>
+                                            <StackLayout Spacing="1" Margin="3,0" Padding="3">
                                                 <Frame IsVisible="{Binding QuotedCommentAvailable}" CornerRadius="5" Padding="0" HasShadow="False">
                                                     <Grid BindingContext="{Binding Quote}" BackgroundColor="{StaticResource PrimaryGray}">
                                                         <Grid.ColumnDefinitions>
@@ -49,91 +49,55 @@
                                                         <Label Text="{Binding Body}"  Grid.Column="1" TextColor="Gray"/>
                                                     </Grid>
                                                 </Frame>
-
                                                 <Label Text="{Binding Body}" HorizontalOptions="StartAndExpand" VerticalOptions="FillAndExpand" FontFamily="{StaticResource Rob}"/>
-                                                <StackLayout Orientation="Horizontal">
-                                                    <Grid HorizontalOptions="StartAndExpand">
-                                                        <Grid.Resources>
-                                                            <Style TargetType="Label">
-                                                                <Setter Property="VerticalOptions" Value="CenterAndExpand" />
-                                                                <Setter Property="FontSize" Value="Large"/>
-                                                            </Style>
-                                                        </Grid.Resources>
-                                                        <Grid.ColumnDefinitions>
-                                                            <ColumnDefinition Width="Auto"/>
-                                                            <ColumnDefinition Width="Auto"/>
-                                                            <ColumnDefinition Width="Auto"/>
-                                                        </Grid.ColumnDefinitions>
-                                                        <StackLayout  Orientation="Horizontal"  Grid.Column="0"  ClassId="{Binding Guid}">
-                                                            <Label  FontFamily="{StaticResource FSolid}" Text="{Binding LikesLogo}" ClassId="{Binding Guid}" TextColor="{Binding LikeColor}"/>
-                                                            <Label Text="{Binding Likes}" FontFamily="{StaticResource Rob}"/>
-                                                            <StackLayout.GestureRecognizers>
-                                                                <TapGestureRecognizer NumberOfTapsRequired="1" Command="{Binding OnLikeCommentCommand}" CommandParameter="{Binding Guid}"/>
-                                                            </StackLayout.GestureRecognizers>
-                                                        </StackLayout>
-                                                        <StackLayout Orientation="Horizontal"  Grid.Column="1"  ClassId="{Binding Guid}">
-                                                            <Label  FontFamily="{StaticResource FSolid}" Text="{Binding DisLikesLogo}" TextColor="{Binding DislikeColor}"/>
-                                                            <Label Text="{Binding DisLikes}" FontFamily="{StaticResource Rob}"/>
-                                                            <StackLayout.GestureRecognizers>
-                                                                <TapGestureRecognizer NumberOfTapsRequired="1" Command="{Binding OnDislikeCommentCommand}" CommandParameter="{Binding Guid}"/>
-                                                            </StackLayout.GestureRecognizers>
-                                                        </StackLayout>
-                                                        <Label  FontFamily="{StaticResource FSolid}" Text="{Binding DeleteLogo}" IsVisible="{Binding DeleteVisibility}" ClassId="{Binding Guid}" Grid.Column="2">
-                                                            <Label.GestureRecognizers>
-                                                                <TapGestureRecognizer NumberOfTapsRequired="1" Tapped="Delete_t_Comment"/>
-                                                            </Label.GestureRecognizers>
-                                                        </Label>
-                                                    </Grid>
-                                                    <Frame CornerRadius="5" Padding="4,0" BackgroundColor="Transparent" VerticalOptions="CenterAndExpand" HorizontalOptions="EndAndExpand">
-                                                        <Label Text="{Binding Date}" TextColor="Gray" FontFamily="{StaticResource Rob}" FontAttributes="Italic" />
-                                                    </Frame>
-                                                </StackLayout>
                                             </StackLayout>
+                                        </local:DraggableView.Content>
+                                    </local:DraggableView>
+                                    <StackLayout Orientation="Horizontal" Margin="3,0" Padding="3">
+                                        <Grid HorizontalOptions="StartAndExpand">
+                                            <Grid.Resources>
+                                                <Style TargetType="Label">
+                                                    <Setter Property="VerticalOptions" Value="CenterAndExpand" />
+                                                    <Setter Property="FontSize" Value="Large"/>
+                                                </Style>
+                                            </Grid.Resources>
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="Auto"/>
+                                                <ColumnDefinition Width="Auto"/>
+                                                <ColumnDefinition Width="Auto"/>
+                                            </Grid.ColumnDefinitions>
+                                            <StackLayout  Orientation="Horizontal"  Grid.Column="0"  ClassId="{Binding Guid}">
+                                                <Label  FontFamily="{StaticResource FSolid}" Text="{Binding LikesLogo}" ClassId="{Binding Guid}" TextColor="{Binding LikeColor}"/>
+                                                <Label Text="{Binding Likes}" FontFamily="{StaticResource Rob}"/>
+                                                <StackLayout.GestureRecognizers>
+                                                    <TapGestureRecognizer NumberOfTapsRequired="1" Tapped="Like_Tapped"/>
+                                                </StackLayout.GestureRecognizers>
+                                            </StackLayout>
+                                            <StackLayout Orientation="Horizontal"  Grid.Column="1"  ClassId="{Binding Guid}">
+                                                <Label  FontFamily="{StaticResource FSolid}" Text="{Binding DisLikesLogo}" TextColor="{Binding DislikeColor}"/>
+                                                <Label Text="{Binding DisLikes}" FontFamily="{StaticResource Rob}"/>
+                                                <StackLayout.GestureRecognizers>
+                                                    <TapGestureRecognizer NumberOfTapsRequired="1" Tapped="DisLike_Tapped"/>
+                                                </StackLayout.GestureRecognizers>
+                                            </StackLayout>
+                                            <Label  FontFamily="{StaticResource FSolid}" Text="{Binding DeleteLogo}" IsVisible="{Binding DeleteVisibility}" ClassId="{Binding Guid}" Grid.Column="2">
+                                                <Label.GestureRecognizers>
+                                                    <TapGestureRecognizer NumberOfTapsRequired="1" Tapped="Delete_t_Comment"/>
+                                                </Label.GestureRecognizers>
+                                            </Label>
+                                        </Grid>
+                                        <Frame CornerRadius="5" Padding="4,0" BackgroundColor="Transparent" VerticalOptions="CenterAndExpand" HorizontalOptions="EndAndExpand">
+                                            <Label Text="{Binding Date}" TextColor="Gray" FontFamily="{StaticResource Rob}" FontAttributes="Italic" />
                                         </Frame>
-                                    </local:DraggableView.Content>
-                                </local:DraggableView>
-                                <local:AdmobControl AdUnitId="ca-app-pub-4507736790505069/8783931635" IsVisible="{Binding IsAdVisible}" HorizontalOptions="CenterAndExpand"/>
-                            </StackLayout>
+                                    </StackLayout>
+                                    <local:AdmobControl AdUnitId="ca-app-pub-4507736790505069/8783931635" IsVisible="{Binding IsAdVisible}" HorizontalOptions="CenterAndExpand"/>
+                                </StackLayout>
+                            </Frame>
                         </ViewCell>
                     </DataTemplate>
                 </ListView.ItemTemplate>
             </ListView>
             <cells:CommentInputBarView Grid.Row="4" Margin="0,10,0,0" x:Name="chatInput"/>
-            <!--<StackLayout Margin="0,10,0,0" Grid.Row="4">
-                <Frame IsVisible="{Binding IsQuotedCommentAvailable}" CornerRadius="5" Padding="0" HasShadow="False">
-                    <Grid BindingContext="{Binding QuotedComment}" BackgroundColor="{StaticResource PrimaryGray}">
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="Auto" />
-                            <ColumnDefinition Width="*" />
-                            <ColumnDefinition Width="Auto" />
-                        </Grid.ColumnDefinitions>
-                        <BoxView Color="{Binding SenderColor}" WidthRequest="4" VerticalOptions="FillAndExpand" Grid.Column="0"/>
-                        <Label Text="{Binding Body}" Grid.Column="1" VerticalOptions="FillAndExpand" TextColor="Gray"/>
-                        <Frame CornerRadius="5" Padding="4"  Margin="0,0,5,0" Grid.Column="2" BackgroundColor="Transparent" VerticalOptions="StartAndExpand" HorizontalOptions="EndAndExpand">
-                            <Label x:Name="Delete_Quote_Label" ClassId="{Binding Guid}" FontFamily="{StaticResource FSolid}" TextColor="Gray" FontSize="Medium">
-                                <Label.GestureRecognizers>
-                                    <TapGestureRecognizer NumberOfTapsRequired="1" Tapped="Delete_Quote_Tapped"/>
-                                </Label.GestureRecognizers>
-                            </Label>
-                        </Frame>
-                    </Grid>
-                </Frame>
-                <Grid>
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="*"/>
-                        <ColumnDefinition Width="Auto"/>
-                    </Grid.ColumnDefinitions>
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="Auto" />
-                    </Grid.RowDefinitions>
-                    <Editor Placeholder="Comment here." FontFamily="{StaticResource Rob}" x:Name="comment_Input" Text="{Binding TextToSend}" Grid.Column="0" Grid.Row="0"/>
-                    <Label Text="Send" Grid.Row="0" Grid.Column="1" VerticalTextAlignment="Center">
-                        <Label.GestureRecognizers>
-                            <TapGestureRecognizer Command="{Binding OnSendCommand}"/>
-                        </Label.GestureRecognizers>
-                    </Label>
-                </Grid>
-            </StackLayout>-->
         </Grid>
     </ContentPage.Content>
 </ContentPage>

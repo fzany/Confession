@@ -55,4 +55,13 @@ namespace Shared
         public string Key { get; set; } = string.Empty;
         public string ConfessGuid { get; set; } = string.Empty;
     }
+    public class CommentSender
+    {
+        public string CommentGuid { get; set; }
+        public string Key { get; set; } = string.Empty;
+        public bool IsComment { get; set; }
+        public string ConfessGuid { get; set; } = string.Empty;
+        public string Count { get; set; }
+
+    }
 }

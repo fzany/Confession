@@ -1,12 +1,15 @@
 ﻿using Microsoft.AppCenter.Crashes;
+using Microsoft.AspNetCore.SignalR.Client;
 using Mobile.Helpers;
 using Mobile.Helpers.Local;
+using Newtonsoft.Json;
 using System;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Input;
+using Xamarin.Essentials;
 using Xamarin.Forms;
 
 namespace Mobile.Models
@@ -15,7 +18,6 @@ namespace Mobile.Models
     {
         public event PropertyChangedEventHandler PropertyChanged;
         public ObservableCollection<CommentLoader> Loaders { get; set; } = new ObservableCollection<CommentLoader>();
-        public ConfessLoader newloader { get; set; }
 
         public string TextToSend { get; set; }
 
@@ -86,9 +88,197 @@ namespace Mobile.Models
             }
         }
 
+        private HubConnection hubConnection;
+        public async Task ConnectToHub()
+        {
+            try
+            {
+                if (Logic.IsInternet())
+                {
+                    if (!IsHubConnected())
+                    {
+                        await hubConnection.StartAsync();
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Crashes.TrackError(ex, Logic.GetErrorProperties(ex));
+            }
+        }
+        public async Task DisConnectHub()
+        {
+            try
+            {
+                if (hubConnection == null)
+                { ResetConnection(); }
+                await hubConnection.StopAsync();
+            }
+            catch (Exception ex)
+            {
+                Crashes.TrackError(ex, Logic.GetErrorProperties(ex));
+            }
+        }
+        public bool IsHubConnected()
+        {
+            try
+            {
+                if (hubConnection == null)
+                { ResetConnection(); }
+                HubConnectionState state = hubConnection.State;
+                return state == HubConnectionState.Connected;
+            }
+            catch (Exception ex)
+            {
+                Crashes.TrackError(ex, Logic.GetErrorProperties(ex));
+                return false;
+            }
+        }
 
+        private void ResetConnection()
+        {
+            hubConnection = new HubConnectionBuilder()
+                .WithUrl("https://confessbackend.azurewebsites.net/chatHub")
+                .Build();
+        }
         public CommentViewModel()
         {
+            #region Signal
+            Connectivity.ConnectivityChanged += Connectivity_ConnectivityChangedAsync;
+            ResetConnection();
+
+            hubConnection.On<string>("ReceiveAddComment", (message) =>
+            {
+                try
+                {
+                    CommentLoader load = JsonConvert.DeserializeObject<CommentLoader>(message);
+                    //filter
+                    if (!string.IsNullOrEmpty(load.LikeColorString))
+                    {
+                        load.LikeColor = Color.FromHex(load.LikeColorString);
+                    }
+
+                    if (!string.IsNullOrEmpty(load.DislikeColorString))
+                    {
+                        load.DislikeColor = Color.FromHex(load.DislikeColorString);
+                    }
+                    Device.BeginInvokeOnMainThread(() =>
+                    {
+                        Loaders.Add(load);
+                    });
+                    OnPropertyChanged(nameof(Loaders));
+
+                    //save to local db
+                    LocalStore.Comment.SaveLoader(load);
+
+                    //maybe scroll down
+
+                }
+
+                catch (Exception ex)
+                {
+                    Crashes.TrackError(ex, Logic.GetErrorProperties(ex));
+                }
+            });
+
+            hubConnection.On<string>("ReceiveLikeComment", async (message) =>
+            {
+                try
+                {
+                    if (!string.IsNullOrEmpty(message))
+                    {
+                        CommentSender incoming = JsonConvert.DeserializeObject<CommentSender>(message);
+                        //update the model
+                        if (Loaders.Any(d => d.Guid == incoming.CommentGuid))
+                        {
+                            int index = Loaders.IndexOf(Loaders.FirstOrDefault(d => d.Guid == incoming.CommentGuid));
+                            CommentLoader replacer = Loaders.FirstOrDefault(d => d.Guid == incoming.CommentGuid);
+                            replacer.Likes = incoming.Count;
+                            //mark it blue if I am the one that liked
+                            if (incoming.Key == await Logic.GetKey())
+                            {
+                                replacer.LikeColorString = "#1976D2";
+                                replacer.LikeColor = Color.FromHex("#1976D2");
+                            }
+                            else { Logic.VibrateNow(); }
+                            Loaders.RemoveAt(index);
+                            Loaders.Insert(index, replacer);
+
+                            //notify UI
+                            OnPropertyChanged(nameof(Loaders));
+                            //update the db
+                            LocalStore.Comment.UpdateLoader(replacer);
+                        }
+
+                    }
+                }
+
+                catch (Exception ex)
+                {
+                    Crashes.TrackError(ex, Logic.GetErrorProperties(ex));
+                }
+            });
+
+            hubConnection.On<string>("ReceiveDislikeComment", async (message) =>
+            {
+                try
+                {
+                    if (!string.IsNullOrEmpty(message))
+                    {
+                        CommentSender incoming = JsonConvert.DeserializeObject<CommentSender>(message);
+                        //update the model
+                        if (Loaders.Any(d => d.Guid == incoming.CommentGuid))
+                        {
+                            int index = Loaders.IndexOf(Loaders.FirstOrDefault(d => d.Guid == incoming.CommentGuid));
+                            CommentLoader replacer = Loaders.FirstOrDefault(d => d.Guid == incoming.CommentGuid);
+                            replacer.DisLikes = incoming.Count;
+                            //mark it blue if I am the one that liked
+                            if (incoming.Key == await Logic.GetKey())
+                            {
+                                replacer.DislikeColorString = "#1976D2";
+                                replacer.DislikeColor = Color.FromHex("#1976D2");
+                            }
+                            else { Logic.VibrateNow(); }
+                            Loaders.RemoveAt(index);
+                            Loaders.Insert(index, replacer);
+
+                            //notify UI
+                            OnPropertyChanged(nameof(Loaders));
+                            //update the db
+                            LocalStore.Comment.UpdateLoader(replacer);
+                        }
+
+                    }
+                }
+
+                catch (Exception ex)
+                {
+                    Crashes.TrackError(ex, Logic.GetErrorProperties(ex));
+                }
+            });
+
+            hubConnection.On<string>("ReceiveDeleteComment", (message) =>
+            {
+                try
+                {
+                    //delete from model
+                    if (!string.IsNullOrEmpty(message))
+                    {
+                        Loaders.Remove(Loaders.FirstOrDefault(d=>d.Guid == message));
+                        OnPropertyChanged(nameof(Loaders));
+
+                        //remove from db
+                        LocalStore.Comment.DeleteLoader(message);
+                    }
+                }
+
+                catch (Exception ex)
+                {
+                    Crashes.TrackError(ex, Logic.GetErrorProperties(ex));
+                }
+            });
+            #endregion
+
 
             OnLikeCommentCommand = new Command(async (arg) =>
             {
@@ -104,7 +294,7 @@ namespace Mobile.Models
                     {
                         load = Loaders.FirstOrDefault(d => d.Guid.Equals(guid));
                     }
-                    //check if this user owns this confession
+                    //check if this user owns this comment
 
 
                     if (load.Owner_Guid == await Logic.GetKey())
@@ -116,26 +306,27 @@ namespace Mobile.Models
                         //post a new like 
                         try
                         {
-                            ConfessSender result = await Store.LikeClass.Post(guid, true, Confess_Guid);
-
-                            ConfessLoader data = Logic.ProcessConfessLoader(result.Loader);
-                            MessagingCenter.Send<object, ConfessLoader>(this, Constants.ReloadViewPage, data);
-
-                            Task.Run(async () =>
-                             {
-                                 await LoadData();
-                             });
-
-                            if (!result.IsSuccessful)
+                            IsBusy = true;
+                            CommentSender sender = new CommentSender
                             {
-                                //update the model
-                                Logic.VibrateNow();
-                            }
-
+                                CommentGuid = guid,
+                                IsComment = true,
+                                ConfessGuid = Confess_Guid,
+                                Key = await Logic.GetKey()
+                            };
+                            //send to signal r
+                            string serialisedMessage = JsonConvert.SerializeObject(sender);
+                            await ConnectToHub();
+                            await hubConnection.InvokeAsync("SendLikeComment", serialisedMessage);
+                            await Task.Delay(10);
                         }
                         catch (Exception ex)
                         {
                             Crashes.TrackError(ex, Logic.GetErrorProperties(ex));
+                        }
+                        finally
+                        {
+                            IsBusy = false;
                         }
                     }
                 }
@@ -154,8 +345,7 @@ namespace Mobile.Models
                 {
                     load = Loaders.FirstOrDefault(d => d.Guid.Equals(guid));
                 }
-                //check if this user owns this confession
-
+                //check if this user owns this comment
 
                 if (load.Owner_Guid == await Logic.GetKey())
                 {
@@ -163,31 +353,30 @@ namespace Mobile.Models
                 }
                 else
                 {
-                    //post a new like 
+                    //post a new dislike 
                     try
                     {
-                        ConfessSender result = await Store.DislikeClass.Post(guid, true, Confess_Guid);
-                        ConfessLoader data = Logic.ProcessConfessLoader(result.Loader);
-
-                        //ViewPage viewPage = new ViewPage()
-                        //{
-                        //    BindingContext = data
-                        //};
-
-                        Task.Run(async () =>
+                        IsBusy = true;
+                        CommentSender sender = new CommentSender
                         {
-                            await LoadData();
-                        });
-                        if (!result.IsSuccessful)
-                        {
-                            Logic.VibrateNow();
-                        }
-                        MessagingCenter.Send<object, ConfessLoader>(this, Constants.ReloadViewPage, data);
-
+                            CommentGuid = guid,
+                            IsComment = true,
+                            ConfessGuid = Confess_Guid,
+                            Key = await Logic.GetKey()
+                        };
+                        //send to signal r
+                        string serialisedMessage = JsonConvert.SerializeObject(sender);
+                        await ConnectToHub();
+                        await hubConnection.InvokeAsync("SendDislikeComment", serialisedMessage);
+                        await Task.Delay(10);
                     }
                     catch (Exception ex)
                     {
                         Crashes.TrackError(ex, Logic.GetErrorProperties(ex));
+                    }
+                    finally
+                    {
+                        IsBusy = false;
                     }
                 }
             });
@@ -195,33 +384,26 @@ namespace Mobile.Models
             {
                 try
                 {
+                    IsBusy = true;
                     string guid = (string)arg;
-                    newloader = await Store.CommentClass.DeleteComment(guid, Confess_Guid);
-                    if (newloader != null)
-                    {
-                        ConfessLoader data = Logic.ProcessConfessLoader(newloader);
-                        MessagingCenter.Send<object, ConfessLoader>(this, Constants.ReloadViewPage, data);
 
-                        //ViewPage viewPage = new ViewPage()
-                        //{
-                        //    BindingContext = data
-                        //};
-                    };
+                    //send to signal r
+                    await ConnectToHub();
+                    await hubConnection.InvokeAsync("SendDeleteComment", guid);
+                    await Task.Delay(10);
                     RemoveQuoteCommand.Execute(null);
-                    Task.Run(async () =>
-                    {
-                        await LoadData();
-                    });
-                    Logic.VibrateNow();
+                    DependencyService.Get<IMessage>().ShortAlert("Deleted");
+
                 }
                 catch (Exception ex)
                 {
                     Crashes.TrackError(ex, Logic.GetErrorProperties(ex));
                 }
-                DependencyService.Get<IMessage>().ShortAlert("Deleted");
+                finally
+                {
+                    IsBusy = false;
+                }
             });
-
-
             OnSendCommand = new Command(async () =>
             {
 
@@ -238,6 +420,7 @@ namespace Mobile.Models
                 }
                 try
                 {
+                    IsBusy = true;
                     Comment newComment = new Comment()
                     {
                         Body = TextToSend.Trim(),
@@ -255,25 +438,29 @@ namespace Mobile.Models
                         };
                     }
 
-                    newloader = await Store.CommentClass.CreateComment(newComment, Confess_Guid);
-                    ConfessLoader data = Logic.ProcessConfessLoader(newloader);
-                    MessagingCenter.Send<object, ConfessLoader>(this, Constants.ReloadViewPage, data);
+                    //send to signal r
+                    string serialisedMessage = JsonConvert.SerializeObject(newComment);
+                    await ConnectToHub();
+                    await hubConnection.InvokeAsync("SendAddComment", serialisedMessage);
+                    await Task.Delay(10);
 
-                    DependencyService.Get<IMessage>().ShortAlert("Comment Posted.");
+
                     RemoveQuoteCommand.Execute(null);
-
-
-                    await LoadData();
+                    //reload data
+                    if (AppConstants.ShowAds)
+                    {
+                        await DependencyService.Get<IAdmobInterstitialAds>().Display(AppConstants.InterstitialAdId);
+                    }
                 }
                 catch (Exception ex)
                 {
                     Crashes.TrackError(ex, Logic.GetErrorProperties(ex));
                 }
-                //reload data
-                if (AppConstants.ShowAds)
+                finally
                 {
-                    await DependencyService.Get<IAdmobInterstitialAds>().Display(AppConstants.InterstitialAdId);
+                    IsBusy = false;
                 }
+
             });
 
             OnQuoteCommand = new Command((arg) =>
@@ -294,6 +481,14 @@ namespace Mobile.Models
                 await LoadData();
             });
 
+        }
+
+        private void Connectivity_ConnectivityChangedAsync(object sender, ConnectivityChangedEventArgs e)
+        {
+            Task.Run(async () =>
+            {
+                await LoadData();
+            });
         }
         private async Task LoadData()
         {

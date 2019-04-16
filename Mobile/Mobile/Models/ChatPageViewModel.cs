@@ -146,7 +146,9 @@ namespace Mobile.Models
 
         public event PropertyChangedEventHandler PropertyChanged;
 
-        private HubConnection hubConnection;
+        private HubConnection hubConnection = new HubConnectionBuilder()
+               .WithUrl("https://confessbackend.azurewebsites.net/chatHub")
+               .Build();
         public async Task ConnectToHub()
         {
             try
@@ -183,8 +185,8 @@ namespace Mobile.Models
                             {
                                 if (!string.IsNullOrEmpty(ch.ImageUrl))
                                 {
-                                    byte[] buffer = Encoding.UTF8.GetBytes(ch.ImageUrl);
-                                    string ImageUrl = Cloud.SaveByteArray(buffer);
+                                    byte[] bytes = Encoding.ASCII.GetBytes(ch.ImageUrl);
+                                    string ImageUrl = Cloud.SaveByteArray(bytes);
                                     ch.ImageUrl = ImageUrl;
                                 }
                             }
@@ -635,7 +637,7 @@ namespace Mobile.Models
                         else
                         {
                             //save the message as pending. But in What Format?
-                            new_send.ImageUrl = Encoding.UTF8.GetString(arg.stream, 0, arg.stream.Length);
+                            new_send.ImageUrl  =  Encoding.ASCII.GetString(arg.stream);
                             LocalStore.Chat.SavePending(new_send);
                         }
 

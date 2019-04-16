@@ -1,9 +1,11 @@
-﻿using Microsoft.AppCenter.Crashes;
+﻿using Microsoft.AppCenter;
+using Microsoft.AppCenter.Crashes;
 using Microsoft.AspNetCore.SignalR.Client;
 using Mobile.Helpers;
 using Mobile.Helpers.Local;
 using Newtonsoft.Json;
 using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
@@ -20,8 +22,11 @@ namespace Mobile.Models
         public LoadMode Mode = LoadMode.None;
         public string CurrentCategory = string.Empty;
         public ICommand OnRefreshCommand { get; set; }
-
+        public ICommand SendGetConfessionsCommand { get; set; }
+        public ICommand ConfessAppearingCommand { get; set; }
+        public ICommand RegisterUserCommand { get; set; }
         public event PropertyChangedEventHandler PropertyChanged;
+        public string LastShownConfessGuid { get; set; }
 
         private bool isBusy;
         public bool IsBusy
@@ -55,9 +60,9 @@ namespace Mobile.Models
                 OnPropertyChanged(nameof(IsErrorAvailable));
             }
         }
-
-
-        private HubConnection hubConnection;
+        private HubConnection hubConnection = new HubConnectionBuilder()
+               .WithUrl("https://confessbackend.azurewebsites.net/chatHub")
+               .Build();
         public async Task ConnectToHub()
         {
             try
@@ -74,13 +79,12 @@ namespace Mobile.Models
             {
                 Crashes.TrackError(ex, Logic.GetErrorProperties(ex));
             }
+
         }
         public async Task DisConnectHub()
         {
             try
             {
-                if (hubConnection == null)
-                { ResetConnection(); }
                 await hubConnection.StopAsync();
             }
             catch (Exception ex)
@@ -93,7 +97,9 @@ namespace Mobile.Models
             try
             {
                 if (hubConnection == null)
-                { ResetConnection(); }
+                {
+                    ResetConnection();
+                }
                 HubConnectionState state = hubConnection.State;
                 return state == HubConnectionState.Connected;
             }
@@ -103,17 +109,16 @@ namespace Mobile.Models
                 return false;
             }
         }
-
         private void ResetConnection()
         {
             hubConnection = new HubConnectionBuilder()
-                .WithUrl("https://confessbackend.azurewebsites.net/chatHub")
-                .Build();
+               .WithUrl("https://confessbackend.azurewebsites.net/chatHub")
+               .Build();
         }
         public ConfessionViewModel()
         {
+            Task forget = ConnectToHub();
             Connectivity.ConnectivityChanged += Connectivity_ConnectivityChangedAsync;
-            ResetConnection();
 
             hubConnection.On<string>("ReceiveConfession", (message) =>
             {
@@ -125,6 +130,42 @@ namespace Mobile.Models
 
                     //save to local db
                     LocalStore.Confession.SaveLoader(incomingConfession);
+                }
+
+                catch (Exception ex)
+                {
+                    Crashes.TrackError(ex, Logic.GetErrorProperties(ex));
+                }
+            });
+
+            hubConnection.On<string>("ReceiveGetConfessions", (message) =>
+            {
+                try
+                {
+                    ObservableCollection<ConfessLoader> incomingConfessions = JsonConvert.DeserializeObject<ObservableCollection<ConfessLoader>>(message);
+                    //check if it's mine, etc
+                    SetLoaders(incomingConfessions);
+
+                    //save to local db
+                    LocalStore.Confession.SaveLoaders(incomingConfessions);
+                }
+
+                catch (Exception ex)
+                {
+                    Crashes.TrackError(ex, Logic.GetErrorProperties(ex));
+                }
+            });
+
+            hubConnection.On<string>("ReceiveUpdateConfession", (message) =>
+            {
+                try
+                {
+                    ConfessLoader incomingConfession = JsonConvert.DeserializeObject<ConfessLoader>(message);
+                    //check if it's mine, etc
+                    SetLoaders(incomingConfession);
+
+                    //save to local db
+                    LocalStore.Confession.UpdateLoader(incomingConfession);
                 }
 
                 catch (Exception ex)
@@ -156,27 +197,147 @@ namespace Mobile.Models
             });
 
             IsErrorAvailable = false;
-            Task.Run(async () =>
-            {
-                await LoadData();
-                Subscriptions();
-            });
-
+          
             OnRefreshCommand = new Command((arg) =>
             {
-                Task.Run(async () =>
+                Task.Run(() =>
                 {
-                    await LoadData();
+                    SendGetConfessionsCommand.Execute(null);
                 });
             });
+
+            RegisterUserCommand = new Command(async () =>
+            {
+                try
+                {
+                    if (AppConstants.MakeRegistration)
+                    {
+                        //A first timer would return null
+                        Guid? installId = await AppCenter.GetInstallIdAsync();
+                        string currentkey = await Logic.GetKey();
+
+                        UserData user_data = new UserData
+                        {
+                            AppCenterID = installId.Value.ToString(),
+                            Biometry = false,
+                            ChatRoomNotification = true,
+                            CommentNotification = true,
+                            Logger = Logic.GetDeviceInformation(),
+                            Key = new List<string>() { currentkey }
+                        };
+
+                        try
+                        {
+                            string serialisedMessage = JsonConvert.SerializeObject(user_data);
+                            await ConnectToHub();
+                            await hubConnection.InvokeAsync("SendRegisterUser", serialisedMessage);
+                            await Task.Delay(10);                          
+                        }
+                        catch (Exception ex)
+                        {
+                            Crashes.TrackError(ex, Logic.GetErrorProperties(ex));
+                        }
+                       
+                    }
+
+
+                }
+                catch (Exception ex)
+                {
+                    Crashes.TrackError(ex, Logic.GetErrorProperties(ex));
+                }
+                finally
+                {
+                    IsBusy = false;
+                }
+
+            });
+
+            SendGetConfessionsCommand = new Command(async (art) =>
+            {
+                try
+                {
+                    if (!Logic.IsInternet())
+                    {
+                        await LoadOfflineData();
+                    }
+
+                    else
+                    {
+                        IsBusy = true;
+                        ConfessCaller caller = new ConfessCaller { UserKey = await Logic.GetKey() };
+                        switch (Mode)
+                        {
+                            case LoadMode.None:
+                                {
+                                    caller.FetchAll = true;
+                                    break;
+                                }
+                            case LoadMode.Category:
+                                {
+                                    caller.IsCategory = true;
+                                    caller.Category = CurrentCategory;
+                                    break;
+                                }
+                            case LoadMode.Mine:
+                                {
+                                    caller.FetchMine = true;
+                                    break;
+                                }
+                        }
+
+                        //send to signal r
+                        string serialisedMessage = JsonConvert.SerializeObject(caller);
+                        await ConnectToHub();
+                        await hubConnection.InvokeAsync("SendGetConfessions", serialisedMessage);
+                        await Task.Delay(10);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Crashes.TrackError(ex, Logic.GetErrorProperties(ex));
+                }
+                finally
+                {
+                    IsBusy = false;
+                }
+            });
+            ConfessAppearingCommand = new Command<ConfessLoader>(OnConfessorAppearing);
+
+            Task.Run(() =>
+            {
+                SendGetConfessionsCommand.Execute(null);
+                RegisterUserCommand.Execute(null);
+                Subscriptions();
+            });
+        }
+
+        private void OnConfessorAppearing(ConfessLoader obj)
+        {
+            int idx = Loaders.IndexOf(obj);
+            int lastIndex = Loaders.IndexOf(Loaders.LastOrDefault());
+
+            //check if the current guy is in the last 5
+
+            if (lastIndex - idx <= 5)
+            {
+                //Pull request for the next set
+                LastShownConfessGuid = obj.Guid;
+
+                //call the fetch method again from here using a special task and cancellation token
+            }
+
         }
 
         private void Connectivity_ConnectivityChangedAsync(object sender, ConnectivityChangedEventArgs e)
         {
-            Task.Run(async () =>
+            if (e.NetworkAccess == NetworkAccess.Internet)
             {
-                await LoadData();
+                Task.Run(() =>
+            {
+                SendGetConfessionsCommand.Execute(null);
             });
+            }
         }
         protected virtual void OnPropertyChanged(string propertyName)
         {
@@ -184,18 +345,10 @@ namespace Mobile.Models
        new PropertyChangedEventArgs(propertyName));
         }
 
-        public async Task LoadData()
+        public async Task LoadOfflineData()
         {
-            await ConnectToHub();
             ObservableCollection<ConfessLoader> TempLoaders = new ObservableCollection<ConfessLoader>();
-            //if (!Logic.IsInternet())
-            //{
-            //    DependencyService.Get<IMessage>().ShortAlert(Constants.No_Internet);
-            //    IsErrorAvailable = true;
-            //    ErrorMessage = Constants.No_Internet;
-            //    return;
-            //    TempLoaders = LocalStore.Confession.
-            //}
+
             try
             {
                 IsBusy = true;
@@ -203,56 +356,17 @@ namespace Mobile.Models
                 {
                     case LoadMode.None:
                         {
-                            if (!Logic.IsInternet())
-                            {
-                                TempLoaders = LocalStore.Confession.FetchAllLoaders();
-                            }
-                            else
-                            {
-                                TempLoaders = await Store.ConfessClass.FetchAllConfess();
-                                if (TempLoaders == null || TempLoaders.Count == 0)
-                                {
-                                    TempLoaders = LocalStore.Confession.FetchAllLoaders();
-                                }
-                                else
-                                {
-                                    LocalStore.Confession.SaveLoaders(TempLoaders);
-                                }
-                            }
+                            TempLoaders = LocalStore.Confession.FetchAllLoaders();
                             break;
                         }
                     case LoadMode.Category:
                         {
-                            if (!Logic.IsInternet())
-                            {
-                                TempLoaders = LocalStore.Confession.FetchByCategory(CurrentCategory);
-                            }
-                            else
-                            {
-                                TempLoaders = await Store.ConfessClass.FetchConfessByCategory(CurrentCategory);
-                                if (TempLoaders == null || TempLoaders.Count == 0)
-                                {
-                                    TempLoaders = LocalStore.Confession.FetchByCategory(CurrentCategory);
-                                }
-                                else { LocalStore.Confession.SaveLoaders(TempLoaders); }
-                            }
+                            TempLoaders = LocalStore.Confession.FetchByCategory(CurrentCategory);
                             break;
                         }
                     case LoadMode.Mine:
                         {
-                            if (!Logic.IsInternet())
-                            {
-                                TempLoaders = await LocalStore.Confession.FetchMine();
-                            }
-                            else
-                            {
-                                TempLoaders = await Store.ConfessClass.FetchMyConfessions();
-                                if (TempLoaders == null || TempLoaders.Count == 0)
-                                {
-                                    TempLoaders = await LocalStore.Confession.FetchMine();
-                                }
-                                else { LocalStore.Confession.SaveLoaders(TempLoaders); }
-                            }
+                            TempLoaders = await LocalStore.Confession.FetchMine();
                             break;
                         }
                 }
@@ -311,10 +425,22 @@ namespace Mobile.Models
                 }
 
             }
+            //reverse the collection
+            Loaders_new = new ObservableCollection<ConfessLoader>(Loaders_new.Reverse());
+            Xamarin.Forms.Device.BeginInvokeOnMainThread(() =>
+            {
+                foreach (ConfessLoader dat in Loaders_new)
+                {
+                    if (!Loaders.Any(d => d.Guid == dat.Guid))
+                    {
+                        Loaders.Add(dat);
+                        OnPropertyChanged(nameof(Loaders));
+                    }
+                }
+            });
 
-            Loaders = new ObservableCollection<ConfessLoader>(Loaders_new.Reverse());
-            PropertyChanged?.Invoke(this,
-       new PropertyChangedEventArgs(nameof(Loaders)));
+            //Loaders = new ObservableCollection<ConfessLoader>(Loaders_new.Reverse());
+            //PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(Loaders)));
             IsBusy = false;
         }
         private void SetLoaders(ConfessLoader load)
@@ -339,7 +465,17 @@ namespace Mobile.Models
                 //remove first
                 Loaders.Remove(Loaders.FirstOrDefault(d => d.Guid == load.Guid));
             }
-            Loaders.Insert(0, load);
+            if (Loaders.Any(d => d.Id == load.Id))
+            {
+                //update the loader
+                int index = Loaders.IndexOf(Loaders.FirstOrDefault(d => d.Id == load.Id));
+                Loaders.RemoveAt(index);
+                Loaders.Insert(index, load);
+            }
+            else
+            {
+                Loaders.Insert(0, load);
+            }
             OnPropertyChanged(nameof(Loaders));
             IsBusy = false;
         }
@@ -355,7 +491,7 @@ namespace Mobile.Models
 
                     Mode = LoadMode.Category;
                     CurrentCategory = arg;
-                    LoadData();
+                    SendGetConfessionsCommand.Execute(null);
                 }
             });
 
@@ -363,7 +499,7 @@ namespace Mobile.Models
             {
                 if (arg != null)
                 {
-                    //remoge guy from viewmodel
+                    //remove guy from viewmodel
                     this.Loaders.Remove(arg);
                     PropertyChanged?.Invoke(this,
        new PropertyChangedEventArgs(nameof(Loaders)));
@@ -373,13 +509,13 @@ namespace Mobile.Models
             MessagingCenter.Subscribe<object>(this, Constants.me_nav, (sender) =>
             {
                 Mode = LoadMode.Mine;
-                LoadData();
+                SendGetConfessionsCommand.Execute(null);
             });
 
             MessagingCenter.Subscribe<object>(this, Constants.none_nav, (sender) =>
             {
                 Mode = LoadMode.None;
-                LoadData();
+                SendGetConfessionsCommand.Execute(null);
             });
 
             //Send out a Confession
@@ -407,6 +543,39 @@ namespace Mobile.Models
                     await Task.Delay(10);
                 }
             });
+
+            //Update a Confession
+            MessagingCenter.Subscribe<object, Confess>(this, Constants.update_confession, async (sender, arg) =>
+            {
+                if (arg != null & Logic.IsInternet())
+                {
+
+                    if (Loaders.Any(d => d.Id == arg.Id))
+                    {
+                        int index = Loaders.IndexOf(Loaders.FirstOrDefault(d => d.Id == arg.Id));
+                        ConfessLoader replacer = Loaders.FirstOrDefault(d => d.Id == arg.Id);
+                        replacer.Title = arg.Title;
+                        replacer.Body = arg.Body;
+                        replacer.Category = arg.Category;
+                        Loaders.RemoveAt(index);
+                        Loaders.Insert(index, replacer);
+                    }
+
+                    //update the Ui
+                    OnPropertyChanged(nameof(Loaders));
+
+                    string serialisedMessage = JsonConvert.SerializeObject(arg);
+                    await ConnectToHub();
+                    await hubConnection.InvokeAsync("UpdateConfession", serialisedMessage);
+                    await Task.Delay(10);
+                    DependencyService.Get<IMessage>().ShortAlert("Updated");
+                }
+                else
+                {
+                    DependencyService.Get<IMessage>().ShortAlert("Cannot Update at the moment.");
+                }
+            });
+
 
             //Delete a Confession
             MessagingCenter.Subscribe<object, string>(this, Constants.delete_confession, async (sender, arg) =>

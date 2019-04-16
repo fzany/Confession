@@ -71,6 +71,11 @@ namespace Mobile.Helpers.Local
                     Local.ConfessLoader.Insert(incomingConfession);
                 }
             }
+
+            internal static void UpdateLoader(ConfessLoader incomingConfession)
+            {
+                Local.ConfessLoader.Update(incomingConfession);
+            }
         }
 
         public static class Comment
@@ -101,6 +106,24 @@ namespace Mobile.Helpers.Local
                 System.Collections.Generic.IEnumerable<CommentLoader> result = Local.CommentLoader.Find(b => b.Confess_Guid == guid);
                 return new ObservableCollection<CommentLoader>(result);
             }
+
+            internal static void SaveLoader(CommentLoader load)
+            {
+                if (!Local.CommentLoader.Exists(d => d.Id == load.Id))
+                {
+                    Local.CommentLoader.Insert(load);
+                }
+            }
+
+            internal static void UpdateLoader(CommentLoader replacer)
+            {
+                Local.CommentLoader.Update(replacer);
+            }
+
+            internal static void DeleteLoader(string message)
+            {
+                Local.CommentLoader.Delete(d=>d.Guid == message);
+            }
         }
 
         public static class Chat
@@ -121,7 +144,7 @@ namespace Mobile.Helpers.Local
                         Local.ChatLoader.Insert(load);
                     }
                 }
-                
+
             }
 
             public static void SaveLoader(ChatLoader loader)
@@ -146,7 +169,7 @@ namespace Mobile.Helpers.Local
                 }
             }
 
-          
+
 
             internal static List<Models.Chat> FetchQueuedChats()
             {
@@ -178,10 +201,10 @@ namespace Mobile.Helpers.Local
 
             internal static void CancelPend(string id)
             {
-                Local.Chat.Delete(d=>d.Id == id);
+                Local.Chat.Delete(d => d.Id == id);
             }
 
-          
+
         }
 
         public static class ChatRoom
@@ -220,9 +243,9 @@ namespace Mobile.Helpers.Local
 
             internal static void UpdateMembership(string roomId, string count)
             {
-                if(Local.ChatRoomLoader.Exists(d=>d.Id == roomId))
+                if (Local.ChatRoomLoader.Exists(d => d.Id == roomId))
                 {
-                    var room = Local.ChatRoomLoader.FindOne(d => d.Id == roomId);
+                    ChatRoomLoader room = Local.ChatRoomLoader.FindOne(d => d.Id == roomId);
                     room.MembersCount = count;
                     Local.ChatRoomLoader.Update(room);
                 }
@@ -236,35 +259,35 @@ namespace Mobile.Helpers.Local
                 try
                 {
                     List<BsonDocument> allconfe = Local.ConfessRaw.FindAll().ToList();
-                    foreach (var conff in allconfe)
+                    foreach (BsonDocument conff in allconfe)
                     {
                         Local.ConfessRaw.Delete(conff);
                     }
                     List<BsonDocument> allcomm = Local.CommentRaw.FindAll().ToList();
-                    foreach (var comm in allcomm)
+                    foreach (BsonDocument comm in allcomm)
                     {
                         Local.CommentRaw.Delete(comm);
                     }
 
                     List<BsonDocument> allchat = Local.ChatLoaderRaw.FindAll().ToList();
-                    foreach (var chat in allchat)
+                    foreach (BsonDocument chat in allchat)
                     {
                         Local.ChatLoaderRaw.Delete(chat);
                     }
 
                     List<BsonDocument> allrooms = Local.ChatRoomRaw.FindAll().ToList();
-                    foreach (var room in allrooms)
+                    foreach (BsonDocument room in allrooms)
                     {
                         Local.ChatRoomRaw.Delete(room);
                     }
 
                     List<BsonDocument> allchats = Local.ChatRaw.FindAll().ToList();
-                    foreach (var chat in allchats)
+                    foreach (BsonDocument chat in allchats)
                     {
                         Local.ChatRaw.Delete(chat);
                     }
 
-                   
+
                 }
                 catch (System.Exception ex)
                 {
@@ -287,6 +310,8 @@ namespace Mobile.Helpers.Local
                 catch (System.Exception ex)
                 {
                     Crashes.TrackError(ex, Logic.GetErrorProperties(ex));
+                    Microsoft.AppCenter.Analytics.Analytics.TrackEvent("My custom event");
+
                     return 0;
                 }
             }

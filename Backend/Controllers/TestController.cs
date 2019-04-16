@@ -11,7 +11,7 @@ namespace Backend.Controllers
     [ApiController]
     public class TestController : ControllerBase
     {
-        private static readonly ChatHub context = new ChatHub();
+        
 
 
         [HttpGet]
@@ -28,7 +28,7 @@ namespace Backend.Controllers
             }
             catch(Exception ex)
             {
-                var forget_error = context.Error(ex);
+                
                 return new List<UserData>();
             }
         }
@@ -46,7 +46,7 @@ namespace Backend.Controllers
             }
             catch(Exception ex)
             {
-                var forget_error = context.Error(ex);
+                
                 return BadRequest();
             }
 

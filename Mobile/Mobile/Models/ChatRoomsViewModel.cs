@@ -109,7 +109,14 @@ namespace Mobile.Models
                 try
                 {
                     //update in model
-                    ChatRooms.FirstOrDefault(d => d.Id == roomId).MembersCount = count;
+                    if (ChatRooms.Any(d => d.Id == roomId))
+                    {
+                        var index = ChatRooms.IndexOf(ChatRooms.FirstOrDefault(d => d.Id == roomId));
+                        var replacer = ChatRooms.FirstOrDefault(d => d.Id == roomId);
+                        replacer.MembersCount = count;
+                        ChatRooms.RemoveAt(index);
+                        ChatRooms.Insert(index, replacer);
+                    }
                     //update Ui
                     OnPropertyChanged(nameof(ChatRooms));
                     //update to local db

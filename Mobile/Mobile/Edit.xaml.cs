@@ -5,6 +5,7 @@ using Mobile.Models;
 using MongoDB.Driver;
 using System;
 using System.Linq;
+using System.Threading.Tasks;
 using Xamarin.Forms;
 using Xamarin.Forms.Xaml;
 
@@ -139,6 +140,7 @@ namespace Mobile
 
 
             ChangeLoading(true);
+            await Task.Delay(10);
 
             try
             {
@@ -149,9 +151,10 @@ namespace Mobile
                     Body = body.Text,
                     Category = cat.SelectedItem.ToString()
                 };
-                //Save
-                await Store.ConfessClass.UpdateConfess(fetch);
-                DependencyService.Get<IMessage>().ShortAlert("Updated");
+                //Update
+                MessagingCenter.Send<object, Confess>(this, Constants.update_confession, fetch);
+
+                //await Store.ConfessClass.UpdateConfess(fetch);
                 ChangeLoading(false);
 
                 //close this page

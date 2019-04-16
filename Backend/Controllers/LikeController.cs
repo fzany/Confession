@@ -11,7 +11,7 @@ namespace Backend.Controllers
     [ApiController]
     public class LikeController : ControllerBase
     {
-        private static readonly ChatHub context = new ChatHub();
+        
 
 
         [HttpGet]
@@ -26,7 +26,7 @@ namespace Backend.Controllers
             }
             catch (Exception ex)
             {
-                var forget_error = context.Error(ex);
+                
                 return StatusCode(500, ex.ToString());
             }
         }
@@ -43,7 +43,7 @@ namespace Backend.Controllers
             }
             catch (Exception ex)
             {
-                var forget_error = context.Error(ex);
+                
                 return StatusCode(500, ex.ToString());
             }
         }
@@ -62,7 +62,7 @@ namespace Backend.Controllers
             }
             catch (Exception ex)
             {
-                var forget_error = context.Error(ex);
+                
                 return StatusCode(500, ex.ToString());
             }
         }

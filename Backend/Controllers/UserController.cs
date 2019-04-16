@@ -17,7 +17,7 @@ namespace Backend.Controllers
     public class UserController : ControllerBase
     {
 
-        private static readonly ChatHub context = new ChatHub();
+        
 
         [HttpGet]
         [Route("user/fetch")]
@@ -34,7 +34,7 @@ namespace Backend.Controllers
             }
             catch (Exception ex)
             {
-                var forget_error = context.Error(ex);
+                
                 return StatusCode(500, ex.ToString());
             }
         }
@@ -52,7 +52,7 @@ namespace Backend.Controllers
             }
             catch (Exception ex)
             {
-                var forget_error = context.Error(ex);
+                
                 return StatusCode(500, ex.ToString());
             }
         }
@@ -68,7 +68,7 @@ namespace Backend.Controllers
             }
             catch (Exception ex)
             {
-                var forget_error = context.Error(ex);
+                
                 return StatusCode(500, ex.ToString());
             }
         }

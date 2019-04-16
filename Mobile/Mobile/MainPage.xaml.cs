@@ -21,26 +21,7 @@ namespace Mobile
             Subscriptions();
 
         }
-        protected override void OnAppearing()
-        {
-            base.OnAppearing();
-            LoadData();
-        }
-
-        private async void LoadData()
-        {
-            //string isLogged = await Logic.CheckUserRegistration();
-            //if (string.IsNullOrEmpty(isLogged))
-            //{
-            //    await Store.UserClass.Add();
-            //}
-
-            await Task.Run(async () =>
-             {
-                 await Store.UserClass.Add();
-             });
-        }
-
+ 
         private void Subscriptions()
         {
             MessagingCenter.Subscribe<object, Edit>(this, Constants.edit_nav, async (sender, arg) =>
@@ -80,12 +61,17 @@ namespace Mobile
             await Navigation.PushModalAsync(new ChatLister());
         }
 
+        private void Item_Appearing(object sender, ItemVisibilityEventArgs e)
+        {
+            _confessionViewModel.ConfessAppearingCommand.Execute(e.Item as ConfessLoader);
+        }
+
         //private void List_View_Refreshing(object sender, EventArgs e)
         //{
         //   // MessagingCenter.Send<object>(this, Constants.none_nav);
         //    _confessionViewModel.OnRefreshCommand.Execute(null);
         //}
 
-     
+
     }
 }

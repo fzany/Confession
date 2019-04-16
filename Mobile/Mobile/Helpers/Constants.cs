@@ -18,6 +18,7 @@ namespace Mobile.Helpers
         public const string image_sender = "image_sender";
         public const string modify_nav = "modify_nav";
         public const string send_confession = "send_confession";
+        public const string update_confession = "update_confession";
         public const string delete_confession = "delete_confession";
         public const string send_room = "send_room";
         public const string go_back = "go_back";
